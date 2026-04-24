@@ -6,7 +6,6 @@ const StatsCards = ({ fines = [], license }) => {
     if (!license?.license_expiry) return 0;
     const expiry = new Date(license.license_expiry);
     const today = new Date();
-    // Reset time parts for accurate day calculation
     expiry.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
     const diffTime = expiry.getTime() - today.getTime();
@@ -16,7 +15,7 @@ const StatsCards = ({ fines = [], license }) => {
   const licenseDays = getLicenseDays();
 
   return (
-    <div className="grid grid-cols-3 gap-2.5">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
       {/* Outstanding fines */}
       <div className="bg-white border-l-[3px] border-l-[#EF4444] border border-[#E2E8F0] rounded-r-[10px] p-3 relative">
         <div className="absolute right-2.5 top-2.5 w-7 h-7 rounded-md bg-[#FEF2F2] flex items-center justify-center">

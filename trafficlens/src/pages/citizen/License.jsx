@@ -3,8 +3,8 @@ import LicenseCard from '../../components/citizen/LicenseCard';
 
 const demoData = {
   user: {
-    first_name: 'MBB',
-    last_name: 'NEL',
+    first_name: 'DAVID',
+    last_name: 'GARETH',
     id_number: '020608 1753 790 8 1',
     date_of_birth: '1996-06-17'
   },

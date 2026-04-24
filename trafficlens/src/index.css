@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  /* --- Your Existing Brand Colors --- */
   --color-ca: #1B6CA8;
   --color-ca-light: #E8F3FB;
   --color-ca-dark: #0F4A7A;
@@ -12,37 +11,31 @@
   --color-adm-acc: #00C9A7;
   --color-adm-red: #FF5A5A;
   --color-adm-amb: #FFB020;
-
-  /* --- New Digital License / Brand Colors --- */
+  
+  --color-brand-neon: #10B981;
   --color-brand-dark: #050f0a;
-  --color-brand-card: #0c1a14;
-  --color-brand-neon: #10b981;
-  --color-brand-accent: #064e3b;
-
-  /* --- Typography --- */
+  --color-brand-card: #0A0A0A;
+  
   --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-sans: 'DM Sans', system-ui, sans-serif;
-
-  /* --- Custom Animations --- */
-  --animate-scan: scan-line 3s linear infinite;
-  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-
-  /* --- Keyframes --- */
-  @keyframes scan-line {
-    0% { top: 0%; opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { top: 100%; opacity: 0; }
-  }
 }
 
-/* --- Global Utilities & Overrides --- */
-body {
-  @apply antialiased;
-  margin: 0;
+/* Animation for license card scan line */
+@keyframes scan {
+  0% { top: 0; }
+  100% { top: 100%; }
 }
 
-/* Custom scrollbar for admin */
+.animate-scan {
+  animation: scan 3s ease-in-out infinite;
+}
+
+/* Safe area for mobile bottom navigation */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+}
+
+/* Custom scrollbar */
 .admin-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
@@ -52,6 +45,13 @@ body {
 .admin-scrollbar::-webkit-scrollbar-thumb {
   background: #1A2E42;
   border-radius: 2px;
+}
+
+/* Mobile responsive grid adjustments */
+@media (max-width: 768px) {
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Optional: Ensure fonts are loaded if not using a link tag in HTML */
