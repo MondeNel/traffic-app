@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import CitizenLayout from '../../components/layout/CitizenLayout';
 import LicenseCard from '../../components/citizen/LicenseCard';
+import RenewalModal from '../../components/citizen/RenewalModal';
 import demoUser from '../../data/demoUser';
 
 const codes = [
@@ -13,6 +15,8 @@ const codes = [
 ];
 
 const License = () => {
+  const [showRenewal, setShowRenewal] = useState(false);
+
   return (
     <CitizenLayout user={demoUser}>
       <div className="flex flex-col gap-4">
@@ -28,12 +32,14 @@ const License = () => {
               </p>
             </div>
           </div>
-          <button className="px-4 py-2 bg-ca text-white border-none rounded-lg text-sm font-medium hover:bg-ca-dark transition-colors shadow-sm">
+          <button 
+            onClick={() => setShowRenewal(true)}
+            className="px-4 py-2 bg-ca text-white border-none rounded-lg text-sm font-medium hover:bg-ca-dark transition-colors shadow-sm"
+          >
             Renew License
           </button>
         </div>
 
-        {/* License card container */}
         <div className="bg-brand-card rounded-2xl overflow-hidden -mx-1">
           <LicenseCard user={demoUser} license={demoUser.license} />
         </div>
@@ -64,14 +70,8 @@ const License = () => {
             <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
               <h3 className="text-sm font-semibold text-slate-900 mb-3">Restrictions & Notes</h3>
               <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-xs text-slate-500">Driver Restrictions</span>
-                  <span className="text-xs font-medium text-slate-900">0 (None)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-xs text-slate-500">Vehicle Restrictions</span>
-                  <span className="text-xs font-medium text-slate-900">None</span>
-                </div>
+                <div className="flex justify-between"><span className="text-xs text-slate-500">Driver Restrictions</span><span className="text-xs font-medium text-slate-900">0 (None)</span></div>
+                <div className="flex justify-between"><span className="text-xs text-slate-500">Vehicle Restrictions</span><span className="text-xs font-medium text-slate-900">None</span></div>
               </div>
             </div>
             <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
@@ -86,6 +86,8 @@ const License = () => {
           </div>
         </div>
       </div>
+
+      <RenewalModal isOpen={showRenewal} onClose={() => setShowRenewal(false)} />
     </CitizenLayout>
   );
 };
