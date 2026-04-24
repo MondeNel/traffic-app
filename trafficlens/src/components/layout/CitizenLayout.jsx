@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
@@ -38,7 +37,6 @@ const iconPaths = {
 };
 
 const CitizenLayout = ({ children, user }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -46,45 +44,6 @@ const CitizenLayout = ({ children, user }) => {
 
   return (
     <div className="flex flex-col h-screen bg-[#F8FAFC]">
-      {/* Desktop Header */}
-      <div className="hidden md:flex bg-white border-b border-[#E2E8F0] px-5 py-3 flex-shrink-0 items-center gap-2">
-        <div className="w-6 h-6 bg-[#1B6CA8] rounded-md flex items-center justify-center">
-          <svg viewBox="0 0 24 24" className="w-3 h-3 stroke-white fill-none" strokeWidth="2.5">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-          </svg>
-        </div>
-        <span className="text-xs font-semibold text-[#0F172A]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-          TrafficLens
-        </span>
-        <span className="text-[10px] text-[#94A3B8]">· Citizen Portal</span>
-      </div>
-
-      {/* Mobile Header */}
-      <div className="md:hidden bg-white border-b border-[#E2E8F0] px-4 py-3 flex-shrink-0 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#1B6CA8] rounded-md flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-white fill-none" strokeWidth="2.5">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-            </svg>
-          </div>
-          <span className="text-sm font-semibold text-[#0F172A]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            TrafficLens
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="w-8 h-8 rounded-lg border border-[#E2E8F0] flex items-center justify-center bg-white relative">
-            <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-[#475569] fill-none" strokeWidth="1.5">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-            <div className="absolute top-1 right-1 w-2 h-2 bg-[#EF4444] rounded-full border border-white"></div>
-          </button>
-          <div className="w-7 h-7 rounded-full bg-[#1B6CA8] text-white text-[10px] font-bold flex items-center justify-center">
-            {user?.first_name?.[0]}{user?.last_name?.[0]}
-          </div>
-        </div>
-      </div>
-
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
         <div className="hidden md:flex w-[210px] bg-white border-r border-[#E2E8F0] flex-col flex-shrink-0">
@@ -137,7 +96,7 @@ const CitizenLayout = ({ children, user }) => {
 
           <div className="p-3 border-t border-[#E2E8F0] flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-[#1B6CA8] text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
-              {user?.first_name?.[0]}{user?.last_name?.[0]}
+              DG
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-[11px] font-medium text-[#0F172A] truncate">
@@ -152,6 +111,33 @@ const CitizenLayout = ({ children, user }) => {
 
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto">
+          {/* Mobile Header */}
+          <div className="md:hidden bg-white border-b border-[#E2E8F0] px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 bg-[#1B6CA8] rounded-md flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-white fill-none" strokeWidth="2.5">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                </svg>
+              </div>
+              <span className="text-sm font-semibold text-[#0F172A]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                TrafficLens
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              {/* Notification bell - only here on mobile */}
+              <button className="w-8 h-8 rounded-lg border border-[#E2E8F0] flex items-center justify-center bg-white relative">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-[#475569] fill-none" strokeWidth="1.5">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <div className="absolute top-1 right-1 w-2 h-2 bg-[#EF4444] rounded-full border border-white"></div>
+              </button>
+              <div className="w-7 h-7 rounded-full bg-[#1B6CA8] text-white text-[10px] font-bold flex items-center justify-center">
+                DG
+              </div>
+            </div>
+          </div>
+
           <div className="p-3 md:p-5 pb-20 md:pb-5">
             {children}
           </div>

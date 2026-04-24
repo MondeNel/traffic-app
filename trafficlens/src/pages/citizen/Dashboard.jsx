@@ -8,7 +8,7 @@ const Dashboard = () => {
   return (
     <CitizenLayout user={demoUser}>
       <div className="flex flex-col gap-4">
-        {/* Welcome header */}
+        {/* Welcome header - no notification bell */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-[15px] font-semibold text-[#0F172A]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -22,18 +22,6 @@ const Dashboard = () => {
                 year: 'numeric' 
               })} · Last login: Today 08:14
             </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="w-7 h-7 rounded-lg border border-[#E2E8F0] flex items-center justify-center bg-white relative">
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-[#475569] fill-none" strokeWidth="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-              <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-[#EF4444] rounded-full border border-white"></div>
-            </button>
-            <div className="w-6 h-6 rounded-full bg-[#1B6CA8] text-white text-[9px] font-bold flex items-center justify-center">
-              DG
-            </div>
           </div>
         </div>
 
