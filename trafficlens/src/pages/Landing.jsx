@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
@@ -22,7 +22,14 @@ const citiesByProvince = {
 
 const Landing = () => {
   const navigate = useNavigate();
-  const { register, loginCitizen, loginAdmin, isLoading, error, clearError } = useAuthStore();
+  const { register, loginCitizen, loginAdmin, isLoading, error, clearError, isAuthenticated, userType } = useAuthStore();
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(userType === 'admin' ? '/admin/map' : '/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, userType, navigate]);
   
   const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
