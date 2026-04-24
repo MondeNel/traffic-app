@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import NotificationsModal from '../citizen/NotificationsModal';
 import PaymentModal from '../citizen/PaymentModal';
 import usePaymentStore from '../../store/paymentStore';
+import useAuthStore from '../../store/authStore';
 import notificationsData from '../../data/notifications';
 import demoUser from '../../data/demoUser';
 
@@ -47,13 +48,21 @@ const CitizenLayout = ({ children, user }) => {
   const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
   
+  // All hooks called inside the component
+  const { logout } = useAuthStore();
+  const { processPayment, isProcessing } = usePaymentStore();
+  
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState(notificationsData);
   const [showPayment, setShowPayment] = useState(false);
   const [selectedFine, setSelectedFine] = useState(null);
-  const { processPayment, isProcessing } = usePaymentStore();
   
   const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const handleMarkRead = (id) => {
     setNotifications(notifications.map(n => 
@@ -68,7 +77,6 @@ const CitizenLayout = ({ children, user }) => {
   const handleNotificationAction = (notification) => {
     handleMarkRead(notification.id);
     
-    // Map notification to a fine for payment
     if (notification.type === 'warning' && notification.title.includes('Fine')) {
       const fine = demoUser.fines.find(f => 
         notification.message.includes(f.description) || 
@@ -93,7 +101,8 @@ const CitizenLayout = ({ children, user }) => {
     <div className="flex flex-col h-screen bg-slate-50">
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
-        <div className="hidden md:flex w-[210px] bg-white border-r border-slate-200 flex-col shrink-0">
+        <div className="hidden md:flex w-52 bg-white border-r border-slate-200 flex-col shrink-0">
+          {/* Logo with notification bell */}
           <div className="p-4 pb-3 border-b border-slate-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -147,12 +156,24 @@ const CitizenLayout = ({ children, user }) => {
             ))}
           </nav>
 
+          {/* User footer with logout */}
           <div className="p-3 border-t border-slate-200 flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-ca text-white text-[10px] font-bold flex items-center justify-center shrink-0">DG</div>
+            <div className="w-7 h-7 rounded-full bg-ca text-white text-[10px] font-bold flex items-center justify-center shrink-0">
+              {user?.first_name?.[0]}{user?.last_name?.[0]}
+            </div>
             <div className="flex-1 min-w-0">
               <div className="text-[11px] font-medium text-slate-900 truncate">{user?.first_name} {user?.last_name}</div>
               <div className="text-[10px] text-slate-400 truncate">{user?.id_number}</div>
             </div>
+            <button 
+              onClick={handleLogout}
+              className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors"
+              title="Sign out"
+            >
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-current fill-none" strokeWidth="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -182,7 +203,9 @@ const CitizenLayout = ({ children, user }) => {
                   </div>
                 )}
               </button>
-              <div className="w-7 h-7 rounded-full bg-ca text-white text-[10px] font-bold flex items-center justify-center">DG</div>
+              <div className="w-7 h-7 rounded-full bg-ca text-white text-[10px] font-bold flex items-center justify-center">
+                {user?.first_name?.[0]}{user?.last_name?.[0]}
+              </div>
             </div>
           </div>
 

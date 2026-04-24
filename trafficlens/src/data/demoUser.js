@@ -11,7 +11,6 @@ const demoUser = {
     license_expiry: '2026-09-28',
     vehicle_codes: 'B'
   },
-  // Demo payment account
   paymentAccount: {
     cardholderName: 'David Gareth',
     cardNumber: '4532 7891 2345 6789',
@@ -93,6 +92,17 @@ const demoUser = {
       plate_number: null
     }
   ]
+};
+
+export const adminUser = {
+  first_name: 'Officer',
+  last_name: 'Dlamini',
+  id_number: 'ADMIN-001',
+  email: 'officer.dlamini@trafficlens.gov.za',
+  password: 'admin123',
+  role: 'admin',
+  department: 'Johannesburg Metro Police',
+  badgeNumber: 'JMPD-4421'
 };
 
 export default demoUser;
