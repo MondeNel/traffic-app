@@ -200,9 +200,9 @@ const Profile = () => {
               <div className="relative group mb-2">
                 <label className="cursor-pointer">
                   <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-                  <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-ca-light">
-                    <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
-                  </div>
+                  <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-ca-light shadow-sm">
+  <img src={profilePic} alt="Profile" className="w-full h-full object-cover" style={{ imageRendering: 'auto' }} />
+</div>
                   <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-white fill-none" strokeWidth="2">
                       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
