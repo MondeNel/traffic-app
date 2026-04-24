@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Fingerprint, Globe, Zap, ShieldCheck, FileText, MapPin } from 'lucide-react';
+import { Fingerprint, Globe, ShieldCheck, FileText, MapPin } from 'lucide-react';
 import userIdImage from '../../assets/ID.jpg';
 import saFlag from '../../assets/sa_flag.png';
 
@@ -15,22 +15,20 @@ const LicenseCard = ({ user, license }) => {
     licenseNo: '1063003041FS',
     docNo: '1',
     restrictions: '0',
-    vehicleRestr: 'None',
     vehicleCode: 'B',
     firstIssue: '13/10/2014',
     placeOfIssue: 'Cape Town',
     province: 'Western Cape',
     postalCode: '8800',
-    issuingAuthority: 'RTMC'
   };
 
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="relative w-full max-w-4xl mx-auto bg-brand-card border border-white/10 rounded-[1.5rem] p-5 md:p-7 shadow-2xl overflow-hidden font-sans"
+      className="relative w-full max-w-4xl mx-auto bg-brand-card border border-white/10 rounded-3xl p-5 md:p-7 shadow-2xl overflow-hidden font-sans"
     >
-      {/* South Africa Flag Watermark - covers entire card */}
+      {/* South Africa Flag Watermark */}
       <div className="absolute inset-0 pointer-events-none select-none z-0">
         <img 
           src={saFlag} 
@@ -40,19 +38,19 @@ const LicenseCard = ({ user, license }) => {
         />
       </div>
 
-      {/* South Africa Map Outline - subtle overlay */}
+      {/* South Africa Map Outline */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
         <svg viewBox="0 0 400 350" className="w-[60%] h-[60%] fill-white opacity-[0.03]">
           <path d="M195 48 C188 44 170 38 158 40 C142 42 130 36 122 42 C114 48 98 52 92 48 C86 44 72 48 66 54 C60 60 54 58 52 64 C50 70 42 74 38 80 C34 86 28 88 30 94 C32 100 28 108 31 114 C34 120 30 128 34 136 C38 144 32 152 36 160 C40 168 44 172 48 178 C52 184 58 190 64 196 C70 202 74 210 80 216 C86 222 88 230 94 236 C100 242 108 248 116 250 C124 252 132 256 140 254 C148 252 158 250 166 248 C174 246 182 242 190 240 C198 238 206 234 212 230 C218 226 228 224 234 218 C240 212 244 206 248 198 C252 190 254 180 252 172 C250 164 248 156 244 148 C240 140 238 132 234 124 C230 116 228 108 224 100 C220 92 218 84 214 76 C210 68 208 62 204 56 C200 50 202 48 195 48Z M158 62 C152 62 146 66 142 70 C138 74 132 76 130 82 C128 88 126 94 124 100 C122 106 120 112 122 118 C124 124 120 130 118 136 C116 142 114 148 116 154 C118 160 116 166 118 172 C120 178 124 182 128 186 C132 190 138 192 144 194 C150 196 156 196 162 194 C168 192 174 188 178 184 C182 180 188 178 192 174 C196 170 198 164 200 158 C202 152 204 146 204 140 C204 134 206 128 204 122 C202 116 202 110 200 104 C198 98 196 92 192 86 C188 80 184 74 178 70 C172 66 166 62 158 62Z" />
-          <path d="M225 138 C230 132 236 128 238 122 C240 116 242 110 240 104 C238 98 234 94 228 92 C222 90 216 92 214 98 C212 104 214 112 218 118 C222 124 222 132 225 138Z" fill="#0A0A0A" />
-          <path d="M250 110 C254 106 260 104 264 100 C268 96 270 92 268 88 C266 84 260 82 254 84 C248 86 244 90 246 96 C248 102 248 106 250 110Z" fill="#0A0A0A" />
+          <path d="M225 138 C230 132 236 128 238 122 C240 116 242 110 240 104 C238 98 234 94 228 92 C222 90 216 92 214 98 C212 104 214 112 218 118 C222 124 222 132 225 138Z" className="fill-brand-card" />
+          <path d="M250 110 C254 106 260 104 264 100 C268 96 270 92 268 88 C266 84 260 82 254 84 C248 86 244 90 246 96 C248 102 248 106 250 110Z" className="fill-brand-card" />
         </svg>
       </div>
 
       {/* Background Micro-Text Pattern */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none select-none overflow-hidden leading-none z-0">
         {Array(30).fill("SOUTH AFRICAN DRIVERS LICENCE ").map((t, i) => (
-          <div key={i} className="whitespace-nowrap text-[8px] font-black tracking-widest py-1 rotate-[-5deg]">
+          <div key={i} className="whitespace-nowrap text-[8px] font-black tracking-widest py-1 -rotate-2">
             {t.repeat(10)}
           </div>
         ))}
@@ -81,13 +79,13 @@ const LicenseCard = ({ user, license }) => {
         <div className="md:w-[30%] space-y-4">
           <div className="relative group">
             <div className="absolute -inset-1 bg-brand-neon/20 rounded-xl blur-md" />
-            <div className="relative aspect-[3/4] bg-black rounded-xl border border-white/10 overflow-hidden shadow-inner">
+            <div className="relative aspect-3/4 bg-black rounded-xl border border-white/10 overflow-hidden shadow-inner">
               <img 
                 src={userIdImage} 
                 alt="David Gareth" 
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-brand-neon/10 to-transparent h-1/2 w-full animate-scan pointer-events-none border-b border-brand-neon/40 shadow-[0_4px_10px_rgba(16,185,129,0.2)] z-10" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-brand-neon/10 to-transparent w-full animate-scan pointer-events-none border-b border-brand-neon/40 z-10" />
             </div>
           </div>
 
@@ -103,7 +101,7 @@ const LicenseCard = ({ user, license }) => {
           </div>
         </div>
 
-        {/* Right Column: Data Layout */}
+        {/* Right Column */}
         <div className="flex-1 flex flex-col justify-between">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6 md:pl-8 md:border-l border-white/10">
             <div>
@@ -123,63 +121,40 @@ const LicenseCard = ({ user, license }) => {
               <p className="text-white text-base font-bold tracking-[0.15em]">{data.idNumber}</p>
             </div>
             <div>
-              <p className="text-[8px] text-rose-500/80 font-black uppercase tracking-widest mb-1">Vervaldatum / Expiry</p>
-              <p className="text-rose-500 text-lg font-black">{data.expiry}</p>
+              <p className="text-[8px] text-rose-400/80 font-black uppercase tracking-widest mb-1">Vervaldatum / Expiry</p>
+              <p className="text-rose-400 text-lg font-black">{data.expiry}</p>
             </div>
           </div>
 
           {/* Issue Location & Details */}
           <div className="mt-8 md:pl-8 space-y-4 border-t border-white/5 pt-6">
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-               <div>
-                  <p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">Issued / Uitgereik</p>
-                  <p className="text-white/60 text-xs font-bold">{data.issued}</p>
-               </div>
-               <div>
-                  <p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">First Issue / Eerste</p>
-                  <p className="text-white/60 text-xs font-bold">{data.firstIssue}</p>
-               </div>
-               <div>
-                  <p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">Driver Restr. / Beperk.</p>
-                  <p className="text-white/60 text-xs font-bold">{data.restrictions}</p>
-               </div>
+               <div><p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">Issued / Uitgereik</p><p className="text-white/60 text-xs font-bold">{data.issued}</p></div>
+               <div><p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">First Issue / Eerste</p><p className="text-white/60 text-xs font-bold">{data.firstIssue}</p></div>
+               <div><p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">Driver Restr. / Beperk.</p><p className="text-white/60 text-xs font-bold">{data.restrictions}</p></div>
             </div>
             
-            {/* Location of Issue */}
             <div className="mt-3 p-3 bg-black/30 backdrop-blur-sm rounded-lg border border-white/5">
               <div className="flex items-center gap-2 mb-3">
                 <MapPin className="w-3 h-3 text-brand-neon/60" />
                 <p className="text-[7px] text-white/20 font-black uppercase tracking-widest">Place of Issue / Plek van Uitreiking</p>
               </div>
               <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">City / Stad</p>
-                  <p className="text-white/80 text-sm font-bold">{data.placeOfIssue}</p>
-                </div>
-                <div>
-                  <p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">Province / Provinsie</p>
-                  <p className="text-white/80 text-sm font-bold">{data.province}</p>
-                </div>
-                <div>
-                  <p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">Code / Kode</p>
-                  <p className="text-white/80 text-sm font-bold">{data.postalCode}</p>
-                </div>
+                <div><p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">City / Stad</p><p className="text-white/80 text-sm font-bold">{data.placeOfIssue}</p></div>
+                <div><p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">Province / Provinsie</p><p className="text-white/80 text-sm font-bold">{data.province}</p></div>
+                <div><p className="text-[7px] text-white/20 font-black uppercase tracking-widest mb-1">Code / Kode</p><p className="text-white/80 text-sm font-bold">{data.postalCode}</p></div>
               </div>
             </div>
           </div>
 
-          {/* Footer: Codes & Digital Security */}
+          {/* Footer */}
           <div className="mt-8 flex items-end justify-between md:pl-8">
             <div className="flex gap-8 items-end">
               <div>
                 <p className="text-[8px] text-white/30 font-black uppercase tracking-widest mb-2">Vehicle Codes / Kodes</p>
                 <div className="flex gap-2">
-                   <span className="px-3 py-1.5 bg-brand-neon text-brand-dark rounded-md text-[10px] font-black shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                     {data.vehicleCode}
-                   </span>
-                   <span className="px-3 py-1.5 bg-white/5 text-white/10 rounded-md text-[10px] font-black border border-white/5">
-                     EB
-                   </span>
+                   <span className="px-3 py-1.5 bg-brand-neon text-brand-dark rounded-md text-[10px] font-black shadow-[0_0_15px_rgba(16,185,129,0.3)]">{data.vehicleCode}</span>
+                   <span className="px-3 py-1.5 bg-white/5 text-white/10 rounded-md text-[10px] font-black border border-white/5">EB</span>
                 </div>
               </div>
               <div className="flex items-center gap-2 pb-1 opacity-20">
@@ -187,13 +162,9 @@ const LicenseCard = ({ user, license }) => {
                 <span className="text-[7px] font-bold text-white uppercase tracking-widest">Digital Auth v2.4</span>
               </div>
             </div>
-
-            {/* Micro QR Section */}
             <div className="relative group p-1 bg-white rounded-lg shadow-xl">
-               <div className="absolute top-0 left-0 w-full h-[1px] bg-brand-neon animate-scan z-10" />
-               <div className="w-14 h-14" style={{ 
-                background: 'repeating-conic-gradient(#000 0% 25%, transparent 0% 50%) 0 0/4px 4px' 
-              }} />
+               <div className="absolute top-0 left-0 w-full h-px bg-brand-neon animate-scan z-10" />
+               <div className="w-14 h-14" style={{ background: 'repeating-conic-gradient(#000 0% 25%, transparent 0% 50%) 0 0/4px 4px' }} />
             </div>
           </div>
         </div>
