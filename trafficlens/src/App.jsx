@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import CitizenDashboard from './pages/citizen/Dashboard';
 import Vehicles from './pages/citizen/Vehicles';
+import License from './pages/citizen/License';
+import Profile from './pages/citizen/Profile';
 
 function App() {
   return (
@@ -8,6 +10,8 @@ function App() {
       <Routes>
         <Route path="/dashboard" element={<CitizenDashboard />} />
         <Route path="/vehicles" element={<Vehicles />} />
+        <Route path="/license" element={<License />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
