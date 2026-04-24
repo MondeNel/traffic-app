@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const notificationIcons = {
@@ -40,7 +40,7 @@ const notificationIcons = {
   }
 };
 
-const NotificationsModal = ({ isOpen, onClose, notifications, onMarkRead, onMarkAllRead }) => {
+const NotificationsModal = ({ isOpen, onClose, notifications, onMarkRead, onMarkAllRead, onAction }) => {
   const [activeFilter, setActiveFilter] = useState('all');
 
   const filteredNotifications = activeFilter === 'all' 
@@ -66,11 +66,20 @@ const NotificationsModal = ({ isOpen, onClose, notifications, onMarkRead, onMark
     return date.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' });
   };
 
+  const isActionable = (notification) => {
+    return notification.type === 'warning' && 
+           (notification.title.includes('Fine') || notification.title.includes('Payment'));
+  };
+
+  const isLinked = (notification) => {
+    return notification.title.includes('License') || 
+           notification.title.includes('Vehicle');
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-100 flex items-start justify-center pt-16 px-4">
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -79,7 +88,6 @@ const NotificationsModal = ({ isOpen, onClose, notifications, onMarkRead, onMark
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
           />
 
-          {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -109,7 +117,6 @@ const NotificationsModal = ({ isOpen, onClose, notifications, onMarkRead, onMark
                 </div>
               </div>
 
-              {/* Filter tabs */}
               <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5">
                 {[
                   { key: 'all', label: 'All' },
@@ -146,19 +153,19 @@ const NotificationsModal = ({ isOpen, onClose, notifications, onMarkRead, onMark
                 <div className="divide-y divide-slate-100">
                   {filteredNotifications.map((notification) => {
                     const iconConfig = notificationIcons[notification.type] || notificationIcons.info;
+                    const actionable = isActionable(notification);
+                    const linked = isLinked(notification);
+                    
                     return (
                       <div
                         key={notification.id}
-                        onClick={() => onMarkRead(notification.id)}
-                        className={`p-4 hover:bg-slate-50 transition-colors cursor-pointer ${!notification.isRead ? 'bg-ca-light/30' : ''}`}
+                        className={`p-4 hover:bg-slate-50 transition-colors ${!notification.isRead ? 'bg-ca-light/30' : ''}`}
                       >
                         <div className="flex gap-3">
-                          {/* Icon */}
                           <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${iconConfig.bg}`}>
                             {iconConfig.icon}
                           </div>
 
-                          {/* Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <h4 className={`text-xs font-semibold ${!notification.isRead ? 'text-slate-900' : 'text-slate-600'}`}>
@@ -176,6 +183,34 @@ const NotificationsModal = ({ isOpen, onClose, notifications, onMarkRead, onMark
                             <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
                               {notification.message}
                             </p>
+                            
+                            {/* Action buttons */}
+                            <div className="flex gap-2 mt-2">
+                              {actionable && (
+                                <button
+                                  onClick={() => onAction && onAction(notification)}
+                                  className="px-3 py-1.5 bg-ca text-white rounded-md text-[10px] font-medium hover:bg-ca-dark transition-colors"
+                                >
+                                  Pay now
+                                </button>
+                              )}
+                              {linked && (
+                                <button
+                                  onClick={() => onMarkRead(notification.id)}
+                                  className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                                >
+                                  View details
+                                </button>
+                              )}
+                              {!actionable && !linked && (
+                                <button
+                                  onClick={() => onMarkRead(notification.id)}
+                                  className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-[10px] font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                                >
+                                  Mark as read
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>

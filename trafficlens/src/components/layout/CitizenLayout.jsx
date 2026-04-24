@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import NotificationsModal from '../citizen/NotificationsModal';
+import PaymentModal from '../citizen/PaymentModal';
+import usePaymentStore from '../../store/paymentStore';
 import notificationsData from '../../data/notifications';
+import demoUser from '../../data/demoUser';
 
 const navItems = [
   {
@@ -46,6 +49,9 @@ const CitizenLayout = ({ children, user }) => {
   
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState(notificationsData);
+  const [showPayment, setShowPayment] = useState(false);
+  const [selectedFine, setSelectedFine] = useState(null);
+  const { processPayment, isProcessing } = usePaymentStore();
   
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -59,12 +65,35 @@ const CitizenLayout = ({ children, user }) => {
     setNotifications(notifications.map(n => ({ ...n, isRead: true })));
   };
 
+  const handleNotificationAction = (notification) => {
+    handleMarkRead(notification.id);
+    
+    // Map notification to a fine for payment
+    if (notification.type === 'warning' && notification.title.includes('Fine')) {
+      const fine = demoUser.fines.find(f => 
+        notification.message.includes(f.description) || 
+        notification.message.includes(f.location)
+      );
+      
+      if (fine) {
+        setSelectedFine(fine);
+        setShowNotifications(false);
+        setShowPayment(true);
+      }
+    }
+  };
+
+  const handlePayment = async (fineId) => {
+    await processPayment(fineId);
+    setShowPayment(false);
+    setSelectedFine(null);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-slate-50">
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
         <div className="hidden md:flex w-[210px] bg-white border-r border-slate-200 flex-col shrink-0">
-          {/* Logo with notification bell */}
           <div className="p-4 pb-3 border-b border-slate-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -191,6 +220,21 @@ const CitizenLayout = ({ children, user }) => {
         notifications={notifications}
         onMarkRead={handleMarkRead}
         onMarkAllRead={handleMarkAllRead}
+        onAction={handleNotificationAction}
+      />
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPayment}
+        onClose={() => { 
+          if (!isProcessing) {
+            setShowPayment(false);
+            setSelectedFine(null); 
+          }
+        }}
+        fine={selectedFine}
+        onPay={handlePayment}
+        isProcessing={isProcessing}
       />
     </div>
   );
