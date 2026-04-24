@@ -11,6 +11,17 @@ const demoUser = {
     license_expiry: '2026-09-28',
     vehicle_codes: 'B'
   },
+  // Demo payment account
+  paymentAccount: {
+    cardholderName: 'David Gareth',
+    cardNumber: '4532 7891 2345 6789',
+    expiryDate: '09/28',
+    cvv: '123',
+    cardType: 'VISA',
+    balance: 12500,
+    bank: 'Standard Bank',
+    accountType: 'Current Account'
+  },
   vehicles: [
     {
       id: 1,
