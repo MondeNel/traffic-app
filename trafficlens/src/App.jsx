@@ -8,9 +8,8 @@ import License from './pages/citizen/License';
 import Profile from './pages/citizen/Profile';
 import Documents from './pages/citizen/Documents';
 import Settings from './pages/citizen/Settings';
-
-// Admin placeholder pages (we'll build these next)
 import AdminLayout from './components/layout/AdminLayout';
+import LiveMap from './pages/admin/LiveMap';
 
 const AdminPlaceholder = ({ title }) => (
   <AdminLayout>
@@ -23,8 +22,17 @@ const AdminPlaceholder = ({ title }) => (
   </AdminLayout>
 );
 
+const ProtectedRoute = ({ children, allowedType }) => {
+  const { isAuthenticated, userType } = useAuthStore();
+  
+  if (!isAuthenticated) return <Navigate to="/" replace />;
+  if (allowedType && userType !== allowedType) return <Navigate to="/" replace />;
+  
+  return children;
+};
+
 function App() {
-  const { isAuthenticated, userType, checkAuth } = useAuthStore();
+  const { checkAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
@@ -33,55 +41,49 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Landing page */}
-        <Route path="/" element={
-          isAuthenticated ? (
-            <Navigate to={userType === 'admin' ? '/admin/map' : '/dashboard'} replace />
-          ) : (
-            <Landing />
-          )
-        } />
-        
+        {/* Landing */}
+        <Route path="/" element={<Landing />} />
+
         {/* Citizen routes */}
         <Route path="/dashboard" element={
-          isAuthenticated && userType === 'citizen' ? <CitizenDashboard /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="citizen"><CitizenDashboard /></ProtectedRoute>
         } />
         <Route path="/vehicles" element={
-          isAuthenticated && userType === 'citizen' ? <Vehicles /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="citizen"><Vehicles /></ProtectedRoute>
         } />
         <Route path="/license" element={
-          isAuthenticated && userType === 'citizen' ? <License /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="citizen"><License /></ProtectedRoute>
         } />
         <Route path="/profile" element={
-          isAuthenticated && userType === 'citizen' ? <Profile /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="citizen"><Profile /></ProtectedRoute>
         } />
         <Route path="/documents" element={
-          isAuthenticated && userType === 'citizen' ? <Documents /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="citizen"><Documents /></ProtectedRoute>
         } />
         <Route path="/settings" element={
-          isAuthenticated && userType === 'citizen' ? <Settings /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="citizen"><Settings /></ProtectedRoute>
         } />
-        
+
         {/* Admin routes */}
         <Route path="/admin/map" element={
-          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Live Map" /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="admin"><LiveMap /></ProtectedRoute>
         } />
         <Route path="/admin/verify" element={
-          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Verification" /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="admin"><AdminPlaceholder title="Verification" /></ProtectedRoute>
         } />
         <Route path="/admin/offenders" element={
-          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Offenders" /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="admin"><AdminPlaceholder title="Offenders" /></ProtectedRoute>
         } />
         <Route path="/admin/roadblocks" element={
-          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Roadblocks" /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="admin"><AdminPlaceholder title="Roadblocks" /></ProtectedRoute>
         } />
         <Route path="/admin/reports" element={
-          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Reports" /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="admin"><AdminPlaceholder title="Reports" /></ProtectedRoute>
         } />
         <Route path="/admin/activity" element={
-          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Activity Log" /> : <Navigate to="/" replace />
+          <ProtectedRoute allowedType="admin"><AdminPlaceholder title="Activity Log" /></ProtectedRoute>
         } />
-        
+
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
