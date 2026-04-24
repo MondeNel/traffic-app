@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  /* --- Your Existing Brand Colors --- */
   --color-ca: #1B6CA8;
   --color-ca-light: #E8F3FB;
   --color-ca-dark: #0F4A7A;
@@ -11,9 +12,34 @@
   --color-adm-acc: #00C9A7;
   --color-adm-red: #FF5A5A;
   --color-adm-amb: #FFB020;
-  
+
+  /* --- New Digital License / Brand Colors --- */
+  --color-brand-dark: #050f0a;
+  --color-brand-card: #0c1a14;
+  --color-brand-neon: #10b981;
+  --color-brand-accent: #064e3b;
+
+  /* --- Typography --- */
   --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-sans: 'DM Sans', system-ui, sans-serif;
+
+  /* --- Custom Animations --- */
+  --animate-scan: scan-line 3s linear infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  /* --- Keyframes --- */
+  @keyframes scan-line {
+    0% { top: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+}
+
+/* --- Global Utilities & Overrides --- */
+body {
+  @apply antialiased;
+  margin: 0;
 }
 
 /* Custom scrollbar for admin */
@@ -26,4 +52,10 @@
 .admin-scrollbar::-webkit-scrollbar-thumb {
   background: #1A2E42;
   border-radius: 2px;
+}
+
+/* Optional: Ensure fonts are loaded if not using a link tag in HTML */
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
 }

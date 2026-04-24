@@ -1,31 +1,52 @@
 import CitizenLayout from '../../components/layout/CitizenLayout';
+import LicenseCard from '../../components/citizen/LicenseCard';
 
 const demoData = {
   user: {
-    first_name: 'Sipho',
-    last_name: 'Khumalo',
-    id_number: '9205125432082',
-    license_number: 'ZA-DL-0298431',
-    vehicle_codes: 'B'
+    first_name: 'MBB',
+    last_name: 'NEL',
+    id_number: '020608 1753 790 8 1',
+    date_of_birth: '1996-06-17'
+  },
+  license: {
+    license_number: '1063003041FS',
+    license_expiry: '2026-09-28'
   }
 };
 
 const License = () => {
+  const codes = [
+    { code: 'B', description: 'Light Motor Vehicles', active: true },
+    { code: 'EB', description: 'Light Articulated Vehicles', active: false },
+    { code: 'C1', description: 'Heavy Motor Vehicle up to 16 000kg', active: false },
+    { code: 'C', description: 'Heavy Motor Vehicle', active: false },
+    { code: 'EC1', description: 'Extra Heavy Articulated up to 16 000kg', active: false },
+    { code: 'EC', description: 'Extra Heavy Articulated', active: false },
+    { code: 'A', description: 'Motorcycles', active: false },
+  ];
+
   return (
-    <CitizenLayout user={demoData.user}>
+    <CitizenLayout user={{
+      first_name: 'MBB',
+      last_name: 'NEL',
+      id_number: '020608175379081'
+    }}>
       <div className="flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-[15px] font-semibold text-[#0F172A]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            <h1 className="text-[15px] font-semibold text-[#0F172A]" style={{ fontFamily: "'Inter', sans-serif" }}>
               My driver's license
             </h1>
-            <p className="text-[11px] text-[#94A3B8] mt-0.5">
-              Digital copy · tap QR to share with officer
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="w-2 h-2 rounded-full bg-[#10B981]" />
+              <p className="text-[11px] text-[#64748B]">
+                Status: <span className="font-medium text-[#10B981]">Valid</span> · Tap QR to verify
+              </p>
+            </div>
           </div>
-          <button className="px-3 py-1.5 bg-[#1B6CA8] text-white border-none rounded text-xs font-medium hover:bg-[#0F4A7A] transition-colors">
-            Renew license
+          <button className="px-4 py-2 bg-[#1B6CA8] text-white border-none rounded-lg text-sm font-medium hover:bg-[#0F4A7A] transition-colors shadow-sm">
+            Renew License
           </button>
         </div>
 
@@ -39,90 +60,91 @@ const License = () => {
           Your license expires in 42 days. Renew now to avoid a lapse in driving privileges.
         </div>
 
-        {/* Full license card */}
-        <div className="bg-[#1B3A6B] rounded-[10px] p-5 text-white relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute -right-5 -top-5 w-[120px] h-[120px] rounded-full border-[18px] border-white/5"></div>
+        {/* Dark background section for the license card */}
+        <div className="bg-[#0A0A0A] rounded-2xl overflow-hidden -mx-2 p-4">
+          <LicenseCard user={demoData.user} license={demoData.license} />
+        </div>
 
-          <div className="relative z-10">
-            {/* Top section */}
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <div className="text-[9px] font-semibold tracking-widest opacity-60">
-                  REPUBLIC OF SOUTH AFRICA
+        {/* Additional Information */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Vehicle Codes */}
+          <div className="bg-white rounded-2xl p-4 border border-[#E2E8F0] shadow-sm">
+            <h3 className="text-sm font-semibold text-[#0F172A] mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Vehicle Categories & Codes
+            </h3>
+            <div className="flex flex-col gap-2">
+              {codes.map((item) => (
+                <div 
+                  key={item.code} 
+                  className={`flex items-center justify-between p-2.5 rounded-lg border ${
+                    item.active 
+                      ? 'border-[#10B981]/30 bg-[#10B981]/5' 
+                      : 'border-[#E2E8F0]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span 
+                      className={`w-10 text-center text-lg font-bold py-1 rounded ${
+                        item.active 
+                          ? 'bg-[#10B981] text-white shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
+                          : 'bg-gray-100 text-gray-400'
+                      }`}
+                      style={{ fontFamily: "'Space Mono', monospace" }}
+                    >
+                      {item.code}
+                    </span>
+                    <span className={`text-xs ${item.active ? 'text-[#0F172A]' : 'text-[#64748B] opacity-60'}`}>
+                      {item.description}
+                    </span>
+                  </div>
+                  {item.active && (
+                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-[#10B981]">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  )}
                 </div>
-                <div className="text-[17px] font-bold mt-0.5" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  Driver's License
+              ))}
+            </div>
+          </div>
+
+          {/* Restrictions & Admin */}
+          <div className="flex flex-col gap-4">
+            <div className="bg-white rounded-2xl p-4 border border-[#E2E8F0] shadow-sm">
+              <h3 className="text-sm font-semibold text-[#0F172A] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+                Restrictions & Notes
+              </h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-xs text-[#64748B]">Driver Restrictions</span>
+                  <span className="text-xs font-medium text-[#0F172A]">0 (None)</span>
                 </div>
-              </div>
-              <div className="bg-white/15 border border-white/25 rounded-full px-3.5 py-1.5 text-xs font-medium">
-                Valid
+                <div className="flex justify-between">
+                  <span className="text-xs text-[#64748B]">Vehicle Restrictions</span>
+                  <span className="text-xs font-medium text-[#0F172A]">None</span>
+                </div>
               </div>
             </div>
-
-            {/* Details grid - 3 columns */}
-            <div className="grid grid-cols-3 gap-3 mb-4">
-              <div>
-                <label className="text-[8px] opacity-55 tracking-wider font-semibold block">1. Surname</label>
-                <span className="text-xs font-medium block mt-0.5">Khumalo</span>
-              </div>
-              <div>
-                <label className="text-[8px] opacity-55 tracking-wider font-semibold block">2. Initials</label>
-                <span className="text-xs font-medium block mt-0.5">S P</span>
-              </div>
-              <div>
-                <label className="text-[8px] opacity-55 tracking-wider font-semibold block">3. ID Number</label>
-                <span className="text-xs font-medium block mt-0.5">9205125432082</span>
-              </div>
-              <div>
-                <label className="text-[8px] opacity-55 tracking-wider font-semibold block">4a. Date issued</label>
-                <span className="text-xs font-medium block mt-0.5">14 Aug 2021</span>
-              </div>
-              <div>
-                <label className="text-[8px] opacity-55 tracking-wider font-semibold block">5. Expires</label>
-                <span className="text-xs font-medium block mt-0.5">04 Jun 2025</span>
-              </div>
-              <div>
-                <label className="text-[8px] opacity-55 tracking-wider font-semibold block">4b. Country</label>
-                <span className="text-xs font-medium block mt-0.5">ZA</span>
-              </div>
-            </div>
-
-            {/* Bottom section */}
-            <div className="flex items-center gap-3.5 pt-2.5 border-t border-white/10">
-              {/* Photo placeholder */}
-              <div className="w-[52px] h-[62px] rounded-sm bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
-                <svg viewBox="0 0 24 24" className="w-[30px] h-[30px] fill-white/50">
-                  <circle cx="12" cy="8" r="4"/>
-                  <path d="M20 21a8 8 0 1 0-16 0"/>
-                </svg>
-              </div>
-
-              {/* Vehicle codes */}
-              <div className="flex-1">
-                <div className="text-[9px] opacity-50 tracking-wider font-semibold mb-1.5">
-                  10. Vehicle codes authorised
+            <div className="bg-white rounded-2xl p-4 border border-[#E2E8F0] shadow-sm flex-1">
+              <h3 className="text-sm font-semibold text-[#0F172A] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+                Administrative Data
+              </h3>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-[11px]">
+                <div>
+                  <span className="text-[8px] font-semibold uppercase text-[#94A3B8] block">First Issue Date</span>
+                  <span className="text-[#475569] font-medium">13/10/2014</span>
                 </div>
-                <div className="flex gap-1.5 flex-wrap">
-                  <span className="bg-white/15 border border-white/30 rounded-sm px-2.5 py-0.5 text-xs font-semibold">B</span>
-                  <span className="bg-white/15 border border-white/30 rounded-sm px-2.5 py-0.5 text-xs font-semibold opacity-30">C</span>
-                  <span className="bg-white/15 border border-white/30 rounded-sm px-2.5 py-0.5 text-xs font-semibold opacity-30">EB</span>
-                  <span className="bg-white/15 border border-white/30 rounded-sm px-2.5 py-0.5 text-xs font-semibold opacity-30">EC</span>
-                  <span className="bg-white/15 border border-white/30 rounded-sm px-2.5 py-0.5 text-xs font-semibold opacity-30">A</span>
+                <div>
+                  <span className="text-[8px] font-semibold uppercase text-[#94A3B8] block">Issuing Authority</span>
+                  <span className="text-[#475569] font-medium">RTMC</span>
                 </div>
-              </div>
-
-              {/* QR code */}
-              <div className="text-center flex-shrink-0">
-                <div className="w-[52px] h-[52px] bg-white/90 rounded-sm p-1">
-                  <div 
-                    className="w-full h-full"
-                    style={{
-                      background: 'repeating-conic-gradient(#1B3A6B 0% 25%, transparent 0% 50%) 0 0/5px 5px'
-                    }}
-                  ></div>
+                <div>
+                  <span className="text-[8px] font-semibold uppercase text-[#94A3B8] block">Document Version</span>
+                  <span className="text-[#475569] font-medium">v2.4 Digital</span>
                 </div>
-                <div className="text-[9px] opacity-50 mt-1.5">Scan to verify</div>
+                <div>
+                  <span className="text-[8px] font-semibold uppercase text-[#94A3B8] block">Country of Issue</span>
+                  <span className="text-[#475569] font-medium">ZA</span>
+                </div>
               </div>
             </div>
           </div>
