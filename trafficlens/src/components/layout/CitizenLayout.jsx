@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import NotificationsModal from '../citizen/NotificationsModal';
+import notificationsData from '../../data/notifications';
 
 const navItems = [
   {
@@ -40,24 +43,55 @@ const CitizenLayout = ({ children, user }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
+  
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState(notificationsData);
+  
+  const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  const handleMarkRead = (id) => {
+    setNotifications(notifications.map(n => 
+      n.id === id ? { ...n, isRead: true } : n
+    ));
+  };
+
+  const handleMarkAllRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, isRead: true })));
+  };
 
   return (
     <div className="flex flex-col h-screen bg-slate-50">
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
         <div className="hidden md:flex w-[210px] bg-white border-r border-slate-200 flex-col shrink-0">
+          {/* Logo with notification bell */}
           <div className="p-4 pb-3 border-b border-slate-200">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-ca rounded-md flex items-center justify-center">
-                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-white fill-none" strokeWidth="2.5">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                  <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 bg-ca rounded-md flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-white fill-none" strokeWidth="2.5">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-[13px] font-semibold text-slate-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>TrafficLens</div>
+                  <div className="text-[10px] text-slate-400">Citizen portal</div>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowNotifications(true)}
+                className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center bg-white relative hover:bg-slate-50"
+              >
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-slate-500 fill-none" strokeWidth="1.5">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                 </svg>
-              </div>
-              <div>
-                <div className="text-[13px] font-semibold text-slate-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>TrafficLens</div>
-                <div className="text-[10px] text-slate-400">Citizen portal</div>
-              </div>
+                {unreadCount > 0 && (
+                  <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-white text-[8px] font-bold flex items-center justify-center border border-white">
+                    {unreadCount}
+                  </div>
+                )}
+              </button>
             </div>
           </div>
 
@@ -106,24 +140,31 @@ const CitizenLayout = ({ children, user }) => {
               <span className="text-sm font-semibold text-slate-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>TrafficLens</span>
             </div>
             <div className="flex items-center gap-2">
-              <button className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center bg-white relative">
+              <button 
+                onClick={() => setShowNotifications(true)}
+                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center bg-white relative"
+              >
                 <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-slate-600 fill-none" strokeWidth="1.5">
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                 </svg>
-                <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></div>
+                {unreadCount > 0 && (
+                  <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-white text-[8px] font-bold flex items-center justify-center border border-white">
+                    {unreadCount}
+                  </div>
+                )}
               </button>
               <div className="w-7 h-7 rounded-full bg-ca text-white text-[10px] font-bold flex items-center justify-center">DG</div>
             </div>
           </div>
 
-          {/* Scrollable content - with safe bottom padding for mobile nav */}
+          {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto p-3 md:p-5 pb-24 md:pb-5">
             {children}
           </div>
         </div>
       </div>
 
-      {/* Mobile Bottom Navigation - fixed */}
+      {/* Mobile Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex items-center justify-around py-1 px-2 z-50 safe-area-bottom">
         {mobileNavItems.map((item) => {
           const active = isActive(item.path);
@@ -142,6 +183,15 @@ const CitizenLayout = ({ children, user }) => {
           );
         })}
       </div>
+
+      {/* Notifications Modal */}
+      <NotificationsModal
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+        notifications={notifications}
+        onMarkRead={handleMarkRead}
+        onMarkAllRead={handleMarkAllRead}
+      />
     </div>
   );
 };
