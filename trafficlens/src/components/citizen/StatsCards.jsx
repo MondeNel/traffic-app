@@ -6,11 +6,14 @@ const StatsCards = ({ fines = [], license }) => {
     if (!license?.license_expiry) return 0;
     const expiry = new Date(license.license_expiry);
     const today = new Date();
-    return Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+    // Reset time parts for accurate day calculation
+    expiry.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    const diffTime = expiry.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
   const licenseDays = getLicenseDays();
-  const vehicleCount = 2; // This will come from store later
 
   return (
     <div className="grid grid-cols-3 gap-2.5">
@@ -44,10 +47,12 @@ const StatsCards = ({ fines = [], license }) => {
         </div>
         <div className="text-[10px] text-[#94A3B8] font-medium uppercase tracking-wider">License expires</div>
         <div className="text-xl font-semibold text-[#0F172A] mt-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-          {licenseDays} days
+          {licenseDays > 0 ? `${licenseDays} days` : 'Expired'}
         </div>
         <div className="text-[10px] text-[#475569] mt-0.5">
-          {license?.license_expiry ? `Renew before ${new Date(license.license_expiry).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })}` : 'Not set'}
+          {license?.license_expiry 
+            ? `Renew before ${new Date(license.license_expiry).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })}` 
+            : 'Not set'}
         </div>
       </div>
 
@@ -61,7 +66,7 @@ const StatsCards = ({ fines = [], license }) => {
         </div>
         <div className="text-[10px] text-[#94A3B8] font-medium uppercase tracking-wider">Registered vehicles</div>
         <div className="text-xl font-semibold text-[#0F172A] mt-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-          {vehicleCount}
+          2
         </div>
         <div className="text-[10px] text-[#475569] mt-0.5">1 disc expiring soon</div>
       </div>

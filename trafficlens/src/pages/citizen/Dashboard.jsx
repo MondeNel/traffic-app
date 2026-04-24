@@ -3,7 +3,6 @@ import StatsCards from '../../components/citizen/StatsCards';
 import FinesList from '../../components/citizen/FinesList';
 import LicenseCard from '../../components/citizen/LicenseCard';
 
-// Hardcoded demo data
 const demoData = {
   user: {
     first_name: 'Sipho',
@@ -16,7 +15,7 @@ const demoData = {
   },
   license: {
     license_number: 'ZA-DL-0298431',
-    license_expiry: '2025-06-04',
+    license_expiry: '2026-06-04',
     vehicle_codes: 'B'
   },
   fines: [
@@ -25,7 +24,7 @@ const demoData = {
       fine_type: 'speeding',
       description: 'Speeding — N1 Johannesburg',
       amount: 1500,
-      location: 'N1 Johannesburg',
+      location: 'N1 Johannesburg · 82km/h in 60km/h zone',
       issued_date: '2025-04-12',
       due_date: '2025-05-12',
       status: 'unpaid',
@@ -96,7 +95,7 @@ const Dashboard = () => {
               <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-[#EF4444] rounded-full border border-white"></div>
             </button>
             <div className="w-6 h-6 rounded-full bg-[#1B6CA8] text-white text-[9px] font-bold flex items-center justify-center">
-              {demoData.user.first_name[0]}{demoData.user.last_name[0]}
+              SK
             </div>
           </div>
         </div>
