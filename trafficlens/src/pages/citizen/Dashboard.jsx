@@ -12,35 +12,37 @@ const Dashboard = () => {
   return (
     <CitizenLayout user={demoUser}>
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-[15px] font-semibold text-[#0F172A]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              Good morning, {demoUser.first_name}
-            </h1>
-            <p className="text-[11px] text-[#94A3B8] mt-0.5">
-              {new Date().toLocaleDateString('en-ZA', { 
-                weekday: 'long', 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric' 
-              })} · Last login: Today 08:14
-            </p>
-          </div>
+        <div>
+          <h1 className="text-[15px] font-semibold text-slate-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            Good morning, {demoUser.first_name}
+          </h1>
+          <p className="text-[11px] text-slate-400 mt-0.5">
+            {new Date().toLocaleDateString('en-ZA', { 
+              weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+            })} · Last login: Today 08:14
+          </p>
         </div>
 
         <StatsCards fines={displayFines} license={demoUser.license} />
 
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-[#0F172A]">Outstanding fines</span>
-          <button className="text-[11px] text-[#1B6CA8] hover:text-[#0F4A7A]">View all</button>
+          <span className="text-xs font-medium text-slate-900">Outstanding fines</span>
+          <button className="text-[11px] text-ca hover:text-ca-dark">View all</button>
         </div>
         <FinesList fines={displayFines} />
 
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-[#0F172A]">Digital license</span>
-          <button className="text-[11px] text-[#1B6CA8] hover:text-[#0F4A7A]">Renew now</button>
+          <span className="text-xs font-medium text-slate-900">Digital license</span>
+          <button className="text-[11px] text-ca hover:text-ca-dark">Renew now</button>
         </div>
-        <LicenseCard user={demoUser} license={demoUser.license} />
+        
+        {/* License card - contained, no overflow */}
+        <div className="bg-brand-card rounded-2xl overflow-hidden w-full">
+          <LicenseCard user={demoUser} license={demoUser.license} />
+        </div>
+        
+        {/* Extra spacer for mobile */}
+        <div className="h-4 md:hidden" />
       </div>
     </CitizenLayout>
   );
