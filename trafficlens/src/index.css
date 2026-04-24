@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ca: #1B6CA8;
+  --color-ca-light: #E8F3FB;
+  --color-ca-dark: #0F4A7A;
+  
+  --color-adm: #0B1520;
+  --color-adm2: #112030;
+  --color-adm3: #162840;
+  --color-adm-acc: #00C9A7;
+  --color-adm-red: #FF5A5A;
+  --color-adm-amb: #FFB020;
+  
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+}
+
+/* Custom scrollbar for admin */
+.admin-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: #0B1520;
+}
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: #1A2E42;
+  border-radius: 2px;
+}
