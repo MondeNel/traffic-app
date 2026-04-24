@@ -9,6 +9,20 @@ import Profile from './pages/citizen/Profile';
 import Documents from './pages/citizen/Documents';
 import Settings from './pages/citizen/Settings';
 
+// Admin placeholder pages (we'll build these next)
+import AdminLayout from './components/layout/AdminLayout';
+
+const AdminPlaceholder = ({ title }) => (
+  <AdminLayout>
+    <div className="flex items-center justify-center h-full text-slate-500">
+      <div className="text-center">
+        <h2 className="text-lg font-bold text-slate-400 mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{title}</h2>
+        <p className="text-sm">Coming soon</p>
+      </div>
+    </div>
+  </AdminLayout>
+);
+
 function App() {
   const { isAuthenticated, userType, checkAuth } = useAuthStore();
 
@@ -48,16 +62,24 @@ function App() {
           isAuthenticated && userType === 'citizen' ? <Settings /> : <Navigate to="/" replace />
         } />
         
-        {/* Admin routes placeholder */}
+        {/* Admin routes */}
         <Route path="/admin/map" element={
-          isAuthenticated && userType === 'admin' ? (
-            <div className="bg-slate-900 text-white min-h-screen flex items-center justify-center">
-              <div className="text-center">
-                <h1 className="text-2xl font-bold mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Admin Dashboard</h1>
-                <p className="text-slate-400">Coming soon</p>
-              </div>
-            </div>
-          ) : <Navigate to="/" replace />
+          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Live Map" /> : <Navigate to="/" replace />
+        } />
+        <Route path="/admin/verify" element={
+          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Verification" /> : <Navigate to="/" replace />
+        } />
+        <Route path="/admin/offenders" element={
+          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Offenders" /> : <Navigate to="/" replace />
+        } />
+        <Route path="/admin/roadblocks" element={
+          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Roadblocks" /> : <Navigate to="/" replace />
+        } />
+        <Route path="/admin/reports" element={
+          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Reports" /> : <Navigate to="/" replace />
+        } />
+        <Route path="/admin/activity" element={
+          isAuthenticated && userType === 'admin' ? <AdminPlaceholder title="Activity Log" /> : <Navigate to="/" replace />
         } />
         
         {/* Fallback */}
