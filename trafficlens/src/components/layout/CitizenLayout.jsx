@@ -1,47 +1,20 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import useAuthStore from '../../store/authStore';
 
 const navItems = [
   {
     group: 'Main',
     items: [
-      { 
-        icon: 'dashboard', 
-        label: 'Dashboard', 
-        path: '/dashboard',
-        active: true 
-      },
-      { 
-        icon: 'license', 
-        label: 'My license', 
-        path: '/license',
-        badge: '!'
-      },
-      { 
-        icon: 'clock', 
-        label: 'Vehicles', 
-        path: '/vehicles' 
-      }
+      { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
+      { icon: 'license', label: 'My license', path: '/license', badge: '!' },
+      { icon: 'clock', label: 'Vehicles', path: '/vehicles' }
     ]
   },
   {
     group: 'Account',
     items: [
-      { 
-        icon: 'document', 
-        label: 'Documents', 
-        path: '/documents' 
-      },
-      { 
-        icon: 'user', 
-        label: 'Profile', 
-        path: '/profile' 
-      },
-      { 
-        icon: 'settings', 
-        label: 'Settings', 
-        path: '/settings' 
-      }
+      { icon: 'document', label: 'Documents', path: '/documents' },
+      { icon: 'user', label: 'Profile', path: '/profile' },
+      { icon: 'settings', label: 'Settings', path: '/settings' }
     ]
   }
 ];
@@ -55,8 +28,7 @@ const iconPaths = {
   settings: <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-current fill-none" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M22 12h-2M2 12h2M12 2v2M12 20v2"/></svg>
 };
 
-const CitizenLayout = ({ children }) => {
-  const { user, logout } = useAuthStore();
+const CitizenLayout = ({ children, user }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -130,17 +102,6 @@ const CitizenLayout = ({ children }) => {
               {user?.id_number}
             </div>
           </div>
-          <button 
-            onClick={logout}
-            className="text-[#94A3B8] hover:text-[#EF4444] transition-colors"
-            title="Sign out"
-          >
-            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-current fill-none" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-          </button>
         </div>
       </div>
 

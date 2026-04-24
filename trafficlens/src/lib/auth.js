@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import db from './database';
+import { query, getLastInsertId } from './database';
 
 const SALT_ROUNDS = 10;
 
@@ -15,31 +15,31 @@ export const createUser = async (userData) => {
   const { firstName, lastName, idNumber, email, password, phone, address, dateOfBirth } = userData;
   
   // Check if user already exists
-  const existingUser = db.prepare('SELECT id FROM users WHERE email = ? OR id_number = ?').get(email, idNumber);
-  if (existingUser) {
+  const existingUsers = query('SELECT id FROM users WHERE email = ? OR id_number = ?', [email, idNumber]);
+  if (existingUsers.length > 0) {
     throw new Error('User with this email or ID number already exists');
   }
 
   const passwordHash = await hashPassword(password);
   
-  const stmt = db.prepare(`
+  query(`
     INSERT INTO users (first_name, last_name, id_number, email, password_hash, phone, address, date_of_birth)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `);
+  `, [firstName, lastName, idNumber, email, passwordHash, phone, address, dateOfBirth]);
   
-  const result = stmt.run(firstName, lastName, idNumber, email, passwordHash, phone, address, dateOfBirth);
-  
-  return result.lastInsertRowid;
+  return getLastInsertId();
 };
 
 export const authenticateUser = async (email, password) => {
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+  const users = query('SELECT * FROM users WHERE email = ?', [email]);
   
-  if (!user) {
+  if (users.length === 0) {
     throw new Error('Invalid email or password');
   }
 
+  const user = users[0];
   const isValid = await verifyPassword(password, user.password_hash);
+  
   if (!isValid) {
     throw new Error('Invalid email or password');
   }
@@ -50,9 +50,9 @@ export const authenticateUser = async (email, password) => {
 };
 
 export const getUserById = (userId) => {
-  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
-  if (user) {
-    const { password_hash, ...userWithoutPassword } = user;
+  const users = query('SELECT * FROM users WHERE id = ?', [userId]);
+  if (users.length > 0) {
+    const { password_hash, ...userWithoutPassword } = users[0];
     return userWithoutPassword;
   }
   return null;

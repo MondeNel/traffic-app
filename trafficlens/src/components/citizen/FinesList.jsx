@@ -1,5 +1,3 @@
-import useCitizenStore from '../../store/citizenStore';
-
 const fineIcons = {
   speeding: {
     bg: '#FEF2F2',
@@ -24,8 +22,6 @@ const fineIcons = {
 };
 
 const FinesList = ({ fines = [] }) => {
-  const { payFine } = useCitizenStore();
-
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     return new Date(dateStr).toLocaleDateString('en-ZA', { 
@@ -89,10 +85,7 @@ const FinesList = ({ fines = [] }) => {
                   Receipt
                 </button>
               ) : (
-                <button 
-                  onClick={() => payFine(fine.id)}
-                  className="px-3 py-1.5 bg-[#1B6CA8] text-white border-none rounded text-[11px] font-medium whitespace-nowrap hover:bg-[#0F4A7A] transition-colors"
-                >
+                <button className="px-3 py-1.5 bg-[#1B6CA8] text-white border-none rounded text-[11px] font-medium whitespace-nowrap hover:bg-[#0F4A7A] transition-colors">
                   Pay now
                 </button>
               )}
