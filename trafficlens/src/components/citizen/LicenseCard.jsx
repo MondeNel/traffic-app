@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Fingerprint, Globe, Zap, ShieldCheck, FileText, MapPin } from 'lucide-react';
 import userIdImage from '../../assets/ID.jpg';
+import saFlag from '../../assets/sa_flag.png';
 
 const LicenseCard = ({ user, license }) => {
   const data = {
@@ -29,8 +30,27 @@ const LicenseCard = ({ user, license }) => {
       animate={{ opacity: 1, scale: 1 }}
       className="relative w-full max-w-4xl mx-auto bg-brand-card border border-white/10 rounded-[1.5rem] p-5 md:p-7 shadow-2xl overflow-hidden font-sans"
     >
+      {/* South Africa Flag Watermark - covers entire card */}
+      <div className="absolute inset-0 pointer-events-none select-none z-0">
+        <img 
+          src={saFlag} 
+          alt="" 
+          className="w-full h-full object-cover opacity-[0.04]"
+          style={{ filter: 'grayscale(100%) brightness(1.5)' }}
+        />
+      </div>
+
+      {/* South Africa Map Outline - subtle overlay */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
+        <svg viewBox="0 0 400 350" className="w-[60%] h-[60%] fill-white opacity-[0.03]">
+          <path d="M195 48 C188 44 170 38 158 40 C142 42 130 36 122 42 C114 48 98 52 92 48 C86 44 72 48 66 54 C60 60 54 58 52 64 C50 70 42 74 38 80 C34 86 28 88 30 94 C32 100 28 108 31 114 C34 120 30 128 34 136 C38 144 32 152 36 160 C40 168 44 172 48 178 C52 184 58 190 64 196 C70 202 74 210 80 216 C86 222 88 230 94 236 C100 242 108 248 116 250 C124 252 132 256 140 254 C148 252 158 250 166 248 C174 246 182 242 190 240 C198 238 206 234 212 230 C218 226 228 224 234 218 C240 212 244 206 248 198 C252 190 254 180 252 172 C250 164 248 156 244 148 C240 140 238 132 234 124 C230 116 228 108 224 100 C220 92 218 84 214 76 C210 68 208 62 204 56 C200 50 202 48 195 48Z M158 62 C152 62 146 66 142 70 C138 74 132 76 130 82 C128 88 126 94 124 100 C122 106 120 112 122 118 C124 124 120 130 118 136 C116 142 114 148 116 154 C118 160 116 166 118 172 C120 178 124 182 128 186 C132 190 138 192 144 194 C150 196 156 196 162 194 C168 192 174 188 178 184 C182 180 188 178 192 174 C196 170 198 164 200 158 C202 152 204 146 204 140 C204 134 206 128 204 122 C202 116 202 110 200 104 C198 98 196 92 192 86 C188 80 184 74 178 70 C172 66 166 62 158 62Z" />
+          <path d="M225 138 C230 132 236 128 238 122 C240 116 242 110 240 104 C238 98 234 94 228 92 C222 90 216 92 214 98 C212 104 214 112 218 118 C222 124 222 132 225 138Z" fill="#0A0A0A" />
+          <path d="M250 110 C254 106 260 104 264 100 C268 96 270 92 268 88 C266 84 260 82 254 84 C248 86 244 90 246 96 C248 102 248 106 250 110Z" fill="#0A0A0A" />
+        </svg>
+      </div>
+
       {/* Background Micro-Text Pattern */}
-      <div className="absolute inset-0 opacity-[0.04] pointer-events-none select-none overflow-hidden leading-none">
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none select-none overflow-hidden leading-none z-0">
         {Array(30).fill("SOUTH AFRICAN DRIVERS LICENCE ").map((t, i) => (
           <div key={i} className="whitespace-nowrap text-[8px] font-black tracking-widest py-1 rotate-[-5deg]">
             {t.repeat(10)}
@@ -57,7 +77,6 @@ const LicenseCard = ({ user, license }) => {
       </div>
 
       <div className="flex flex-col md:flex-row gap-6 md:gap-8 relative z-10">
-        
         {/* Left Column: Photo & Core Identifiers */}
         <div className="md:w-[30%] space-y-4">
           <div className="relative group">
@@ -68,12 +87,11 @@ const LicenseCard = ({ user, license }) => {
                 alt="David Gareth" 
                 className="w-full h-full object-cover"
               />
-              {/* Scanning line overlay */}
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-brand-neon/10 to-transparent h-1/2 w-full animate-scan pointer-events-none border-b border-brand-neon/40 shadow-[0_4px_10px_rgba(16,185,129,0.2)] z-10" />
             </div>
           </div>
 
-          <div className="bg-black/40 p-4 rounded-xl border border-white/5 space-y-4">
+          <div className="bg-black/40 backdrop-blur-sm p-4 rounded-xl border border-white/5 space-y-4">
             <div>
               <p className="text-[8px] text-brand-neon font-black uppercase tracking-widest mb-1">Lic. No. / Lisensienr.</p>
               <p className="text-white text-lg font-bold tracking-tighter">{data.licenseNo}</p>
@@ -128,7 +146,7 @@ const LicenseCard = ({ user, license }) => {
             </div>
             
             {/* Location of Issue */}
-            <div className="mt-3 p-3 bg-black/30 rounded-lg border border-white/5">
+            <div className="mt-3 p-3 bg-black/30 backdrop-blur-sm rounded-lg border border-white/5">
               <div className="flex items-center gap-2 mb-3">
                 <MapPin className="w-3 h-3 text-brand-neon/60" />
                 <p className="text-[7px] text-white/20 font-black uppercase tracking-widest">Place of Issue / Plek van Uitreiking</p>
