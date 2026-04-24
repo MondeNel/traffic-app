@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import AdminLayout from '../../components/layout/AdminLayout';
-import useAuthStore from '../../store/authStore';
 import 'leaflet/dist/leaflet.css';
 
 // Fix default marker icon issue with React
@@ -35,18 +34,17 @@ const roadblockIcon = new L.DivIcon({
   iconAnchor: [16, 16]
 });
 
-// Gauteng center coordinates
 const gautengCenter = [-26.1000, 28.0500];
 
 const violations = [
-  { id: 1, lat: -26.1048, lng: 28.0535, type: 'speeding', amount: 1500, plate: 'GP 14 KW', area: 'Sandton', count: 7 },
-  { id: 2, lat: -26.1453, lng: 28.0420, type: 'speeding', amount: 2100, plate: 'GP 82 TT', area: 'Rosebank', count: 5 },
-  { id: 3, lat: -26.0800, lng: 28.0100, type: 'expired_disc', amount: 750, plate: 'GP 44 LZ', area: 'Randburg', count: 3 },
-  { id: 4, lat: -26.0200, lng: 28.0000, type: 'speeding', amount: 1800, plate: 'GP 09 RR', area: 'Fourways', count: 4 },
-  { id: 5, lat: -26.1900, lng: 28.1000, type: 'parking', amount: 600, plate: 'GP 55 ZN', area: 'Midrand', count: 2 },
-  { id: 6, lat: -26.1600, lng: 28.0700, type: 'expired_disc', amount: 900, plate: 'WC 31 PP', area: 'Sandton', count: 6 },
-  { id: 7, lat: -26.1200, lng: 28.0900, type: 'speeding', amount: 1350, plate: 'GP 14 KW', area: 'Rosebank', count: 3 },
-  { id: 8, lat: -26.0500, lng: 28.0300, type: 'parking', amount: 500, plate: 'GP 82 TT', area: 'Randburg', count: 1 },
+  { id: 1, lat: -26.1048, lng: 28.0535, type: 'speeding', amount: 1500, plate: 'GP 14 KW', area: 'Sandton', count: 7, time: '2m ago' },
+  { id: 2, lat: -26.1453, lng: 28.0420, type: 'speeding', amount: 2100, plate: 'GP 82 TT', area: 'Rosebank', count: 5, time: '5m ago' },
+  { id: 3, lat: -26.0800, lng: 28.0100, type: 'expired_disc', amount: 750, plate: 'GP 44 LZ', area: 'Randburg', count: 3, time: '8m ago' },
+  { id: 4, lat: -26.0200, lng: 28.0000, type: 'speeding', amount: 1800, plate: 'GP 09 RR', area: 'Fourways', count: 4, time: '12m ago' },
+  { id: 5, lat: -26.1900, lng: 28.1000, type: 'parking', amount: 600, plate: 'GP 55 ZN', area: 'Midrand', count: 2, time: '15m ago' },
+  { id: 6, lat: -26.1600, lng: 28.0700, type: 'expired_disc', amount: 900, plate: 'WC 31 PP', area: 'Sandton', count: 6, time: '20m ago' },
+  { id: 7, lat: -26.1200, lng: 28.0900, type: 'speeding', amount: 1350, plate: 'GP 14 KW', area: 'Rosebank', count: 3, time: '25m ago' },
+  { id: 8, lat: -26.0500, lng: 28.0300, type: 'parking', amount: 500, plate: 'GP 82 TT', area: 'Randburg', count: 1, time: '30m ago' },
 ];
 
 const roadblocks = [
@@ -54,12 +52,14 @@ const roadblocks = [
   { id: 2, lat: -26.1500, lng: 28.0800, name: 'Oxford Road Checkpoint', officers: 3 },
 ];
 
-const topOffenders = [
-  { id: 1, name: 'T. Molefe', initials: 'TM', fines: 4200, plate: 'GP 14 KW', area: 'Rosebank', seen: '2h ago', level: 'HIGH' },
-  { id: 2, name: 'N. Khumalo', initials: 'NK', fines: 3750, plate: 'GP 82 TT', area: 'Sandton', seen: '5h ago', level: 'HIGH' },
-  { id: 3, name: 'P. van der Berg', initials: 'PV', fines: 2100, plate: 'WC 31 PP', area: 'Fourways', seen: '1d ago', level: 'MED' },
-  { id: 4, name: 'S. Mthembu', initials: 'SM', fines: 1800, plate: 'GP 44 LZ', area: 'Randburg', seen: '3h ago', level: 'MED' },
-  { id: 5, name: 'A. Botha', initials: 'AB', fines: 1350, plate: 'GP 09 RR', area: 'Midrand', seen: '6h ago', level: 'MED' },
+const recentActivity = [
+  { id: 1, type: 'speeding', plate: 'GP 14 KW', location: 'N1 Northbound, Sandton', amount: 1500, time: '2m ago', color: 'red' },
+  { id: 2, type: 'expired_disc', plate: 'WC 31 PP', location: 'Rivonia Road, Sandton', amount: 900, time: '5m ago', color: 'amber' },
+  { id: 3, type: 'speeding', plate: 'GP 82 TT', location: 'Oxford Road, Rosebank', amount: 2100, time: '8m ago', color: 'red' },
+  { id: 4, type: 'parking', plate: 'GP 09 RR', location: 'Fourways Mall', amount: 600, time: '12m ago', color: 'blue' },
+  { id: 5, type: 'roadblock', plate: '—', location: 'William Nicol & N1', amount: null, time: '38m ago', color: 'blue' },
+  { id: 6, type: 'expired_disc', plate: 'GP 44 LZ', location: 'Beyers Naudé, Randburg', amount: 750, time: '1h ago', color: 'amber' },
+  { id: 7, type: 'payment', plate: 'GP 82 TT', location: 'R 750 disc fine paid', amount: 750, time: '1h ago', color: 'emerald' },
 ];
 
 const SetMapView = ({ center }) => {
@@ -69,21 +69,35 @@ const SetMapView = ({ center }) => {
 };
 
 const LiveMap = () => {
-  const { user } = useAuthStore();
   const [activeFilters, setActiveFilters] = useState({
     unpaid: true,
     expiredDisc: true,
     roadblocks: true
   });
-  const [selectedOffender, setSelectedOffender] = useState(null);
 
   const toggleFilter = (key) => {
     setActiveFilters(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const getMarkerIcon = (type) => {
-    if (type === 'expired_disc') return expiredDiscIcon;
-    return violationIcon;
+  const getActivityIcon = (type) => {
+    switch (type) {
+      case 'speeding': return '⚡';
+      case 'expired_disc': return '📋';
+      case 'parking': return '🅿️';
+      case 'roadblock': return '🚧';
+      case 'payment': return '✅';
+      default: return '📌';
+    }
+  };
+
+  const getDotColor = (color) => {
+    switch (color) {
+      case 'red': return 'bg-red-500';
+      case 'amber': return 'bg-amber-500';
+      case 'blue': return 'bg-blue-500';
+      case 'emerald': return 'bg-emerald-500';
+      default: return 'bg-slate-500';
+    }
   };
 
   return (
@@ -191,7 +205,7 @@ const LiveMap = () => {
           </div>
 
           {/* Filters */}
-          <div className="absolute top-3 right-3 z-[1000] flex gap-1.5">
+          <div className="absolute top-3 right-3 z-[1000] flex gap-1.5 flex-wrap">
             <button onClick={() => toggleFilter('unpaid')}
               className={`px-3 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${
                 activeFilters.unpaid ? 'bg-red-500/20 border-red-500/30 text-red-400' : 'bg-adm/90 border-slate-700 text-slate-500'
@@ -223,37 +237,35 @@ const LiveMap = () => {
           </div>
         </div>
 
-        {/* Right Panel - Top Offenders */}
-        <div className="hidden lg:flex w-56 bg-adm2 border-l border-slate-800 flex-col shrink-0">
+        {/* Right Panel - Recent Activity */}
+        <div className="hidden lg:flex w-60 bg-adm2 border-l border-slate-800 flex-col shrink-0">
           <div className="p-3 border-b border-slate-800 flex items-center justify-between">
-            <span className="text-[11px] font-medium text-slate-400">Top offenders</span>
-            <span className="bg-emerald-500/10 text-emerald-400 rounded-md px-1.5 py-0.5 text-[10px] font-semibold">42</span>
+            <span className="text-[11px] font-medium text-slate-400">Recent activity</span>
+            <span className="bg-emerald-500/10 text-emerald-400 rounded-md px-1.5 py-0.5 text-[10px] font-semibold">{recentActivity.length}</span>
           </div>
-          <div className="flex-1 overflow-y-auto p-1.5 space-y-1">
-            {topOffenders.map((offender) => (
+          <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+            {recentActivity.map((activity) => (
               <div
-                key={offender.id}
-                onClick={() => setSelectedOffender(offender)}
-                className={`p-2 rounded-lg cursor-pointer transition-colors ${
-                  selectedOffender?.id === offender.id ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-white/[0.02] border border-slate-800 hover:bg-white/[0.05]'
-                }`}
+                key={activity.id}
+                className="p-2.5 rounded-lg bg-white/[0.02] border border-slate-800 hover:bg-white/[0.04] transition-colors"
               >
                 <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center text-[8px] font-bold text-slate-400 shrink-0">
-                    {offender.initials}
-                  </div>
-                  <span className="text-[11px] font-medium text-slate-300 truncate flex-1">{offender.name}</span>
-                  <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${
-                    offender.level === 'HIGH' ? 'bg-red-500/15 text-red-400' : 'bg-amber-500/15 text-amber-400'
-                  }`}>
-                    {offender.level}
-                  </span>
+                  <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${getDotColor(activity.color)}`} />
+                  <span className="text-[10px] font-medium text-slate-300 capitalize">{activity.type.replace('_', ' ')}</span>
+                  <span className="text-[9px] text-slate-600 ml-auto">{activity.time}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-1 text-[9px]">
-                  <div><span className="text-slate-600 block">Fines</span><span className="text-slate-400">R {offender.fines.toLocaleString()}</span></div>
-                  <div><span className="text-slate-600 block">Plate</span><span className="text-slate-400">{offender.plate}</span></div>
-                  <div><span className="text-slate-600 block">Area</span><span className="text-slate-400">{offender.area}</span></div>
-                  <div><span className="text-slate-600 block">Seen</span><span className="text-slate-400">{offender.seen}</span></div>
+                <div className="space-y-0.5">
+                  <div className="flex justify-between text-[9px]">
+                    <span className="text-slate-500">Plate</span>
+                    <span className="text-slate-400 font-mono">{activity.plate}</span>
+                  </div>
+                  <div className="text-[9px] text-slate-500 truncate">{activity.location}</div>
+                  {activity.amount && (
+                    <div className="flex justify-between text-[9px] mt-0.5">
+                      <span className="text-slate-500">Amount</span>
+                      <span className="text-red-400 font-medium">R {activity.amount.toLocaleString()}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
