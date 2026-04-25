@@ -69,7 +69,8 @@ const hotspots = [
   { id: 8, lat: -26.1550, lng: 28.0650, radius: 1100, tickets: 178, revenue: 'R 267,000', area: 'Parktown', color: '#F59E0B', opacity: 0.08 },
 ];
 
-// Roads with waypoints
+
+// Roads with waypoints for smooth movement across Gauteng hotspots
 const roadNetworks = {
   'N1_North': [
     [-26.1900, 28.1000], [-26.1850, 28.0980], [-26.1780, 28.0950], [-26.1700, 28.0900],
@@ -102,21 +103,98 @@ const roadNetworks = {
     [-26.0750, 28.0630], [-26.0800, 28.0600], [-26.0850, 28.0570], [-26.0900, 28.0540],
     [-26.0950, 28.0510], [-26.1000, 28.0480], [-26.1050, 28.0450], [-26.1100, 28.0420],
     [-26.1150, 28.0390], [-26.1200, 28.0360], [-26.1250, 28.0330]
-  ]
+  ],
+  'Sandton_CBD_Loop': [
+    [-26.1080, 28.0560], [-26.1070, 28.0580], [-26.1050, 28.0590], [-26.1030, 28.0570],
+    [-26.1020, 28.0540], [-26.1040, 28.0520], [-26.1060, 28.0510], [-26.1090, 28.0530],
+    [-26.1100, 28.0550], [-26.1080, 28.0560]
+  ],
+  'Rosebank_Zone': [
+    [-26.1480, 28.0420], [-26.1460, 28.0440], [-26.1440, 28.0430], [-26.1430, 28.0400],
+    [-26.1450, 28.0380], [-26.1470, 28.0390], [-26.1490, 28.0410], [-26.1480, 28.0420]
+  ],
+  'Fourways_Mall': [
+    [-26.0220, 28.0020], [-26.0200, 28.0040], [-26.0180, 28.0030], [-26.0190, 28.0000],
+    [-26.0210, 27.9980], [-26.0240, 27.9990], [-26.0250, 28.0010], [-26.0220, 28.0020]
+  ],
+  'Midrand_Industrial': [
+    [-26.1920, 28.1020], [-26.1900, 28.1040], [-26.1880, 28.1030], [-26.1870, 28.1000],
+    [-26.1890, 28.0980], [-26.1910, 28.0990], [-26.1930, 28.1010], [-26.1920, 28.1020]
+  ],
+  'Bryanston_Drive': [
+    [-26.0580, 28.0460], [-26.0560, 28.0480], [-26.0540, 28.0470], [-26.0550, 28.0440],
+    [-26.0570, 28.0420], [-26.0600, 28.0430], [-26.0610, 28.0450], [-26.0580, 28.0460]
+  ],
+  'Parktown_Road': [
+    [-26.1580, 28.0660], [-26.1560, 28.0680], [-26.1540, 28.0670], [-26.1530, 28.0640],
+    [-26.1550, 28.0620], [-26.1570, 28.0630], [-26.1590, 28.0650], [-26.1580, 28.0660]
+  ],
+  'Randburg_Main': [
+    [-26.0820, 28.0120], [-26.0800, 28.0140], [-26.0780, 28.0130], [-26.0770, 28.0100],
+    [-26.0790, 28.0080], [-26.0810, 28.0090], [-26.0830, 28.0110], [-26.0820, 28.0120]
+  ],
 };
 
+// Vehicles spread across all hotspot areas
 const simulatedVehicles = [
-  { id: 1, plate: 'GP 14 KW', color: '#3B82F6', route: 'N1_North', direction: 1, speed: 0.0003, fine: { type: 'speeding', amount: 1500 } },
-  { id: 2, plate: 'GP 82 TT', color: '#EF4444', route: 'N1_North', direction: -1, speed: 0.00025, fine: { type: 'speeding', amount: 2100 } },
-  { id: 3, plate: 'WC 31 PP', color: '#F59E0B', route: 'M1_Sandton', direction: 1, speed: 0.0002, fine: { type: 'expired_disc', amount: 900 } },
-  { id: 4, plate: 'GP 09 RR', color: '#10B981', route: 'William_Nicol', direction: 1, speed: 0.00022, fine: null },
-  { id: 5, plate: 'GP 44 LZ', color: '#8B5CF6', route: 'Oxford_Road', direction: 1, speed: 0.00018, fine: { type: 'parking', amount: 600 } },
-  { id: 6, plate: 'GP 55 ZN', color: '#EC4899', route: 'Rivonia_Road', direction: -1, speed: 0.00028, fine: { type: 'speeding', amount: 1350 } },
+  // N1 Northbound
+  { id: 1, plate: 'GP 14 KW', color: '#3B82F6', route: 'N1_North', direction: 1, speed: 0.00035, fine: { type: 'speeding', amount: 1500 } },
+  { id: 2, plate: 'GP 82 TT', color: '#EF4444', route: 'N1_North', direction: -1, speed: 0.00028, fine: { type: 'speeding', amount: 2100 } },
+  { id: 3, plate: 'GP 19 MP', color: '#6366F1', route: 'N1_North', direction: 1, speed: 0.00040, fine: { type: 'speeding', amount: 3200 } },
+  
+  // M1 Sandton
+  { id: 4, plate: 'WC 31 PP', color: '#F59E0B', route: 'M1_Sandton', direction: 1, speed: 0.00022, fine: { type: 'expired_disc', amount: 900 } },
+  { id: 5, plate: 'GP 77 XM', color: '#14B8A6', route: 'M1_Sandton', direction: -1, speed: 0.00030, fine: { type: 'speeding', amount: 1800 } },
+  
+  // William Nicol
+  { id: 6, plate: 'GP 09 RR', color: '#10B981', route: 'William_Nicol', direction: 1, speed: 0.00024, fine: null },
+  { id: 7, plate: 'GP 33 LS', color: '#F97316', route: 'William_Nicol', direction: -1, speed: 0.00026, fine: { type: 'parking', amount: 500 } },
+  
+  // Oxford Road
+  { id: 8, plate: 'GP 44 LZ', color: '#8B5CF6', route: 'Oxford_Road', direction: 1, speed: 0.00020, fine: { type: 'parking', amount: 600 } },
+  { id: 9, plate: 'GP 21 NT', color: '#EC4899', route: 'Oxford_Road', direction: -1, speed: 0.00032, fine: { type: 'speeding', amount: 2500 } },
+  
+  // Rivonia Road
+  { id: 10, plate: 'GP 55 ZN', color: '#06B6D4', route: 'Rivonia_Road', direction: -1, speed: 0.00030, fine: { type: 'speeding', amount: 1350 } },
+  { id: 11, plate: 'GP 88 WJ', color: '#A855F7', route: 'Rivonia_Road', direction: 1, speed: 0.00025, fine: null },
+  
+  // Sandton CBD Loop (high density)
+  { id: 12, plate: 'GP 12 AB', color: '#E11D48', route: 'Sandton_CBD_Loop', direction: 1, speed: 0.00018, fine: { type: 'speeding', amount: 2800 } },
+  { id: 13, plate: 'GP 45 CD', color: '#0EA5E9', route: 'Sandton_CBD_Loop', direction: -1, speed: 0.00015, fine: { type: 'parking', amount: 750 } },
+  { id: 14, plate: 'GP 67 EF', color: '#84CC16', route: 'Sandton_CBD_Loop', direction: 1, speed: 0.00020, fine: null },
+  { id: 15, plate: 'WC 89 GH', color: '#F43F5E', route: 'Sandton_CBD_Loop', direction: -1, speed: 0.00022, fine: { type: 'expired_disc', amount: 1100 } },
+  
+  // Rosebank Zone
+  { id: 16, plate: 'GP 23 JK', color: '#8B5CF6', route: 'Rosebank_Zone', direction: 1, speed: 0.00016, fine: { type: 'speeding', amount: 1950 } },
+  { id: 17, plate: 'GP 56 LM', color: '#FB923C', route: 'Rosebank_Zone', direction: -1, speed: 0.00019, fine: null },
+  { id: 18, plate: 'GP 90 NP', color: '#34D399', route: 'Rosebank_Zone', direction: 1, speed: 0.00017, fine: { type: 'parking', amount: 450 } },
+  
+  // Fourways Mall
+  { id: 19, plate: 'GP 34 QR', color: '#F87171', route: 'Fourways_Mall', direction: 1, speed: 0.00014, fine: { type: 'expired_disc', amount: 800 } },
+  { id: 20, plate: 'GP 78 ST', color: '#60A5FA', route: 'Fourways_Mall', direction: -1, speed: 0.00016, fine: { type: 'speeding', amount: 1650 } },
+  
+  // Bryanston
+  { id: 21, plate: 'GP 15 UV', color: '#C084FC', route: 'Bryanston_Drive', direction: 1, speed: 0.00013, fine: null },
+  { id: 22, plate: 'GP 92 WX', color: '#FB7185', route: 'Bryanston_Drive', direction: -1, speed: 0.00015, fine: { type: 'speeding', amount: 2200 } },
+  
+  // Parktown
+  { id: 23, plate: 'GP 41 YZ', color: '#38BDF8', route: 'Parktown_Road', direction: 1, speed: 0.00012, fine: { type: 'parking', amount: 550 } },
+  
+  // Randburg
+  { id: 24, plate: 'GP 63 AA', color: '#A3E635', route: 'Randburg_Main', direction: -1, speed: 0.00014, fine: { type: 'expired_disc', amount: 700 } },
+  { id: 25, plate: 'GP 86 BB', color: '#FDBA74', route: 'Randburg_Main', direction: 1, speed: 0.00016, fine: null },
+  
+  // Midrand
+  { id: 26, plate: 'GP 29 CC', color: '#E879F9', route: 'Midrand_Industrial', direction: 1, speed: 0.00013, fine: { type: 'speeding', amount: 1450 } },
+  { id: 27, plate: 'GP 50 DD', color: '#4ADE80', route: 'Midrand_Industrial', direction: -1, speed: 0.00015, fine: null },
 ];
 
-const policeVehicle = {
-  id: 'police', plate: 'POLICE', route: 'M1_Sandton', direction: 1, speed: 0.00035, isPolice: true
-};
+// Police patrols in hotspot areas
+const policeVehicles = [
+  { id: 'police-1', plate: 'POLICE-1', route: 'Sandton_CBD_Loop', direction: 1, speed: 0.00035, isPolice: true },
+  { id: 'police-2', plate: 'POLICE-2', route: 'Rosebank_Zone', direction: -1, speed: 0.00030, isPolice: true },
+  { id: 'police-3', plate: 'POLICE-3', route: 'M1_Sandton', direction: 1, speed: 0.00040, isPolice: true },
+];
 
 const roadblocks = [
   { id: 1, lat: -26.1000, lng: 28.0400, name: 'William Nicol & N1', officers: 4 },
@@ -325,15 +403,17 @@ const LiveMap = () => {
               </Circle>
             ))}
 
-            {/* Moving Vehicles */}
-            {activeFilters.vehicles && (
-              <>
-                {simulatedVehicles.map(v => (
-                  <SmoothMarker key={v.id} vehicle={v} routePoints={roadNetworks[v.route]} />
-                ))}
-                <SmoothMarker vehicle={policeVehicle} routePoints={roadNetworks[policeVehicle.route]} />
-              </>
-            )}
+           {/* Moving Vehicles */}
+{activeFilters.vehicles && (
+  <>
+    {simulatedVehicles.map(v => (
+      <SmoothMarker key={v.id} vehicle={v} routePoints={roadNetworks[v.route]} />
+    ))}
+    {policeVehicles.map(v => (
+      <SmoothMarker key={v.id} vehicle={v} routePoints={roadNetworks[v.route]} />
+    ))}
+  </>
+)}
 
             {/* Roadblocks */}
             {activeFilters.roadblocks && roadblocks.map(rb => (
