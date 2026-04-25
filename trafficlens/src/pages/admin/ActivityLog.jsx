@@ -7,26 +7,26 @@ const ActivityLog = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const allActivities = [
-    { id: 1, type: 'violation', action: 'Fine Issued', officer: 'Officer Dlamini', detail: 'Speeding fine R1,500 issued to GP 14 KW on N1 Northbound', location: 'Sandton', time: '2025-04-25T08:15:00', icon: '⚠️', color: 'red' },
-    { id: 2, type: 'payment', action: 'Payment Received', officer: 'System', detail: 'R 750 expired disc fine paid by S. Khumalo via portal', location: 'Online', time: '2025-04-25T08:02:00', icon: '💰', color: 'emerald' },
-    { id: 3, type: 'roadblock', action: 'Roadblock Started', officer: 'Officer Dlamini', detail: 'William Nicol & N1 checkpoint activated — 4 officers deployed', location: 'Sandton', time: '2025-04-25T07:30:00', icon: '🚧', color: 'blue' },
-    { id: 4, type: 'verification', action: 'License Verified', officer: 'Officer Dlamini', detail: 'David Gareth (020608175379081) — license valid, 2 outstanding fines', location: 'Rosebank', time: '2025-04-25T07:15:00', icon: '🔍', color: 'emerald' },
-    { id: 5, type: 'alert', action: 'Forged Document', officer: 'Officer Dlamini', detail: 'GP 55 ZN flagged with forged license — suspect detained', location: 'Fourways', time: '2025-04-24T22:45:00', icon: '🚨', color: 'red' },
-    { id: 6, type: 'violation', action: 'Fine Issued', officer: 'Officer Ndlovu', detail: 'Expired disc fine R900 issued to WC 31 PP', location: 'Sandton', time: '2025-04-24T20:30:00', icon: '⚠️', color: 'red' },
-    { id: 7, type: 'payment', action: 'Payment Received', officer: 'System', detail: 'R 2,100 speeding fine paid by T. Molefe via EFT', location: 'Online', time: '2025-04-24T18:45:00', icon: '💰', color: 'emerald' },
-    { id: 8, type: 'roadblock', action: 'Roadblock Ended', officer: 'Officer Ndlovu', detail: 'Oxford Road checkpoint completed — 54 vehicles stopped, 15 fines, 0 arrests', location: 'Rosebank', time: '2025-04-24T18:00:00', icon: '🚧', color: 'blue' },
-    { id: 9, type: 'verification', action: 'License Verified', officer: 'Officer Ndlovu', detail: 'N. Khumalo — license valid, vehicle disc expired', location: 'Midrand', time: '2025-04-24T16:20:00', icon: '🔍', color: 'amber' },
-    { id: 10, type: 'violation', action: 'Fine Issued', officer: 'Officer Dlamini', detail: 'Parking fine R600 issued to GP 44 LZ — Beach Road, Sea Point', location: 'Cape Town', time: '2025-04-24T15:10:00', icon: '⚠️', color: 'red' },
-    { id: 11, type: 'alert', action: 'Stolen Vehicle', officer: 'Officer Dlamini', detail: 'GP 14 KW reported stolen — recovered at Rosebank', location: 'Rosebank', time: '2025-04-24T14:00:00', icon: '🚨', color: 'red' },
-    { id: 12, type: 'payment', action: 'Payment Received', officer: 'System', detail: 'R 500 traffic light fine paid by A. Botha', location: 'Online', time: '2025-04-24T12:30:00', icon: '💰', color: 'emerald' },
-    { id: 13, type: 'verification', action: 'License Verified', officer: 'Officer Ndlovu', detail: 'P. van der Berg — WC 31 PP, expired disc detected', location: 'Fourways', time: '2025-04-24T11:15:00', icon: '🔍', color: 'amber' },
-    { id: 14, type: 'roadblock', action: 'Roadblock Started', officer: 'Officer Dlamini', detail: 'Rivonia Road checkpoint activated — 3 officers deployed', location: 'Sandton', time: '2025-04-24T10:00:00', icon: '🚧', color: 'blue' },
-    { id: 15, type: 'violation', action: 'Fine Issued', officer: 'Officer Dlamini', detail: 'Speeding fine R2,500 issued to GP 21 NT on Oxford Road', location: 'Rosebank', time: '2025-04-24T09:45:00', icon: '⚠️', color: 'red' },
-    { id: 16, type: 'verification', action: 'License Verified', officer: 'Officer Ndlovu', detail: 'S. Mthembu — all clear, no outstanding fines', location: 'Randburg', time: '2025-04-24T09:00:00', icon: '🔍', color: 'emerald' },
-    { id: 17, type: 'payment', action: 'Payment Received', officer: 'System', detail: 'R 1,350 speeding fine paid by S. Mthembu', location: 'Online', time: '2025-04-24T08:30:00', icon: '💰', color: 'emerald' },
-    { id: 18, type: 'alert', action: 'System Alert', officer: 'System', detail: 'High violation area detected — Sandton CBD, 42 violations this month', location: 'Sandton', time: '2025-04-24T07:00:00', icon: '🚨', color: 'red' },
-    { id: 19, type: 'violation', action: 'Fine Issued', officer: 'Officer Dlamini', detail: 'Red light violation R1,500 — GP 82 TT, Beyers Naudé Drive', location: 'Randburg', time: '2025-04-23T20:45:00', icon: '⚠️', color: 'red' },
-    { id: 20, type: 'payment', action: 'Payment Received', officer: 'System', detail: 'R 800 expired disc fine paid by G. Petersen', location: 'Online', time: '2025-04-23T18:00:00', icon: '💰', color: 'emerald' },
+    { id: 1, type: 'violation', action: 'Fine Issued', officer: 'Officer Dlamini', detail: 'Speeding fine R1,500 issued to GP 14 KW on N1 Northbound', location: 'Sandton', time: '2025-04-25T08:15:00', color: 'red' },
+    { id: 2, type: 'payment', action: 'Payment Received', officer: 'System', detail: 'R 750 expired disc fine paid by S. Khumalo via portal', location: 'Online', time: '2025-04-25T08:02:00', color: 'emerald' },
+    { id: 3, type: 'roadblock', action: 'Roadblock Started', officer: 'Officer Dlamini', detail: 'William Nicol & N1 checkpoint activated — 4 officers deployed', location: 'Sandton', time: '2025-04-25T07:30:00', color: 'blue' },
+    { id: 4, type: 'verification', action: 'License Verified', officer: 'Officer Dlamini', detail: 'David Gareth (020608175379081) — license valid, 2 outstanding fines', location: 'Rosebank', time: '2025-04-25T07:15:00', color: 'emerald' },
+    { id: 5, type: 'alert', action: 'Forged Document', officer: 'Officer Dlamini', detail: 'GP 55 ZN flagged with forged license — suspect detained', location: 'Fourways', time: '2025-04-24T22:45:00', color: 'red' },
+    { id: 6, type: 'violation', action: 'Fine Issued', officer: 'Officer Ndlovu', detail: 'Expired disc fine R900 issued to WC 31 PP', location: 'Sandton', time: '2025-04-24T20:30:00', color: 'red' },
+    { id: 7, type: 'payment', action: 'Payment Received', officer: 'System', detail: 'R 2,100 speeding fine paid by T. Molefe via EFT', location: 'Online', time: '2025-04-24T18:45:00', color: 'emerald' },
+    { id: 8, type: 'roadblock', action: 'Roadblock Ended', officer: 'Officer Ndlovu', detail: 'Oxford Road checkpoint completed — 54 vehicles stopped, 15 fines, 0 arrests', location: 'Rosebank', time: '2025-04-24T18:00:00', color: 'blue' },
+    { id: 9, type: 'verification', action: 'License Verified', officer: 'Officer Ndlovu', detail: 'N. Khumalo — license valid, vehicle disc expired', location: 'Midrand', time: '2025-04-24T16:20:00', color: 'amber' },
+    { id: 10, type: 'violation', action: 'Fine Issued', officer: 'Officer Dlamini', detail: 'Parking fine R600 issued to GP 44 LZ — Beach Road, Sea Point', location: 'Cape Town', time: '2025-04-24T15:10:00', color: 'red' },
+    { id: 11, type: 'alert', action: 'Stolen Vehicle', officer: 'Officer Dlamini', detail: 'GP 14 KW reported stolen — recovered at Rosebank', location: 'Rosebank', time: '2025-04-24T14:00:00', color: 'red' },
+    { id: 12, type: 'payment', action: 'Payment Received', officer: 'System', detail: 'R 500 traffic light fine paid by A. Botha', location: 'Online', time: '2025-04-24T12:30:00', color: 'emerald' },
+    { id: 13, type: 'verification', action: 'License Verified', officer: 'Officer Ndlovu', detail: 'P. van der Berg — WC 31 PP, expired disc detected', location: 'Fourways', time: '2025-04-24T11:15:00', color: 'amber' },
+    { id: 14, type: 'roadblock', action: 'Roadblock Started', officer: 'Officer Dlamini', detail: 'Rivonia Road checkpoint activated — 3 officers deployed', location: 'Sandton', time: '2025-04-24T10:00:00', color: 'blue' },
+    { id: 15, type: 'violation', action: 'Fine Issued', officer: 'Officer Dlamini', detail: 'Speeding fine R2,500 issued to GP 21 NT on Oxford Road', location: 'Rosebank', time: '2025-04-24T09:45:00', color: 'red' },
+    { id: 16, type: 'verification', action: 'License Verified', officer: 'Officer Ndlovu', detail: 'S. Mthembu — all clear, no outstanding fines', location: 'Randburg', time: '2025-04-24T09:00:00', color: 'emerald' },
+    { id: 17, type: 'payment', action: 'Payment Received', officer: 'System', detail: 'R 1,350 speeding fine paid by S. Mthembu', location: 'Online', time: '2025-04-24T08:30:00', color: 'emerald' },
+    { id: 18, type: 'alert', action: 'System Alert', officer: 'System', detail: 'High violation area detected — Sandton CBD, 42 violations this month', location: 'Sandton', time: '2025-04-24T07:00:00', color: 'red' },
+    { id: 19, type: 'violation', action: 'Fine Issued', officer: 'Officer Dlamini', detail: 'Red light violation R1,500 — GP 82 TT, Beyers Naudé Drive', location: 'Randburg', time: '2025-04-23T20:45:00', color: 'red' },
+    { id: 20, type: 'payment', action: 'Payment Received', officer: 'System', detail: 'R 800 expired disc fine paid by G. Petersen', location: 'Online', time: '2025-04-23T18:00:00', color: 'emerald' },
   ];
 
   const filterOptions = [
@@ -45,6 +45,59 @@ const ActivityLog = () => {
       a.officer.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.location.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+  const getActionIcon = (type) => {
+    switch (type) {
+      case 'violation':
+        return (
+          <div className="w-7 h-7 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-red-400 fill-none" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+        );
+      case 'payment':
+        return (
+          <div className="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-emerald-400 fill-none" strokeWidth="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+        );
+      case 'roadblock':
+        return (
+          <div className="w-7 h-7 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-blue-400 fill-none" strokeWidth="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+        );
+      case 'verification':
+        return (
+          <div className="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-amber-400 fill-none" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+        );
+      case 'alert':
+        return (
+          <div className="w-7 h-7 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-red-400 fill-none" strokeWidth="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+        );
+      default:
+        return (
+          <div className="w-7 h-7 rounded-lg bg-slate-500/20 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-slate-400 fill-none" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/>
+            </svg>
+          </div>
+        );
+    }
+  };
 
   const getDotColor = (color) => {
     switch (color) {
@@ -147,7 +200,7 @@ const ActivityLog = () => {
                   className="flex items-start gap-3 p-3.5 hover:bg-white/[0.02] transition-colors"
                 >
                   {/* Icon */}
-                  <div className="text-base shrink-0 mt-0.5">{activity.icon}</div>
+                  {getActionIcon(activity.type)}
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">

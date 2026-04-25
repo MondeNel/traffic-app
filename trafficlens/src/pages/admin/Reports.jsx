@@ -96,15 +96,50 @@ const Reports = () => {
     }
   };
 
-  const getActivityIcon = (type) => {
-    switch (type) {
-      case 'violation': return '⚠️';
-      case 'payment': return '💰';
-      case 'roadblock': return '🚧';
-      case 'alert': return '🚨';
-      default: return '📌';
-    }
-  };
+const getActivityIcon = (type) => {
+  switch (type) {
+    case 'violation':
+      return (
+        <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+          <svg viewBox="0 0 24 24" className="w-3 h-3 stroke-red-400 fill-none" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+      );
+    case 'payment':
+      return (
+        <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+          <svg viewBox="0 0 24 24" className="w-3 h-3 stroke-emerald-400 fill-none" strokeWidth="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+      );
+    case 'roadblock':
+      return (
+        <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
+          <svg viewBox="0 0 24 24" className="w-3 h-3 stroke-blue-400 fill-none" strokeWidth="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+      );
+    case 'alert':
+      return (
+        <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+          <svg viewBox="0 0 24 24" className="w-3 h-3 stroke-red-400 fill-none" strokeWidth="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+      );
+    default:
+      return (
+        <div className="w-5 h-5 rounded-full bg-slate-500/20 flex items-center justify-center shrink-0">
+          <svg viewBox="0 0 24 24" className="w-3 h-3 stroke-slate-400 fill-none" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+        </div>
+      );
+  }
+};
 
   return (
     <AdminLayout>
@@ -240,13 +275,12 @@ const Reports = () => {
           </div>
           <div className="space-y-0 max-h-[400px] overflow-y-auto">
             {recentActivities.map((activity, i) => (
-              <div key={activity.id} className={`flex items-center gap-3 py-2.5 ${i < recentActivities.length - 1 ? 'border-b border-slate-800/50' : ''}`}>
-                <span className="text-xs shrink-0">{getActivityIcon(activity.type)}</span>
-                <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${getDotColor(activity.color)}`} />
-                <span className="text-[11px] text-slate-400 flex-1">{activity.text}</span>
-                <span className="text-[10px] text-slate-600 shrink-0">{activity.time}</span>
-              </div>
-            ))}
+  <div key={activity.id} className={`flex items-center gap-3 py-2.5 ${i < recentActivities.length - 1 ? 'border-b border-slate-800/50' : ''}`}>
+    {getActivityIcon(activity.type)}
+    <span className="text-[11px] text-slate-400 flex-1">{activity.text}</span>
+    <span className="text-[10px] text-slate-600 shrink-0">{activity.time}</span>
+  </div>
+))}
           </div>
         </div>
       </div>

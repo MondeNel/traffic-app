@@ -14,6 +14,7 @@ import Verify from './pages/admin/Verify';
 import Roadblocks from './pages/admin/Roadblocks';
 import Reports from './pages/admin/Reports';
 import ActivityLog from './pages/admin/ActivityLog';
+import Offenders from './pages/admin/Offenders';
 
 const AdminPlaceholder = ({ title }) => (
   <AdminLayout>
@@ -76,8 +77,8 @@ function App() {
   <ProtectedRoute allowedType="admin"><Verify /></ProtectedRoute>
 } />
         <Route path="/admin/offenders" element={
-          <ProtectedRoute allowedType="admin"><AdminPlaceholder title="Offenders" /></ProtectedRoute>
-        } />
+  <ProtectedRoute allowedType="admin"><Offenders /></ProtectedRoute>
+} />
 <Route path="/admin/roadblocks" element={
   <ProtectedRoute allowedType="admin"><Roadblocks /></ProtectedRoute>
 } />
