@@ -13,6 +13,7 @@ import LiveMap from './pages/admin/LiveMap';
 import Verify from './pages/admin/Verify';
 import Roadblocks from './pages/admin/Roadblocks';
 import Reports from './pages/admin/Reports';
+import ActivityLog from './pages/admin/ActivityLog';
 
 const AdminPlaceholder = ({ title }) => (
   <AdminLayout>
@@ -84,8 +85,8 @@ function App() {
   <ProtectedRoute allowedType="admin"><Reports /></ProtectedRoute>
 } />
         <Route path="/admin/activity" element={
-          <ProtectedRoute allowedType="admin"><AdminPlaceholder title="Activity Log" /></ProtectedRoute>
-        } />
+  <ProtectedRoute allowedType="admin"><ActivityLog /></ProtectedRoute>
+} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
