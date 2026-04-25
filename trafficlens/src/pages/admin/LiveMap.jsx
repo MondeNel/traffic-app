@@ -178,7 +178,7 @@ const MapControls = () => {
   const map = useMap();
 
   return (
-    <div className="absolute bottom-20 right-3 z-[1000] flex flex-col gap-1.5">
+    <div className="absolute bottom-16 md:bottom-4 right-3 z-[1000] flex flex-col gap-1.5">
       {/* Zoom In */}
       <button 
         onClick={() => map.zoomIn()} 
@@ -435,7 +435,7 @@ const LiveMap = () => {
           </div>
 
          {/* Legend */}
-<div className="absolute bottom-3 left-3 z-[1000] bg-adm/90 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2 text-[10px] text-slate-500">
+<div className="absolute bottom-16 md:bottom-3 left-3 z-[1000] bg-adm/90 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2 text-[10px] text-slate-500">
   <div className="flex items-center gap-2 mb-1">
     <div className="w-3 h-3 bg-red-400 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.5)]" /> High revenue hotspot
   </div>

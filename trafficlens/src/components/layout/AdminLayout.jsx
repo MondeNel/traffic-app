@@ -88,7 +88,10 @@ const AdminLayout = ({ children }) => {
             <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
             <span className="text-[10px] text-emerald-400 font-medium hidden sm:inline">Live</span>
           </div>
-          <div className="w-7 h-7 rounded-full bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-[9px] font-bold text-emerald-400 shrink-0">
+          <button onClick={handleLogout} className="md:hidden w-7 h-7 rounded-lg border border-slate-700 flex items-center justify-center text-slate-400 hover:text-red-400 hover:border-red-500/30 transition-colors" title="Sign out">
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-current fill-none" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+          <div className="hidden md:flex w-7 h-7 rounded-full bg-emerald-500/15 border border-emerald-500/40 items-center justify-center text-[9px] font-bold text-emerald-400 shrink-0">
             {user?.first_name?.[0]}{user?.last_name?.[0]}
           </div>
         </div>
