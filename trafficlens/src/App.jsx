@@ -12,6 +12,7 @@ import AdminLayout from './components/layout/AdminLayout';
 import LiveMap from './pages/admin/LiveMap';
 import Verify from './pages/admin/Verify';
 import Roadblocks from './pages/admin/Roadblocks';
+import Reports from './pages/admin/Reports';
 
 const AdminPlaceholder = ({ title }) => (
   <AdminLayout>
@@ -79,9 +80,9 @@ function App() {
 <Route path="/admin/roadblocks" element={
   <ProtectedRoute allowedType="admin"><Roadblocks /></ProtectedRoute>
 } />
-        <Route path="/admin/reports" element={
-          <ProtectedRoute allowedType="admin"><AdminPlaceholder title="Reports" /></ProtectedRoute>
-        } />
+       <Route path="/admin/reports" element={
+  <ProtectedRoute allowedType="admin"><Reports /></ProtectedRoute>
+} />
         <Route path="/admin/activity" element={
           <ProtectedRoute allowedType="admin"><AdminPlaceholder title="Activity Log" /></ProtectedRoute>
         } />
