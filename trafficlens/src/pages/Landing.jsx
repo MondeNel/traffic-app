@@ -138,7 +138,12 @@ const Landing = () => {
                     {isLoading ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Signing in...</> : 'Sign in'}
                   </button>
                 </form>
-                <p className="text-center text-xs text-slate-400 mt-4">💡 Any email and password (4+ characters) will work</p>
+                <p className="text-center text-xs text-slate-400 mt-4 flex items-center justify-center gap-1.5">
+  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-ca fill-none shrink-0" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+  </svg>
+  Any email and password (4+ characters) will work
+</p>
                 <p className="text-center text-xs text-slate-500 mt-2">Don't have an account? <button onClick={() => setActiveTab('register')} className="text-ca font-medium hover:text-ca-dark">Register here</button></p>
               </motion.div>
             )}
