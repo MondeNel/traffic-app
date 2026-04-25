@@ -10,6 +10,7 @@ import Documents from './pages/citizen/Documents';
 import Settings from './pages/citizen/Settings';
 import AdminLayout from './components/layout/AdminLayout';
 import LiveMap from './pages/admin/LiveMap';
+import Verify from './pages/admin/Verify';
 
 const AdminPlaceholder = ({ title }) => (
   <AdminLayout>
@@ -69,8 +70,8 @@ function App() {
           <ProtectedRoute allowedType="admin"><LiveMap /></ProtectedRoute>
         } />
         <Route path="/admin/verify" element={
-          <ProtectedRoute allowedType="admin"><AdminPlaceholder title="Verification" /></ProtectedRoute>
-        } />
+  <ProtectedRoute allowedType="admin"><Verify /></ProtectedRoute>
+} />
         <Route path="/admin/offenders" element={
           <ProtectedRoute allowedType="admin"><AdminPlaceholder title="Offenders" /></ProtectedRoute>
         } />
