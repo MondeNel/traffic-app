@@ -176,12 +176,59 @@ const recentActivity = [
 
 const MapControls = () => {
   const map = useMap();
+
   return (
-    <div className="absolute bottom-20 right-3 z-[1000] flex flex-col gap-1">
-      <button onClick={() => map.zoomIn()} className="w-8 h-8 bg-adm/90 backdrop-blur-sm border border-slate-700 rounded-lg flex items-center justify-center text-slate-300 hover:bg-adm2 hover:text-white transition-colors text-lg font-bold">+</button>
-      <button onClick={() => map.zoomOut()} className="w-8 h-8 bg-adm/90 backdrop-blur-sm border border-slate-700 rounded-lg flex items-center justify-center text-slate-300 hover:bg-adm2 hover:text-white transition-colors text-lg font-bold">−</button>
-      <button onClick={() => map.setView(gautengCenter, 12)} className="w-8 h-8 bg-adm/90 backdrop-blur-sm border border-slate-700 rounded-lg flex items-center justify-center text-slate-300 hover:bg-adm2 hover:text-white transition-colors" title="Reset view">
-        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-current fill-none" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="8 12 12 8 16 12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+    <div className="absolute bottom-20 right-3 z-[1000] flex flex-col gap-1.5">
+      {/* Zoom In */}
+      <button 
+        onClick={() => map.zoomIn()} 
+        className="w-9 h-9 bg-adm/95 backdrop-blur-sm border border-slate-700 rounded-xl flex items-center justify-center text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600 transition-all duration-200 text-lg font-bold shadow-lg hover:shadow-xl active:scale-95"
+        title="Zoom in"
+      >
+        <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-current fill-none" strokeWidth="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+
+      {/* Zoom Out */}
+      <button 
+        onClick={() => map.zoomOut()} 
+        className="w-9 h-9 bg-adm/95 backdrop-blur-sm border border-slate-700 rounded-xl flex items-center justify-center text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600 transition-all duration-200 text-lg font-bold shadow-lg hover:shadow-xl active:scale-95"
+        title="Zoom out"
+      >
+        <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-current fill-none" strokeWidth="2">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+
+      {/* Separator */}
+      <div className="w-6 h-px bg-slate-700 mx-auto" />
+
+      {/* Reset View */}
+      <button 
+        onClick={() => map.setView(gautengCenter, 12)} 
+        className="w-9 h-9 bg-adm/95 backdrop-blur-sm border border-slate-700 rounded-xl flex items-center justify-center text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95"
+        title="Reset view"
+      >
+        <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-current fill-none" strokeWidth="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="8 12 12 8 16 12"/>
+          <line x1="12" y1="8" x2="12" y2="16"/>
+        </svg>
+      </button>
+
+      {/* Locate Current Jurisdiction */}
+      <button 
+        onClick={() => {
+          map.setView(gautengCenter, 14);
+        }} 
+        className="w-9 h-9 bg-adm/95 backdrop-blur-sm border border-slate-700 rounded-xl flex items-center justify-center text-slate-300 hover:bg-blue-900/30 hover:text-blue-400 hover:border-blue-500/30 transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95"
+        title="Go to jurisdiction"
+      >
+        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-current fill-none" strokeWidth="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7z"/>
+        </svg>
       </button>
     </div>
   );
@@ -286,20 +333,67 @@ const LiveMap = () => {
             <SetMapView center={gautengCenter} />
             <MapControls />
 
-            {activeFilters.hotspots && hotspots.map(h => (
-              <Circle key={`hotspot-${h.id}`} center={[h.lat, h.lng]} radius={h.radius}
-                pathOptions={{ color: h.color, fillColor: h.color, fillOpacity: h.opacity, weight: 2, dashArray: h.area === 'Sandton CBD' || h.area === 'M1 Corridor' ? '5 5' : '10 5' }}>
-                <Popup>
-                  <div className="text-xs min-w-[140px]">
-                    <p className="font-bold text-slate-900 mb-2">{h.area}</p>
-                    <div className="space-y-1">
-                      <div className="flex justify-between"><span className="text-slate-500">Tickets</span><span className="font-bold text-red-600">{h.tickets}</span></div>
-                      <div className="flex justify-between"><span className="text-slate-500">Revenue</span><span className="font-bold text-red-600">{h.revenue}</span></div>
-                    </div>
-                  </div>
-                </Popup>
-              </Circle>
-            ))}
+   {activeFilters.hotspots && hotspots.map(h => (
+  <div key={`hotspot-${h.id}`}>
+    {/* Outer glow ring */}
+    <Circle
+      center={[h.lat, h.lng]}
+      radius={h.radius * 1.5}
+      pathOptions={{
+        color: 'transparent',
+        fillColor: h.color,
+        fillOpacity: 0.03,
+        weight: 0,
+        stroke: false,
+        className: 'hotspot-glow-outer'
+      }}
+      interactive={false}
+    />
+    {/* Middle glow ring */}
+    <Circle
+      center={[h.lat, h.lng]}
+      radius={h.radius * 1.2}
+      pathOptions={{
+        color: 'transparent',
+        fillColor: h.color,
+        fillOpacity: 0.05,
+        weight: 0,
+        stroke: false,
+        className: 'hotspot-glow-middle'
+      }}
+      interactive={false}
+    />
+    {/* Main hotspot circle */}
+    <Circle
+      center={[h.lat, h.lng]}
+      radius={h.radius}
+      pathOptions={{
+        color: h.color,
+        fillColor: h.color,
+        fillOpacity: h.opacity,
+        weight: 1.5,
+        opacity: 0.7,
+        className: 'hotspot-pulse'
+      }}
+    >
+      <Popup>
+        <div className="text-xs min-w-[140px]">
+          <p className="font-bold text-slate-900 mb-2">{h.area}</p>
+          <div className="space-y-1">
+            <div className="flex justify-between">
+              <span className="text-slate-500">Tickets</span>
+              <span className="font-bold text-red-600">{h.tickets}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Revenue</span>
+              <span className="font-bold text-red-600">{h.revenue}</span>
+            </div>
+          </div>
+        </div>
+      </Popup>
+    </Circle>
+  </div>
+))}
 
             {activeFilters.vehicles && (
               <>
@@ -340,13 +434,21 @@ const LiveMap = () => {
             ))}
           </div>
 
-          {/* Legend */}
-          <div className="absolute bottom-3 left-3 z-[1000] bg-adm/90 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2 text-[10px] text-slate-500">
-            <div className="flex items-center gap-2 mb-1"><div className="w-2 h-2 bg-red-400 rounded-full animate-pulse" /> High revenue hotspot</div>
-            <div className="flex items-center gap-2 mb-1"><div className="w-2 h-2 bg-amber-400 rounded-full" /> Medium revenue hotspot</div>
-            <div className="flex items-center gap-2 mb-1"><div className="w-2 h-2 bg-blue-400 rounded-full" /> Roadblock</div>
-            <div className="flex items-center gap-2"><div className="w-2 h-2 bg-emerald-400 rounded-full" /> Active vehicle</div>
-          </div>
+         {/* Legend */}
+<div className="absolute bottom-3 left-3 z-[1000] bg-adm/90 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2 text-[10px] text-slate-500">
+  <div className="flex items-center gap-2 mb-1">
+    <div className="w-3 h-3 bg-red-400 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.5)]" /> High revenue hotspot
+  </div>
+  <div className="flex items-center gap-2 mb-1">
+    <div className="w-3 h-3 bg-amber-400 rounded-full shadow-[0_0_6px_rgba(245,158,11,0.4)]" /> Medium revenue hotspot
+  </div>
+  <div className="flex items-center gap-2 mb-1">
+    <div className="w-2 h-2 bg-blue-400 rounded-full" /> Roadblock
+  </div>
+  <div className="flex items-center gap-2">
+    <div className="w-2 h-2 bg-emerald-400 rounded-full" /> Active vehicle
+  </div>
+</div>
         </div>
 
         {/* Right Panel */}

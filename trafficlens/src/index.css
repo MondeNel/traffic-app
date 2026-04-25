@@ -82,3 +82,43 @@ img[alt="Profile"] {
   background: transparent !important;
   border: none !important;
 }
+
+/* Hotspot glow animations */
+@keyframes hotspotPulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes hotspotGlowOuter {
+  0%, 100% {
+    opacity: 0.02;
+  }
+  50% {
+    opacity: 0.06;
+  }
+}
+
+@keyframes hotspotGlowMiddle {
+  0%, 100% {
+    opacity: 0.04;
+  }
+  50% {
+    opacity: 0.10;
+  }
+}
+
+.hotspot-pulse {
+  animation: hotspotPulse 2.5s ease-in-out infinite;
+}
+
+.hotspot-glow-outer {
+  animation: hotspotGlowOuter 2.5s ease-in-out infinite;
+}
+
+.hotspot-glow-middle {
+  animation: hotspotGlowMiddle 2.5s ease-in-out infinite;
+}
