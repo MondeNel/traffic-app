@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CitizenLayout from '../../components/layout/CitizenLayout';
 import StatsCards from '../../components/citizen/StatsCards';
 import FinesList from '../../components/citizen/FinesList';
 import LicenseCard from '../../components/citizen/LicenseCard';
 import RenewalModal from '../../components/citizen/RenewalModal';
+import PaymentModal from '../../components/citizen/PaymentModal';
 import demoUser from '../../data/demoUser';
 import usePaymentStore from '../../store/paymentStore';
 
@@ -74,13 +76,23 @@ const SectionHeader = ({ title, action, onAction }) => (
 
 /* ── Dashboard ─────────────────────────────────────────────── */
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [showRenewal, setShowRenewal] = useState(false);
-  const fines        = usePaymentStore(state => state.fines);
+  const [showPayment, setShowPayment] = useState(false);
+  const [selectedFine, setSelectedFine] = useState(null);
+  const fines = usePaymentStore(state => state.fines);
   const displayFines = fines.length > 0 ? fines : demoUser.fines;
 
   const quickActions = [
     {
       label: 'Pay Fine',
+      onClick: () => {
+        const unpaidFine = displayFines.find(f => f.status === 'unpaid');
+        if (unpaidFine) {
+          setSelectedFine(unpaidFine);
+          setShowPayment(true);
+        }
+      },
       icon: <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>,
     },
     {
@@ -90,13 +102,21 @@ const Dashboard = () => {
     },
     {
       label: 'Renew Disc',
+      onClick: () => navigate('/vehicles'),
       icon: <><rect x="1" y="9" width="22" height="11" rx="2"/><path d="M5 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></>,
     },
     {
       label: 'Upload Docs',
-      icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></>,
+      onClick: () => navigate('/documents'),
+      icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></>,
     },
   ];
+
+  const handlePayment = async (fineId) => {
+    await usePaymentStore.getState().processPayment(fineId);
+    setShowPayment(false);
+    setSelectedFine(null);
+  };
 
   return (
     <CitizenLayout user={demoUser}>
@@ -106,11 +126,11 @@ const Dashboard = () => {
         <StatsCards fines={displayFines} license={demoUser.license} />
 
         {/* Quick actions - 2x2 on mobile, 4 columns on desktop */}
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }} className="md:grid-cols-4 md:gap-2.5">
-  {quickActions.map(a => (
-    <QuickAction key={a.label} label={a.label} icon={a.icon} onClick={a.onClick} />
-  ))}
-</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }} className="md:grid-cols-4 md:gap-2.5">
+          {quickActions.map(a => (
+            <QuickAction key={a.label} label={a.label} icon={a.icon} onClick={a.onClick} />
+          ))}
+        </div>
 
         {/* Fines */}
         <div>
@@ -122,7 +142,7 @@ const Dashboard = () => {
         <div>
           <SectionHeader
             title="Digital driver's license"
-            action="Renew now →"
+            action="Renew now"
             onAction={() => setShowRenewal(true)}
           />
           <LicenseCard user={demoUser} license={demoUser.license} />
@@ -133,6 +153,13 @@ const Dashboard = () => {
       </div>
 
       <RenewalModal isOpen={showRenewal} onClose={() => setShowRenewal(false)} />
+      <PaymentModal
+        isOpen={showPayment}
+        onClose={() => { setShowPayment(false); setSelectedFine(null); }}
+        fine={selectedFine}
+        onPay={handlePayment}
+        isProcessing={false}
+      />
     </CitizenLayout>
   );
 };
