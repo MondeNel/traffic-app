@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import usePaymentStore from '../../store/paymentStore';
 import NotificationsModal from '../citizen/NotificationsModal';
+import PaymentModal from '../citizen/PaymentModal';
+import demoUser from '../../data/demoUser';
 
 /* ─── Nav config ───────────────────────────────────────────── */
 const NAV_ITEMS = [
@@ -24,34 +27,12 @@ const NAV_ITEMS = [
   },
 ];
 
-// Mobile bottom nav items
-// Mobile bottom nav items - each icon wrapped in a single fragment
 const MOBILE_NAV = [
-  { 
-    label: 'Home', 
-    path: '/dashboard', 
-    icon: <><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></>
-  },
-  { 
-    label: 'License', 
-    path: '/license', 
-    icon: <><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><circle cx="12" cy="14" r="2"/></>
-  },
-  { 
-    label: 'Vehicles', 
-    path: '/vehicles', 
-    icon: <><rect x="1" y="9" width="22" height="11" rx="2"/><path d="M5 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></>
-  },
-  { 
-    label: 'Docs', 
-    path: '/documents', 
-    icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></>
-  },
-  { 
-    label: 'Profile', 
-    path: '/profile', 
-    icon: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>
-  },
+  { label: 'Home', path: '/dashboard', icon: <><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></> },
+  { label: 'License', path: '/license', icon: <><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><circle cx="12" cy="14" r="2"/></> },
+  { label: 'Vehicles', path: '/vehicles', icon: <><rect x="1" y="9" width="22" height="11" rx="2"/><path d="M5 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></> },
+  { label: 'Docs', path: '/documents', icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></> },
+  { label: 'Profile', path: '/profile', icon: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></> },
 ];
 
 const DEMO_NOTIFICATIONS = [
@@ -61,7 +42,6 @@ const DEMO_NOTIFICATIONS = [
   { id: 4, type: 'success', title: 'Payment Confirmed', message: 'Your fine payment of R 500 (TL-M4X9W) has been processed successfully.', created_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), isRead: true },
 ];
 
-/* ─── Icon helper ──────────────────────────────────────────── */
 const NavIcon = ({ path }) => (
   <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, flexShrink: 0, fill: 'none', stroke: 'currentColor', strokeWidth: 2 }}>
     {path}
@@ -80,9 +60,12 @@ const CitizenLayout = ({ user, children }) => {
   const navigate  = useNavigate();
   const location  = useLocation();
   const { logout } = useAuthStore();
+  const { processPayment, isProcessing } = usePaymentStore();
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState(DEMO_NOTIFICATIONS);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [selectedFine, setSelectedFine] = useState(null);
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
   const markRead = (id) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
@@ -91,24 +74,49 @@ const CitizenLayout = ({ user, children }) => {
   const handleLogout = () => { logout(); navigate('/'); };
 
   const initials = user ? `${(user.first_name || '')[0] || ''}${(user.last_name || '')[0] || ''}` : 'U';
-
   const isActive = (path) => location.pathname === path;
+
+  // Handle notification actions
+  const handleNotificationAction = (notification) => {
+    markRead(notification.id);
+    
+    // Fine-related: open payment modal
+    if (notification.type === 'warning' && notification.title.includes('Fine')) {
+      const fine = demoUser.fines.find(f => f.status === 'unpaid');
+      if (fine) {
+        setSelectedFine(fine);
+        setNotifOpen(false);
+        setShowPayment(true);
+      }
+    }
+    
+    // License/disc related: navigate to page
+    if (notification.title.includes('License Disc')) {
+      setNotifOpen(false);
+      navigate('/vehicles');
+    }
+    if (notification.title.includes('License Renewal')) {
+      setNotifOpen(false);
+      navigate('/license');
+    }
+  };
+
+  const handlePayment = async (fineId) => {
+    await processPayment(fineId);
+    setShowPayment(false);
+    setSelectedFine(null);
+  };
 
   return (
     <div className="flex min-h-screen bg-slate-100" style={{ fontFamily: "'DM Sans', sans-serif" }}>
 
-      {/* ── DESKTOP SIDEBAR (desktop only) ────────────── */}
+      {/* ── DESKTOP SIDEBAR ──────────────────────────── */}
       <aside className="hidden md:flex flex-col shrink-0 relative overflow-hidden" style={{ width: 220, background: '#0B1628' }}>
-        {/* Decorative blob */}
         <div className="absolute pointer-events-none" style={{ top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: 'rgba(27,108,168,0.1)' }} />
-
-        {/* Logo */}
         <div style={{ padding: '18px 18px 14px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
           <div className="flex items-center gap-2">
             <div className="flex items-center justify-center shrink-0" style={{ width: 32, height: 32, background: '#1B6CA8', borderRadius: 8 }}>
-              <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, stroke: 'white', fill: 'none', strokeWidth: 2.5 }}>
-                <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-              </svg>
+              <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, stroke: 'white', fill: 'none', strokeWidth: 2.5 }}><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
             </div>
             <div>
               <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 800, color: 'white', letterSpacing: '-0.3px' }}>TrafficLens</div>
@@ -116,8 +124,6 @@ const CitizenLayout = ({ user, children }) => {
             </div>
           </div>
         </div>
-
-        {/* User */}
         <div className="flex items-center gap-2.5" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
           <div className="flex items-center justify-center shrink-0" style={{ width: 34, height: 34, borderRadius: '50%', background: '#1B6CA8', border: '2px solid rgba(255,255,255,0.15)', fontFamily: "'Syne', sans-serif", fontSize: 12, fontWeight: 800, color: 'white' }}>{initials}</div>
           <div style={{ minWidth: 0 }}>
@@ -125,8 +131,6 @@ const CitizenLayout = ({ user, children }) => {
             <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.32)', fontFamily: "'IBM Plex Mono', monospace", marginTop: 1 }}>{user?.id_number?.slice(0, 13)}</div>
           </div>
         </div>
-
-        {/* Nav */}
         <nav className="flex flex-col gap-0.5" style={{ flex: 1, padding: '8px 10px' }}>
           {NAV_ITEMS.map(group => (
             <div key={group.section}>
@@ -147,21 +151,17 @@ const CitizenLayout = ({ user, children }) => {
             </div>
           ))}
         </nav>
-
-        {/* Sign out */}
         <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-          <button onClick={handleLogout}
-            className="flex items-center gap-2 w-full transition-colors"
+          <button onClick={handleLogout} className="flex items-center gap-2 w-full transition-colors"
             style={{ padding: '8px 10px', borderRadius: 8, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.28)', fontSize: 12, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}
             onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
             onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.28)'; e.currentTarget.style.background = 'transparent'; }}>
-            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, stroke: 'currentColor', fill: 'none', strokeWidth: 2 }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Sign out
+            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, stroke: 'currentColor', fill: 'none', strokeWidth: 2 }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign out
           </button>
         </div>
       </aside>
 
-      {/* ── MOBILE HEADER (mobile only) ────────────────── */}
+      {/* ── MOBILE HEADER ──────────────────────────────── */}
       <div className="flex md:hidden items-center justify-between fixed top-0 left-0 right-0 z-50" style={{ background: '#0B1628', padding: '10px 16px' }}>
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: 4 }}>
           <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, stroke: 'white', fill: 'none', strokeWidth: 2 }}>
@@ -180,7 +180,7 @@ const CitizenLayout = ({ user, children }) => {
         </div>
       </div>
 
-      {/* ── MOBILE SLIDE-OUT MENU ────────────────────────── */}
+      {/* ── MOBILE SLIDE-OUT MENU ──────────────────────── */}
       {mobileMenuOpen && (
         <div className="md:hidden fixed top-12 left-0 bottom-0 z-40 overflow-y-auto" style={{ width: 240, background: '#0B1628', padding: 12 }}>
           {NAV_ITEMS.map(group => (
@@ -202,15 +202,13 @@ const CitizenLayout = ({ user, children }) => {
           <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
             className="flex items-center gap-2 w-full text-left"
             style={{ padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", background: 'transparent', color: '#C13333', marginTop: 12, borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 14 }}>
-            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, stroke: 'currentColor', fill: 'none', strokeWidth: 2 }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Sign out
+            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, stroke: 'currentColor', fill: 'none', strokeWidth: 2 }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign out
           </button>
         </div>
       )}
 
-      {/* ── MAIN CONTENT ─────────────────────────────────── */}
+      {/* ── MAIN CONTENT ────────────────────────────────── */}
       <div className="flex flex-col flex-1 min-w-0 pt-12 md:pt-0">
-        {/* Desktop Topbar (desktop only) */}
         <div className="hidden md:flex items-center justify-between sticky top-0 z-10 shrink-0" style={{ background: 'white', borderBottom: '1px solid #E2E8F0', padding: '0 24px', height: 52 }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{getGreeting()}, {user?.first_name}</div>
@@ -223,14 +221,12 @@ const CitizenLayout = ({ user, children }) => {
             </button>
           </div>
         </div>
-
-        {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 pb-24 md:p-5 md:pb-5">
           {children}
         </main>
       </div>
 
-      {/* ── MOBILE BOTTOM NAVIGATION (mobile only) ──────── */}
+      {/* ── MOBILE BOTTOM NAVIGATION ───────────────────── */}
       <div className="flex md:hidden justify-around fixed bottom-0 left-0 right-0 z-50" style={{ background: '#0B1628', borderTop: '1px solid rgba(255,255,255,0.07)', padding: '4px', paddingBottom: 'env(safe-area-inset-bottom, 4px)' }}>
         {MOBILE_NAV.map(item => {
           const active = isActive(item.path);
@@ -246,8 +242,22 @@ const CitizenLayout = ({ user, children }) => {
         })}
       </div>
 
-      {/* Notifications modal */}
-      <NotificationsModal isOpen={notifOpen} onClose={() => setNotifOpen(false)} notifications={notifications} onMarkRead={markRead} onMarkAllRead={markAllRead} />
+      {/* ── MODALS ──────────────────────────────────────── */}
+      <NotificationsModal 
+        isOpen={notifOpen} 
+        onClose={() => setNotifOpen(false)} 
+        notifications={notifications} 
+        onMarkRead={markRead} 
+        onMarkAllRead={markAllRead} 
+        onAction={handleNotificationAction} 
+      />
+      <PaymentModal
+        isOpen={showPayment}
+        onClose={() => { if (!isProcessing) { setShowPayment(false); setSelectedFine(null); } }}
+        fine={selectedFine}
+        onPay={handlePayment}
+        isProcessing={isProcessing}
+      />
     </div>
   );
 };
