@@ -232,14 +232,6 @@ const Landing = () => {
                     {isLoading ? <><div className="w-4 h-4 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" /> Authenticating...</> : 'Access Admin Portal'}
                   </button>
                 </form>
-                <div className="mt-4 p-3 bg-slate-800 rounded-lg">
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">Demo Access</p>
-                  <div className="space-y-1 text-xs text-slate-400">
-                    <p>Use any email and password (6+ characters)</p>
-                    <p>Select your province and city for jurisdiction</p>
-                    <p className="text-slate-500 mt-1">Try: <span className="text-slate-300 font-mono">officer@trafficlens.gov.za</span></p>
-                  </div>
-                </div>
               </motion.div>
             )}
           </AnimatePresence>

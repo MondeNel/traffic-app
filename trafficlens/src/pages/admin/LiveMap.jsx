@@ -293,7 +293,14 @@ const SmoothMarker = ({ vehicle, routePoints }) => {
 };
 
 const LiveMap = () => {
-  const [activeFilters, setActiveFilters] = useState({ hotspots: true, vehicles: true, roadblocks: true });
+  const [activeFilters, setActiveFilters] = useState({ 
+    violations: true,
+    expiredDiscs: true, 
+    roadblocks: true,
+    hotspots: true,
+    vehicles: true,
+    revenue: true
+  });
   const [showPlanRoadblock, setShowPlanRoadblock] = useState(false);
   const [roadblocksList, setRoadblocksList] = useState([
     { id: 1, lat: -26.1000, lng: 28.0400, name: 'William Nicol & N1', officers: 4 },
@@ -324,77 +331,28 @@ const LiveMap = () => {
 
   const totalRevenue = hotspots.reduce((sum, h) => sum + parseInt(h.revenue.replace(/[^0-9]/g, '')), 0);
 
-  return (
+   return (
     <AdminLayout>
       <div className="flex h-full">
+        {/* ==================== MAP PANEL ==================== */}
         <div className="flex-1 relative">
           <MapContainer center={gautengCenter} zoom={12} zoomControl={false} className="h-full w-full z-0" style={{ background: '#0B1520' }}>
             <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
             <SetMapView center={gautengCenter} />
             <MapControls />
 
-   {activeFilters.hotspots && hotspots.map(h => (
-  <div key={`hotspot-${h.id}`}>
-    {/* Outer glow ring */}
-    <Circle
-      center={[h.lat, h.lng]}
-      radius={h.radius * 1.5}
-      pathOptions={{
-        color: 'transparent',
-        fillColor: h.color,
-        fillOpacity: 0.03,
-        weight: 0,
-        stroke: false,
-        className: 'hotspot-glow-outer'
-      }}
-      interactive={false}
-    />
-    {/* Middle glow ring */}
-    <Circle
-      center={[h.lat, h.lng]}
-      radius={h.radius * 1.2}
-      pathOptions={{
-        color: 'transparent',
-        fillColor: h.color,
-        fillOpacity: 0.05,
-        weight: 0,
-        stroke: false,
-        className: 'hotspot-glow-middle'
-      }}
-      interactive={false}
-    />
-    {/* Main hotspot circle */}
-    <Circle
-      center={[h.lat, h.lng]}
-      radius={h.radius}
-      pathOptions={{
-        color: h.color,
-        fillColor: h.color,
-        fillOpacity: h.opacity,
-        weight: 1.5,
-        opacity: 0.7,
-        className: 'hotspot-pulse'
-      }}
-    >
-      <Popup>
-        <div className="text-xs min-w-[140px]">
-          <p className="font-bold text-slate-900 mb-2">{h.area}</p>
-          <div className="space-y-1">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Tickets</span>
-              <span className="font-bold text-red-600">{h.tickets}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Revenue</span>
-              <span className="font-bold text-red-600">{h.revenue}</span>
-            </div>
-          </div>
-        </div>
-      </Popup>
-    </Circle>
-  </div>
-))}
+            {/* Hotspot Circles */}
+            {activeFilters.hotspots && hotspots.map(h => (
+              <div key={`hotspot-${h.id}`}>
+                <Circle center={[h.lat, h.lng]} radius={h.radius * 1.5} pathOptions={{ color: 'transparent', fillColor: h.color, fillOpacity: 0.03, weight: 0, stroke: false, className: 'hotspot-glow-outer' }} interactive={false} />
+                <Circle center={[h.lat, h.lng]} radius={h.radius * 1.2} pathOptions={{ color: 'transparent', fillColor: h.color, fillOpacity: 0.05, weight: 0, stroke: false, className: 'hotspot-glow-middle' }} interactive={false} />
+                <Circle center={[h.lat, h.lng]} radius={h.radius} pathOptions={{ color: h.color, fillColor: h.color, fillOpacity: h.opacity, weight: 1.5, opacity: 0.7, className: 'hotspot-pulse' }}>
+                  <Popup><div className="text-xs min-w-[140px]"><p className="font-bold text-slate-900 mb-2">{h.area}</p><div className="space-y-1"><div className="flex justify-between"><span className="text-slate-500">Tickets</span><span className="font-bold text-red-600">{h.tickets}</span></div><div className="flex justify-between"><span className="text-slate-500">Revenue</span><span className="font-bold text-red-600">{h.revenue}</span></div></div></div></Popup>
+                </Circle>
+              </div>
+            ))}
 
+            {/* Moving Vehicles */}
             {activeFilters.vehicles && (
               <>
                 {simulatedVehicles.map(v => <SmoothMarker key={v.id} vehicle={v} routePoints={roadNetworks[v.route]} />)}
@@ -402,6 +360,7 @@ const LiveMap = () => {
               </>
             )}
 
+            {/* Roadblocks */}
             {activeFilters.roadblocks && roadblocksList.map(rb => (
               <div key={rb.id}>
                 <Marker position={[rb.lat, rb.lng]} icon={roadblockIcon}>
@@ -412,53 +371,75 @@ const LiveMap = () => {
             ))}
           </MapContainer>
 
-          {/* Stats Overlay */}
-          <div className="absolute top-3 left-3 z-[1000] space-y-2">
-            <div className="bg-adm/90 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2"><div className="text-lg font-bold text-red-400" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>147</div><div className="text-[9px] text-slate-500">Active violations</div></div>
-            <div className="bg-adm/90 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2"><div className="text-lg font-bold text-amber-400" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>38</div><div className="text-[9px] text-slate-500">Expired discs</div></div>
-            <div className="bg-adm/90 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2"><div className="text-lg font-bold text-blue-400" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{roadblocksList.length}</div><div className="text-[9px] text-slate-500">Roadblocks active</div></div>
-            {activeFilters.hotspots && <div className="bg-adm/90 backdrop-blur-sm border border-red-500/30 rounded-lg px-3 py-2"><div className="text-lg font-bold text-red-400" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>R {(totalRevenue / 1000000).toFixed(1)}M</div><div className="text-[9px] text-slate-500">Hotspot revenue</div></div>}
+          {/* ==================== STATS OVERLAY — Desktop Only ==================== */}
+          <div className="hidden md:block absolute top-3 left-3 z-[1000] space-y-2">
+            <button onClick={() => toggleFilter('violations')}
+              className={`block text-left bg-adm/95 backdrop-blur-sm border rounded-lg px-3 py-2 transition-all w-full cursor-pointer ${activeFilters.violations ? 'border-red-500/30 hover:border-red-500/50' : 'border-slate-800 opacity-50 hover:opacity-75'}`}>
+              <div className="text-lg font-bold text-red-400" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>147</div>
+              <div className="text-[9px] text-slate-500">Active violations</div>
+            </button>
+            <button onClick={() => toggleFilter('expiredDiscs')}
+              className={`block text-left bg-adm/95 backdrop-blur-sm border rounded-lg px-3 py-2 transition-all w-full cursor-pointer ${activeFilters.expiredDiscs ? 'border-amber-500/30 hover:border-amber-500/50' : 'border-slate-800 opacity-50 hover:opacity-75'}`}>
+              <div className="text-lg font-bold text-amber-400" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>38</div>
+              <div className="text-[9px] text-slate-500">Expired discs</div>
+            </button>
+            <button onClick={() => toggleFilter('roadblocks')}
+              className={`block text-left bg-adm/95 backdrop-blur-sm border rounded-lg px-3 py-2 transition-all w-full cursor-pointer ${activeFilters.roadblocks ? 'border-blue-500/30 hover:border-blue-500/50' : 'border-slate-800 opacity-50 hover:opacity-75'}`}>
+              <div className="text-lg font-bold text-blue-400" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{roadblocksList.length}</div>
+              <div className="text-[9px] text-slate-500">Roadblocks active</div>
+            </button>
+            <button onClick={() => toggleFilter('revenue')}
+              className={`block text-left bg-adm/95 backdrop-blur-sm border rounded-lg px-3 py-2 transition-all w-full cursor-pointer ${activeFilters.revenue ? 'border-red-500/30 hover:border-red-500/50' : 'border-slate-800 opacity-50 hover:opacity-75'}`}>
+              <div className="text-lg font-bold text-red-400" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>R {(totalRevenue / 1000000).toFixed(1)}M</div>
+              <div className="text-[9px] text-slate-500">Hotspot revenue</div>
+            </button>
           </div>
 
-          {/* Filters */}
+          {/* ==================== FILTER PILLS — All Screens ==================== */}
           <div className="absolute top-3 right-3 z-[1000] flex gap-1.5 flex-wrap">
             {[
+              { key: 'violations', label: 'Violations', color: 'red' },
+              { key: 'expiredDiscs', label: 'Expired', color: 'amber' },
+              { key: 'roadblocks', label: 'Roadblocks', color: 'blue' },
               { key: 'hotspots', label: 'Hotspots', color: 'red' },
               { key: 'vehicles', label: 'Vehicles', color: 'emerald' },
-              { key: 'roadblocks', label: 'Roadblocks', color: 'blue' }
+              { key: 'revenue', label: 'Revenue', color: 'red' }
             ].map(f => (
               <button key={f.key} onClick={() => toggleFilter(f.key)}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-medium border transition-colors ${activeFilters[f.key] ? `bg-${f.color}-500/20 border-${f.color}-500/30 text-${f.color}-400` : 'bg-adm/90 border-slate-700 text-slate-500'}`}>
-                <span className={`w-1.5 h-1.5 bg-${f.color}-400 rounded-full inline-block mr-1.5`} />{f.label}
+                className={`px-3 py-1.5 rounded-full text-[10px] font-medium border transition-colors cursor-pointer ${activeFilters[f.key] ? `bg-${f.color}-500/20 border-${f.color}-500/30 text-${f.color}-400` : 'bg-adm/90 border-slate-700 text-slate-500 opacity-50 hover:opacity-75'}`}>
+                <span className={`w-1.5 h-1.5 bg-${f.color}-400 rounded-full inline-block mr-1.5 ${activeFilters[f.key] ? '' : 'opacity-50'}`} />{f.label}
               </button>
             ))}
           </div>
 
-         {/* Legend */}
-<div className="absolute bottom-16 md:bottom-3 left-3 z-[1000] bg-adm/90 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2 text-[10px] text-slate-500">
-  <div className="flex items-center gap-2 mb-1">
-    <div className="w-3 h-3 bg-red-400 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.5)]" /> High revenue hotspot
-  </div>
-  <div className="flex items-center gap-2 mb-1">
-    <div className="w-3 h-3 bg-amber-400 rounded-full shadow-[0_0_6px_rgba(245,158,11,0.4)]" /> Medium revenue hotspot
-  </div>
-  <div className="flex items-center gap-2 mb-1">
-    <div className="w-2 h-2 bg-blue-400 rounded-full" /> Roadblock
-  </div>
-  <div className="flex items-center gap-2">
-    <div className="w-2 h-2 bg-emerald-400 rounded-full" /> Active vehicle
-  </div>
-</div>
+          {/* ==================== LEGEND — Desktop Only ==================== */}
+          <div className="hidden md:block absolute bottom-4 left-3 z-[1000] bg-adm/90 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2 text-[10px] text-slate-500">
+            <div className="flex items-center gap-2 mb-1"><div className="w-3 h-3 bg-red-400 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.5)]" /> High revenue hotspot</div>
+            <div className="flex items-center gap-2 mb-1"><div className="w-3 h-3 bg-amber-400 rounded-full shadow-[0_0_6px_rgba(245,158,11,0.4)]" /> Medium revenue hotspot</div>
+            <div className="flex items-center gap-2 mb-1"><div className="w-2 h-2 bg-blue-400 rounded-full" /> Roadblock</div>
+            <div className="flex items-center gap-2"><div className="w-2 h-2 bg-emerald-400 rounded-full" /> Active vehicle</div>
+          </div>
         </div>
 
-        {/* Right Panel */}
+        {/* ==================== RIGHT PANEL — Recent Activity ==================== */}
         <div className="hidden lg:flex w-60 bg-adm2 border-l border-slate-800 flex-col shrink-0">
-          <div className="p-3 border-b border-slate-800 flex items-center justify-between"><span className="text-[11px] font-medium text-slate-400">Recent activity</span><span className="bg-emerald-500/10 text-emerald-400 rounded-md px-1.5 py-0.5 text-[10px] font-semibold">{recentActivity.length}</span></div>
+          <div className="p-3 border-b border-slate-800 flex items-center justify-between">
+            <span className="text-[11px] font-medium text-slate-400">Recent activity</span>
+            <span className="bg-emerald-500/10 text-emerald-400 rounded-md px-1.5 py-0.5 text-[10px] font-semibold">{recentActivity.length}</span>
+          </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
             {recentActivity.map((activity) => (
               <div key={activity.id} className="p-2.5 rounded-lg bg-white/[0.02] border border-slate-800 hover:bg-white/[0.04] transition-colors">
-                <div className="flex items-center gap-2 mb-1.5"><div className={`w-1.5 h-1.5 rounded-full shrink-0 ${getDotColor(activity.color)}`} /><span className="text-[10px] font-medium text-slate-300 capitalize">{activity.type.replace('_', ' ')}</span><span className="text-[9px] text-slate-600 ml-auto">{activity.time}</span></div>
-                <div className="space-y-0.5"><div className="flex justify-between text-[9px]"><span className="text-slate-500">Plate</span><span className="text-slate-400 font-mono">{activity.plate}</span></div><div className="text-[9px] text-slate-500 truncate">{activity.location}</div>{activity.amount && <div className="flex justify-between text-[9px] mt-0.5"><span className="text-slate-500">Amount</span><span className="text-red-400 font-medium">R {activity.amount.toLocaleString()}</span></div>}</div>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${getDotColor(activity.color)}`} />
+                  <span className="text-[10px] font-medium text-slate-300 capitalize">{activity.type.replace('_', ' ')}</span>
+                  <span className="text-[9px] text-slate-600 ml-auto">{activity.time}</span>
+                </div>
+                <div className="space-y-0.5">
+                  <div className="flex justify-between text-[9px]"><span className="text-slate-500">Plate</span><span className="text-slate-400 font-mono">{activity.plate}</span></div>
+                  <div className="text-[9px] text-slate-500 truncate">{activity.location}</div>
+                  {activity.amount && <div className="flex justify-between text-[9px] mt-0.5"><span className="text-slate-500">Amount</span><span className="text-red-400 font-medium">R {activity.amount.toLocaleString()}</span></div>}
+                </div>
               </div>
             ))}
           </div>
