@@ -53,15 +53,16 @@ const AdminLayout = ({ children }) => {
     return 'Admin console';
   };
 
-  const pageSubtitle = () => {
-    const path = location.pathname;
-    if (path.includes('/map')) return 'Updated 2 min ago · 147 active violations';
-    if (path.includes('/verify')) return 'Roadside check — scan QR or enter manually';
-    if (path.includes('/offenders')) return '42 registered offenders';
-    if (path.includes('/roadblocks')) return '2 active roadblocks';
-    if (path.includes('/reports')) return 'April 2025';
-    return '';
-  };
+ const pageSubtitle = () => {
+  const loc = jurisdiction ? `${jurisdiction.city}, ${jurisdiction.province}` : 'Gauteng';
+  const path = location.pathname;
+  if (path.includes('/map')) return `Live traffic monitoring — ${loc}`;
+  if (path.includes('/verify')) return `Roadside check — ${loc}`;
+  if (path.includes('/offenders')) return `${loc} database`;
+  if (path.includes('/roadblocks')) return `Active checkpoints — ${loc}`;
+  if (path.includes('/reports')) return `${loc} · April 2025`;
+  return `Jurisdiction: ${loc}`;
+};
 
   return (
     <div className="flex flex-col h-screen bg-adm">

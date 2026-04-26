@@ -5,8 +5,8 @@ import useAuthStore from '../../store/authStore';
 
 const Reports = () => {
   const { user } = useAuthStore();
-  const jurisdiction = user?.jurisdiction;
-  const location = jurisdiction ? `${jurisdiction.city}, ${jurisdiction.province}` : 'Johannesburg, Gauteng';
+const jurisdiction = user?.jurisdiction || { province: 'Gauteng', city: 'Johannesburg' };
+const location = `${jurisdiction.city}, ${jurisdiction.province}`;
 
   const [timeframe, setTimeframe] = useState('month');
 
@@ -148,8 +148,8 @@ const getActivityIcon = (type) => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-sm font-semibold text-slate-200" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              Enforcement reports — {location}
-            </h1>
+  Enforcement reports — {location}
+</h1>
             <p className="text-[10px] text-slate-600 mt-0.5">{currentData.label}</p>
           </div>
           <select 
