@@ -7,48 +7,128 @@ import RenewalModal from '../../components/citizen/RenewalModal';
 import demoUser from '../../data/demoUser';
 import usePaymentStore from '../../store/paymentStore';
 
+/* ── Quick action button ───────────────────────────────────── */
+const QuickAction = ({ label, icon, onClick }) => (
+  <button
+    onClick={onClick}
+    style={{
+      background: 'white',
+      border: '1px solid #E2E8F0',
+      borderRadius: 10,
+      padding: '12px 10px',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: 7,
+      cursor: 'pointer',
+      transition: 'all 0.15s',
+      textAlign: 'center',
+      fontFamily: "'DM Sans', sans-serif",
+    }}
+    onMouseEnter={e => {
+      e.currentTarget.style.borderColor = '#1B6CA8';
+      e.currentTarget.style.background = '#E8F2FA';
+    }}
+    onMouseLeave={e => {
+      e.currentTarget.style.borderColor = '#E2E8F0';
+      e.currentTarget.style.background = 'white';
+    }}
+  >
+    <div style={{
+      width: 36, height: 36,
+      borderRadius: 9,
+      background: '#E8F2FA',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, stroke: '#1B6CA8', fill: 'none', strokeWidth: 2 }}>
+        {icon}
+      </svg>
+    </div>
+    <span style={{ fontSize: 10.5, fontWeight: 600, color: '#334155', lineHeight: 1.3 }}>
+      {label}
+    </span>
+  </button>
+);
+
+/* ── Section header ────────────────────────────────────────── */
+const SectionHeader = ({ title, action, onAction }) => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+    <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>{title}</span>
+    {action && (
+      <button
+        onClick={onAction}
+        style={{
+          fontSize: 11, color: '#1B6CA8', fontWeight: 500,
+          border: 'none', background: 'none', cursor: 'pointer', padding: 0,
+          fontFamily: "'DM Sans', sans-serif",
+        }}
+        onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+        onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+      >
+        {action}
+      </button>
+    )}
+  </div>
+);
+
+/* ── Dashboard ─────────────────────────────────────────────── */
 const Dashboard = () => {
   const [showRenewal, setShowRenewal] = useState(false);
-  const fines = usePaymentStore(state => state.fines);
+  const fines        = usePaymentStore(state => state.fines);
   const displayFines = fines.length > 0 ? fines : demoUser.fines;
+
+  const quickActions = [
+    {
+      label: 'Pay Fine',
+      icon: <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>,
+    },
+    {
+      label: 'Renew License',
+      onClick: () => setShowRenewal(true),
+      icon: <><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></>,
+    },
+    {
+      label: 'Renew Disc',
+      icon: <><rect x="1" y="9" width="22" height="11" rx="2"/><path d="M5 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></>,
+    },
+    {
+      label: 'Upload Docs',
+      icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></>,
+    },
+  ];
 
   return (
     <CitizenLayout user={demoUser}>
-      <div className="flex flex-col gap-4">
-        <div>
-          <h1 className="text-[15px] font-semibold text-slate-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Good morning, {demoUser.first_name}
-          </h1>
-          <p className="text-[11px] text-slate-400 mt-0.5">
-            {new Date().toLocaleDateString('en-ZA', { 
-              weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
-            })} · Last login: Today 08:14
-          </p>
-        </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
 
+        {/* Stats */}
         <StatsCards fines={displayFines} license={demoUser.license} />
 
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-slate-900">Outstanding fines</span>
-          <button className="text-[11px] text-ca hover:text-ca-dark">View all</button>
+        {/* Quick actions */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+          {quickActions.map(a => (
+            <QuickAction key={a.label} label={a.label} icon={a.icon} onClick={a.onClick} />
+          ))}
         </div>
-        <FinesList fines={displayFines} />
 
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-slate-900">Digital license</span>
-          <button 
-            onClick={() => setShowRenewal(true)}
-            className="text-[11px] text-ca hover:text-ca-dark"
-          >
-            Renew now
-          </button>
+        {/* Fines */}
+        <div>
+          <SectionHeader title="Outstanding fines" action="View all" />
+          <FinesList fines={displayFines} />
         </div>
-        
-        <div className="bg-brand-card rounded-2xl overflow-hidden w-full">
+
+        {/* License card */}
+        <div>
+          <SectionHeader
+            title="Digital driver's license"
+            action="Renew now →"
+            onAction={() => setShowRenewal(true)}
+          />
           <LicenseCard user={demoUser} license={demoUser.license} />
         </div>
-        
-        <div className="h-4 md:hidden" />
+
+        {/* Mobile bottom spacing */}
+        <div style={{ height: 8 }} />
       </div>
 
       <RenewalModal isOpen={showRenewal} onClose={() => setShowRenewal(false)} />

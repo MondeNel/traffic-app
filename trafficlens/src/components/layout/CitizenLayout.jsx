@@ -1,216 +1,250 @@
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import NotificationsModal from '../citizen/NotificationsModal';
-import PaymentModal from '../citizen/PaymentModal';
-import usePaymentStore from '../../store/paymentStore';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
-import notificationsData from '../../data/notifications';
-import demoUser from '../../data/demoUser';
+import NotificationsModal from '../citizen/NotificationsModal';
 
-const navItems = [
+/* ─── Nav config ───────────────────────────────────────────── */
+const NAV_ITEMS = [
   {
-    group: 'Main',
+    section: 'Main',
     items: [
-      { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
-      { icon: 'license', label: 'My license', path: '/license', badge: '!' },
-      { icon: 'clock', label: 'Vehicles', path: '/vehicles' }
-    ]
+      { label: 'Dashboard', path: '/dashboard', icon: <><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></> },
+      { label: 'Documents', path: '/documents', icon: <><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></> },
+      { label: "Driver's License", path: '/license', icon: <><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><circle cx="12" cy="14" r="2"/></> },
+      { label: 'Vehicles', path: '/vehicles', icon: <><rect x="1" y="9" width="22" height="11" rx="2"/><path d="M5 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></> },
+      { label: 'Traffic Fines', path: '/dashboard', badge: 3, icon: <><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></> },
+    ],
   },
   {
-    group: 'Account',
+    section: 'Account',
     items: [
-      { icon: 'document', label: 'Documents', path: '/documents' },
-      { icon: 'user', label: 'Profile', path: '/profile' },
-      { icon: 'settings', label: 'Settings', path: '/settings' }
-    ]
-  }
+      { label: 'Profile', path: '/profile', icon: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></> },
+      { label: 'Settings', path: '/settings', icon: <><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></> },
+    ],
+  },
 ];
 
-const mobileNavItems = [
-  { icon: 'dashboard', label: 'Home', path: '/dashboard' },
-  { icon: 'license', label: 'License', path: '/license' },
-  { icon: 'clock', label: 'Vehicles', path: '/vehicles' },
-  { icon: 'document', label: 'Docs', path: '/documents' },
-  { icon: 'user', label: 'Profile', path: '/profile' }
+// Mobile bottom nav items
+// Mobile bottom nav items - each icon wrapped in a single fragment
+const MOBILE_NAV = [
+  { 
+    label: 'Home', 
+    path: '/dashboard', 
+    icon: <><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></>
+  },
+  { 
+    label: 'License', 
+    path: '/license', 
+    icon: <><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><circle cx="12" cy="14" r="2"/></>
+  },
+  { 
+    label: 'Vehicles', 
+    path: '/vehicles', 
+    icon: <><rect x="1" y="9" width="22" height="11" rx="2"/><path d="M5 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></>
+  },
+  { 
+    label: 'Docs', 
+    path: '/documents', 
+    icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></>
+  },
+  { 
+    label: 'Profile', 
+    path: '/profile', 
+    icon: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>
+  },
 ];
 
-const iconPaths = {
-  dashboard: <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-current fill-none" strokeWidth="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>,
-  license: <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-current fill-none" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><circle cx="12" cy="12" r="2"/></svg>,
-  clock: <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-current fill-none" strokeWidth="1.5"><rect x="1" y="7" width="22" height="14" rx="2"/><path d="M5 7V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2"/><circle cx="7" cy="18" r="1.5"/><circle cx="17" cy="18" r="1.5"/></svg>,
-  document: <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-current fill-none" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
-  user: <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-current fill-none" strokeWidth="1.5"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>,
-  settings: <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-current fill-none" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M22 12h-2M2 12h2M12 2v2M12 20v2"/></svg>
+const DEMO_NOTIFICATIONS = [
+  { id: 1, type: 'warning', title: 'Fine Payment Due', message: 'You have 3 outstanding fines totalling R 2,550 due within 30 days.', created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(), isRead: false },
+  { id: 2, type: 'warning', title: 'License Disc Expiring', message: 'The license disc for GP 14 KW expires in 21 days. Renew to avoid penalties.', created_at: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(), isRead: false },
+  { id: 3, type: 'info', title: 'License Renewal Reminder', message: 'Your driver\'s license expires on 28 Sep 2026. Start your renewal early to avoid delays.', created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), isRead: false },
+  { id: 4, type: 'success', title: 'Payment Confirmed', message: 'Your fine payment of R 500 (TL-M4X9W) has been processed successfully.', created_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), isRead: true },
+];
+
+/* ─── Icon helper ──────────────────────────────────────────── */
+const NavIcon = ({ path }) => (
+  <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, flexShrink: 0, fill: 'none', stroke: 'currentColor', strokeWidth: 2 }}>
+    {path}
+  </svg>
+);
+
+const getGreeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
 };
 
-const CitizenLayout = ({ children, user }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isActive = (path) => location.pathname === path;
-  
+/* ─── Layout ───────────────────────────────────────────────── */
+const CitizenLayout = ({ user, children }) => {
+  const navigate  = useNavigate();
+  const location  = useLocation();
   const { logout } = useAuthStore();
-  const { processPayment, isProcessing } = usePaymentStore();
-  
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState(notificationsData);
-  const [showPayment, setShowPayment] = useState(false);
-  const [selectedFine, setSelectedFine] = useState(null);
-  
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState(DEMO_NOTIFICATIONS);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const unreadCount = notifications.filter(n => !n.isRead).length;
+  const markRead = (id) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+  const markAllRead = () => setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
+  const handleLogout = () => { logout(); navigate('/'); };
 
-  const handleMarkRead = (id) => {
-    setNotifications(notifications.map(n => n.id === id ? { ...n, isRead: true } : n));
-  };
+  const initials = user ? `${(user.first_name || '')[0] || ''}${(user.last_name || '')[0] || ''}` : 'U';
 
-  const handleMarkAllRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, isRead: true })));
-  };
-
-  const handleNotificationAction = (notification) => {
-    handleMarkRead(notification.id);
-    if (notification.type === 'warning' && notification.title.includes('Fine')) {
-      const fine = demoUser.fines.find(f => 
-        notification.message.includes(f.description) || notification.message.includes(f.location)
-      );
-      if (fine) {
-        setSelectedFine(fine);
-        setShowNotifications(false);
-        setShowPayment(true);
-      }
-    }
-  };
-
-  const handlePayment = async (fineId) => {
-    await processPayment(fineId);
-    setShowPayment(false);
-    setSelectedFine(null);
-  };
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50">
-      <div className="flex flex-1 overflow-hidden">
-        {/* Desktop Sidebar */}
-        <div className="hidden md:flex w-52 bg-white border-r border-slate-200 flex-col shrink-0">
-          <div className="p-4 pb-3 border-b border-slate-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-ca rounded-md flex items-center justify-center">
-                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-white fill-none" strokeWidth="2.5">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
-                  </svg>
-                </div>
-                <div>
-                  <div className="text-[13px] font-semibold text-slate-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>TrafficLens</div>
-                  <div className="text-[10px] text-slate-400">Citizen portal</div>
-                </div>
-              </div>
-              <button onClick={() => setShowNotifications(true)}
-                className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center bg-white relative hover:bg-slate-50">
-                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-slate-500 fill-none" strokeWidth="1.5">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                </svg>
-                {unreadCount > 0 && (
-                  <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-white text-[8px] font-bold flex items-center justify-center border border-white">{unreadCount}</div>
-                )}
-              </button>
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#F1F5F9', fontFamily: "'DM Sans', sans-serif" }}>
+
+      {/* ── DESKTOP SIDEBAR (hidden on mobile) ────────────── */}
+      <aside className="hidden md:flex" style={{
+        width: 220, background: '#0B1628', flexDirection: 'column', flexShrink: 0, position: 'relative', overflow: 'hidden',
+      }}>
+        {/* Decorative blob */}
+        <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: 'rgba(27,108,168,0.1)', pointerEvents: 'none' }} />
+
+        {/* Logo */}
+        <div style={{ padding: '18px 18px 14px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+            <div style={{ width: 32, height: 32, background: '#1B6CA8', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, stroke: 'white', fill: 'none', strokeWidth: 2.5 }}>
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 800, color: 'white', letterSpacing: '-0.3px' }}>TrafficLens</div>
+              <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.3)', letterSpacing: '1.5px', textTransform: 'uppercase', marginTop: 1 }}>Citizen Portal</div>
             </div>
           </div>
+        </div>
 
-          <nav className="p-2 flex-1">
-            {navItems.map((group, idx) => (
-              <div key={idx}>
-                <div className="text-[9px] font-semibold tracking-widest text-slate-400 uppercase px-2 py-2">{group.group}</div>
-                {group.items.map((item) => (
+        {/* User */}
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#1B6CA8', border: '2px solid rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Syne', sans-serif", fontSize: 12, fontWeight: 800, color: 'white', flexShrink: 0 }}>{initials}</div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.first_name} {user?.last_name}</div>
+            <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.32)', fontFamily: "'IBM Plex Mono', monospace", marginTop: 1 }}>{user?.id_number?.slice(0, 13)}</div>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav style={{ flex: 1, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {NAV_ITEMS.map(group => (
+            <div key={group.section}>
+              <div style={{ fontSize: 8.5, fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.18)', textTransform: 'uppercase', padding: '8px 10px 4px' }}>{group.section}</div>
+              {group.items.map(item => {
+                const active = isActive(item.path);
+                return (
                   <button key={item.path} onClick={() => navigate(item.path)}
-                    className={`flex items-center gap-2 px-2.5 py-2 rounded-md cursor-pointer text-xs mb-0.5 transition-colors w-full text-left ${isActive(item.path) ? 'bg-ca-light text-ca font-medium' : 'text-slate-600 hover:bg-slate-100'}`}>
-                    {iconPaths[item.icon]}{item.label}
-                    {item.badge && <span className="ml-auto bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-lg">{item.badge}</span>}
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", background: active ? '#1B6CA8' : 'transparent', color: active ? 'white' : 'rgba(255,255,255,0.48)', transition: 'all 0.15s', textAlign: 'left' }}
+                    onMouseEnter={e => { if (!active) { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}}
+                    onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.48)'; }}}>
+                    <NavIcon path={item.icon} />{item.label}
+                    {item.badge > 0 && <span style={{ marginLeft: 'auto', background: '#C13333', color: 'white', fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 10 }}>{item.badge}</span>}
                   </button>
-                ))}
-              </div>
-            ))}
-          </nav>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
 
-          <div className="p-3 border-t border-slate-200 flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-ca text-white text-[10px] font-bold flex items-center justify-center shrink-0">
-              {user?.first_name?.[0]}{user?.last_name?.[0]}
+        {/* Sign out */}
+        <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+          <button onClick={handleLogout}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderRadius: 8, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.28)', fontSize: 12, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer', width: '100%', transition: 'all 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.28)'; e.currentTarget.style.background = 'transparent'; }}>
+            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, stroke: 'currentColor', fill: 'none', strokeWidth: 2 }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign out
+          </button>
+        </div>
+      </aside>
+
+      {/* ── MOBILE HEADER ────────────────────────────────── */}
+      <div className="md:hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: '#0B1628', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: 4 }}>
+          <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, stroke: 'white', fill: 'none', strokeWidth: 2 }}>
+            {mobileMenuOpen ? <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></> : <><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></>}
+          </svg>
+        </button>
+        <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 800, color: 'white' }}>TrafficLens</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button onClick={() => setNotifOpen(true)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: 4, position: 'relative' }}>
+            <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, stroke: 'white', fill: 'none', strokeWidth: 2 }}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            {unreadCount > 0 && <div style={{ position: 'absolute', top: 2, right: 2, width: 7, height: 7, background: '#C13333', borderRadius: '50%', border: '1.5px solid #0B1628' }} />}
+          </button>
+          <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: 4 }}>
+            <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, stroke: 'currentColor', fill: 'none', strokeWidth: 2 }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      {/* ── MOBILE SLIDE-OUT MENU ────────────────────────── */}
+      {mobileMenuOpen && (
+        <div className="md:hidden" style={{ position: 'fixed', top: 48, left: 0, bottom: 0, width: 240, background: '#0B1628', zIndex: 40, overflowY: 'auto', padding: 12 }}>
+          {NAV_ITEMS.map(group => (
+            <div key={group.section} style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 8.5, fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.18)', textTransform: 'uppercase', padding: '8px 10px 4px' }}>{group.section}</div>
+              {group.items.map(item => {
+                const active = isActive(item.path);
+                return (
+                  <button key={item.path} onClick={() => { navigate(item.path); setMobileMenuOpen(false); }}
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", background: active ? '#1B6CA8' : 'transparent', color: active ? 'white' : 'rgba(255,255,255,0.48)', textAlign: 'left' }}>
+                    <NavIcon path={item.icon} />{item.label}
+                    {item.badge > 0 && <span style={{ marginLeft: 'auto', background: '#C13333', color: 'white', fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 10 }}>{item.badge}</span>}
+                  </button>
+                );
+              })}
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-[11px] font-medium text-slate-900 truncate">{user?.first_name} {user?.last_name}</div>
-              <div className="text-[10px] text-slate-400 truncate">{user?.id_number}</div>
-            </div>
-            <button onClick={handleLogout}
-              className="w-7 h-7 rounded-lg hover:bg-red-50 flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors" title="Sign out">
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-current fill-none" strokeWidth="2">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-              </svg>
+          ))}
+          <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", background: 'transparent', color: '#C13333', textAlign: 'left', marginTop: 12, borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 14 }}>
+            <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, stroke: 'currentColor', fill: 'none', strokeWidth: 2 }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign out
+          </button>
+        </div>
+      )}
+
+      {/* ── MAIN CONTENT ─────────────────────────────────── */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, paddingTop: 48 }} className="md:pt-0">
+        {/* Desktop Topbar */}
+        <div className="hidden md:flex" style={{ background: 'white', borderBottom: '1px solid #E2E8F0', padding: '0 24px', height: 52, alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10, flexShrink: 0 }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{getGreeting()}, {user?.first_name}</div>
+            <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 1 }}>{new Date().toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button onClick={() => setNotifOpen(true)} style={{ width: 34, height: 34, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative' }}>
+              <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, stroke: '#64748B', fill: 'none', strokeWidth: 2 }}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              {unreadCount > 0 && <div style={{ position: 'absolute', top: 6, right: 6, width: 7, height: 7, background: '#C13333', borderRadius: '50%', border: '1.5px solid white' }} />}
             </button>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          {/* Mobile Header */}
-          <div className="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shrink-0 z-10">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 bg-ca rounded-md flex items-center justify-center">
-                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-white fill-none" strokeWidth="2.5">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                </svg>
-              </div>
-              <span className="text-sm font-semibold text-slate-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>TrafficLens</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setShowNotifications(true)}
-                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center bg-white relative">
-                <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-slate-600 fill-none" strokeWidth="1.5">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                </svg>
-                {unreadCount > 0 && (
-                  <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-white text-[8px] font-bold flex items-center justify-center border border-white">{unreadCount}</div>
-                )}
-              </button>
-              <button onClick={handleLogout}
-                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center bg-white text-slate-400 hover:text-red-500 hover:border-red-200 transition-colors" title="Sign out">
-                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-current fill-none" strokeWidth="2">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-3 md:p-5 pb-24 md:pb-5">
-            {children}
-          </div>
-        </div>
+        {/* Page content */}
+        <main style={{ flex: 1, padding: '16px', overflowY: 'auto' }} className="md:p-5 pb-24 md:pb-5">
+          {children}
+        </main>
       </div>
 
-      {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex items-center justify-around py-1 px-2 z-50 safe-area-bottom">
-        {mobileNavItems.map((item) => {
+      {/* ── MOBILE BOTTOM NAVIGATION ─────────────────────── */}
+      <div className="md:hidden" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#0B1628', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', justifyContent: 'space-around', padding: '4px 4px', zIndex: 50, paddingBottom: 'env(safe-area-inset-bottom, 4px)' }}>
+        {MOBILE_NAV.map(item => {
           const active = isActive(item.path);
           return (
             <button key={item.path} onClick={() => navigate(item.path)}
-              className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg min-w-[56px] transition-colors ${active ? 'text-ca' : 'text-slate-400'}`}>
-              {active && <div className="absolute -top-0.5 w-8 h-0.5 bg-ca rounded-full" />}
-              <div className={`${active ? 'scale-110' : ''} transition-transform`}>{iconPaths[item.icon]}</div>
-              <span className={`text-[10px] font-medium ${active ? 'font-semibold' : ''}`}>{item.label}</span>
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '6px 8px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'transparent', color: active ? '#1B6CA8' : 'rgba(255,255,255,0.35)', transition: 'all 0.15s', minWidth: 52 }}>
+              {active && <div style={{ position: 'absolute', top: -1, width: 24, height: 2, background: '#1B6CA8', borderRadius: 2 }} />}
+              <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, stroke: 'currentColor', fill: 'none', strokeWidth: 1.5 }}>{item.icon}</svg>
+              <span style={{ fontSize: 9, fontWeight: active ? 600 : 400 }}>{item.label}</span>
             </button>
           );
         })}
       </div>
 
-      <NotificationsModal isOpen={showNotifications} onClose={() => setShowNotifications(false)}
-        notifications={notifications} onMarkRead={handleMarkRead} onMarkAllRead={handleMarkAllRead} onAction={handleNotificationAction} />
-      
-      <PaymentModal isOpen={showPayment}
-        onClose={() => { if (!isProcessing) { setShowPayment(false); setSelectedFine(null); } }}
-        fine={selectedFine} onPay={handlePayment} isProcessing={isProcessing} />
+      {/* Notifications modal */}
+      <NotificationsModal isOpen={notifOpen} onClose={() => setNotifOpen(false)} notifications={notifications} onMarkRead={markRead} onMarkAllRead={markAllRead} />
     </div>
   );
 };

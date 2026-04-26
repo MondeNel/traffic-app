@@ -4,7 +4,18 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>trafficlens</title>
+    <title>TrafficLens · eGov Services</title>
+
+    <!-- Google Fonts preconnect (perf) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!--
+      Fonts are imported via @import in index.css (Tailwind v4 approach).
+      The preconnect tags above ensure the DNS + TLS handshake happens
+      before the CSS parser hits the @import, shaving ~100–300ms off
+      first render on cold loads.
+    -->
   </head>
   <body>
     <div id="root"></div>
