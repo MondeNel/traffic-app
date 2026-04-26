@@ -8,7 +8,6 @@ import License from './pages/citizen/License';
 import Profile from './pages/citizen/Profile';
 import Documents from './pages/citizen/Documents';
 import Settings from './pages/citizen/Settings';
-import AdminLayout from './components/layout/AdminLayout';
 import LiveMap from './pages/admin/LiveMap';
 import Verify from './pages/admin/Verify';
 import Offenders from './pages/admin/Offenders';
@@ -23,38 +22,32 @@ const ProtectedRoute = ({ children, allowedType }) => {
   return children;
 };
 
-const AdminPageWrapper = ({ children }) => {
-  const { user } = useAuthStore();
-  const jurisdiction = user?.jurisdiction || { province: 'Gauteng', city: 'Johannesburg' };
-  return children;
-};
-
 function App() {
   const { checkAuth } = useAuthStore();
 
   useEffect(() => { checkAuth(); }, []);
 
   return (
-    <Router>
+    <Router
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <Routes>
         <Route path="/" element={<Landing />} />
-
-        {/* Citizen routes */}
         <Route path="/dashboard" element={<ProtectedRoute allowedType="citizen"><CitizenDashboard /></ProtectedRoute>} />
         <Route path="/vehicles" element={<ProtectedRoute allowedType="citizen"><Vehicles /></ProtectedRoute>} />
         <Route path="/license" element={<ProtectedRoute allowedType="citizen"><License /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute allowedType="citizen"><Profile /></ProtectedRoute>} />
         <Route path="/documents" element={<ProtectedRoute allowedType="citizen"><Documents /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute allowedType="citizen"><Settings /></ProtectedRoute>} />
-
-        {/* Admin routes */}
         <Route path="/admin/map" element={<ProtectedRoute allowedType="admin"><LiveMap /></ProtectedRoute>} />
         <Route path="/admin/verify" element={<ProtectedRoute allowedType="admin"><Verify /></ProtectedRoute>} />
         <Route path="/admin/offenders" element={<ProtectedRoute allowedType="admin"><Offenders /></ProtectedRoute>} />
         <Route path="/admin/roadblocks" element={<ProtectedRoute allowedType="admin"><Roadblocks /></ProtectedRoute>} />
         <Route path="/admin/reports" element={<ProtectedRoute allowedType="admin"><Reports /></ProtectedRoute>} />
         <Route path="/admin/activity" element={<ProtectedRoute allowedType="admin"><ActivityLog /></ProtectedRoute>} />
-
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

@@ -1,25 +1,19 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Syne:wght@700;800&display=swap');
 
+@import "tailwindcss";
+
 @theme {
-  /* ── Brand / Government blue ─────────────────────────── */
   --color-ca:        #1B6CA8;
   --color-ca-light:  #E8F2FA;
   --color-ca-dark:   #145A8F;
-
-  /* ── Admin panel palette ─────────────────────────────── */
   --color-adm:       #0B1520;
   --color-adm2:      #112030;
   --color-adm3:      #162840;
   --color-adm-acc:   #00C9A7;
   --color-adm-red:   #FF5A5A;
   --color-adm-amb:   #FFB020;
-
-  /* ── Citizen app sidebar navy ────────────────────────── */
   --color-navy:      #0B1628;
   --color-navy-mid:  #162238;
-
-  /* ── Semantic status colors ──────────────────────────── */
   --color-emerald:        #0E8A5F;
   --color-emerald-light:  #E6F5F0;
   --color-red-fine:       #C13333;
@@ -27,86 +21,66 @@
   --color-amber-fine:     #B86B1A;
   --color-amber-light:    #FDF3E4;
   --color-gold:           #C8912F;
-
-  /* ── Brand / misc ────────────────────────────────────── */
   --color-brand-neon:  #10B981;
   --color-brand-dark:  #050f0a;
   --color-brand-card:  #0A0A0A;
-
-  /* ── Typography ──────────────────────────────────────── */
-  --font-display: 'Syne',         system-ui, sans-serif;
-  --font-sans:    'DM Sans',      system-ui, sans-serif;
+  --font-display: 'Syne', system-ui, sans-serif;
+  --font-sans:    'DM Sans', system-ui, sans-serif;
   --font-mono:    'IBM Plex Mono', monospace;
 }
 
-/* ── Base resets ─────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
   font-family: var(--font-sans);
-  -webkit-font-smoothing:  antialiased;
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── License card scan animation ────────────────────────── */
 @keyframes scan {
-  0%   { top: 0; }
+  0% { top: 0; }
   100% { top: 100%; }
 }
-.animate-scan {
-  animation: scan 3s ease-in-out infinite;
-}
+.animate-scan { animation: scan 3s ease-in-out infinite; }
 
-/* ── License card shimmer ────────────────────────────────── */
 @keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
 .animate-shimmer {
   background-size: 200% auto;
   animation: shimmer 2s linear infinite;
 }
 
-/* ── Safe area for mobile nav ────────────────────────────── */
-.safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 8px);
-}
+.safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 8px); }
 
-/* ── Admin scrollbar ─────────────────────────────────────── */
-.admin-scrollbar::-webkit-scrollbar       { width: 4px; }
+.admin-scrollbar::-webkit-scrollbar { width: 4px; }
 .admin-scrollbar::-webkit-scrollbar-track { background: #0B1520; }
 .admin-scrollbar::-webkit-scrollbar-thumb { background: #1A2E42; border-radius: 2px; }
 
-/* ── Profile image sharpness ─────────────────────────────── */
 img[alt="Profile"] {
   image-rendering: auto;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 
-/* ── Leaflet z-index fixes ───────────────────────────────── */
 .leaflet-container { z-index: 0; }
-.leaflet-pane      { z-index: 1; }
-.leaflet-top,
-.leaflet-bottom    { z-index: 2; }
-.custom-marker     { background: transparent !important; border: none !important; }
+.leaflet-pane { z-index: 1; }
+.leaflet-top, .leaflet-bottom { z-index: 2; }
+.custom-marker { background: transparent !important; border: none !important; }
 
-/* ── Hotspot glow animations ─────────────────────────────── */
 @keyframes hotspotPulse {
   0%, 100% { opacity: 0.3; }
-  50%       { opacity: 0.7; }
+  50% { opacity: 0.7; }
 }
 @keyframes hotspotGlowOuter {
   0%, 100% { opacity: 0.02; }
-  50%       { opacity: 0.06; }
+  50% { opacity: 0.06; }
 }
 @keyframes hotspotGlowMiddle {
   0%, 100% { opacity: 0.04; }
-  50%       { opacity: 0.10; }
+  50% { opacity: 0.10; }
 }
-
-.hotspot-pulse       { animation: hotspotPulse 2.5s ease-in-out infinite; }
-.hotspot-glow-outer  { animation: hotspotGlowOuter 2.5s ease-in-out infinite; }
+.hotspot-pulse { animation: hotspotPulse 2.5s ease-in-out infinite; }
+.hotspot-glow-outer { animation: hotspotGlowOuter 2.5s ease-in-out infinite; }
 .hotspot-glow-middle { animation: hotspotGlowMiddle 2.5s ease-in-out infinite; }
