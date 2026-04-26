@@ -95,19 +95,17 @@ const CitizenLayout = ({ user, children }) => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#F1F5F9', fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="flex min-h-screen bg-slate-100" style={{ fontFamily: "'DM Sans', sans-serif" }}>
 
-      {/* ── DESKTOP SIDEBAR (hidden on mobile) ────────────── */}
-      <aside className="hidden md:flex" style={{
-        width: 220, background: '#0B1628', flexDirection: 'column', flexShrink: 0, position: 'relative', overflow: 'hidden',
-      }}>
+      {/* ── DESKTOP SIDEBAR (desktop only) ────────────── */}
+      <aside className="hidden md:flex flex-col shrink-0 relative overflow-hidden" style={{ width: 220, background: '#0B1628' }}>
         {/* Decorative blob */}
-        <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: 'rgba(27,108,168,0.1)', pointerEvents: 'none' }} />
+        <div className="absolute pointer-events-none" style={{ top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: 'rgba(27,108,168,0.1)' }} />
 
         {/* Logo */}
         <div style={{ padding: '18px 18px 14px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-            <div style={{ width: 32, height: 32, background: '#1B6CA8', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center shrink-0" style={{ width: 32, height: 32, background: '#1B6CA8', borderRadius: 8 }}>
               <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, stroke: 'white', fill: 'none', strokeWidth: 2.5 }}>
                 <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
               </svg>
@@ -120,16 +118,16 @@ const CitizenLayout = ({ user, children }) => {
         </div>
 
         {/* User */}
-        <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#1B6CA8', border: '2px solid rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Syne', sans-serif", fontSize: 12, fontWeight: 800, color: 'white', flexShrink: 0 }}>{initials}</div>
+        <div className="flex items-center gap-2.5" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          <div className="flex items-center justify-center shrink-0" style={{ width: 34, height: 34, borderRadius: '50%', background: '#1B6CA8', border: '2px solid rgba(255,255,255,0.15)', fontFamily: "'Syne', sans-serif", fontSize: 12, fontWeight: 800, color: 'white' }}>{initials}</div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.first_name} {user?.last_name}</div>
+            <div className="truncate" style={{ fontSize: 12, fontWeight: 600, color: 'white' }}>{user?.first_name} {user?.last_name}</div>
             <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.32)', fontFamily: "'IBM Plex Mono', monospace", marginTop: 1 }}>{user?.id_number?.slice(0, 13)}</div>
           </div>
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <nav className="flex flex-col gap-0.5" style={{ flex: 1, padding: '8px 10px' }}>
           {NAV_ITEMS.map(group => (
             <div key={group.section}>
               <div style={{ fontSize: 8.5, fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.18)', textTransform: 'uppercase', padding: '8px 10px 4px' }}>{group.section}</div>
@@ -137,7 +135,8 @@ const CitizenLayout = ({ user, children }) => {
                 const active = isActive(item.path);
                 return (
                   <button key={item.path} onClick={() => navigate(item.path)}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", background: active ? '#1B6CA8' : 'transparent', color: active ? 'white' : 'rgba(255,255,255,0.48)', transition: 'all 0.15s', textAlign: 'left' }}
+                    className="flex items-center gap-2 w-full text-left transition-colors"
+                    style={{ padding: '8px 10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", background: active ? '#1B6CA8' : 'transparent', color: active ? 'white' : 'rgba(255,255,255,0.48)' }}
                     onMouseEnter={e => { if (!active) { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}}
                     onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.48)'; }}}>
                     <NavIcon path={item.icon} />{item.label}
@@ -152,7 +151,8 @@ const CitizenLayout = ({ user, children }) => {
         {/* Sign out */}
         <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
           <button onClick={handleLogout}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderRadius: 8, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.28)', fontSize: 12, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer', width: '100%', transition: 'all 0.15s' }}
+            className="flex items-center gap-2 w-full transition-colors"
+            style={{ padding: '8px 10px', borderRadius: 8, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.28)', fontSize: 12, fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}
             onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
             onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.28)'; e.currentTarget.style.background = 'transparent'; }}>
             <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, stroke: 'currentColor', fill: 'none', strokeWidth: 2 }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -161,16 +161,16 @@ const CitizenLayout = ({ user, children }) => {
         </div>
       </aside>
 
-      {/* ── MOBILE HEADER ────────────────────────────────── */}
-      <div className="md:hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: '#0B1628', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* ── MOBILE HEADER (mobile only) ────────────────── */}
+      <div className="flex md:hidden items-center justify-between fixed top-0 left-0 right-0 z-50" style={{ background: '#0B1628', padding: '10px 16px' }}>
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: 4 }}>
           <svg viewBox="0 0 24 24" style={{ width: 20, height: 20, stroke: 'white', fill: 'none', strokeWidth: 2 }}>
             {mobileMenuOpen ? <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></> : <><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></>}
           </svg>
         </button>
         <div style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 800, color: 'white' }}>TrafficLens</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button onClick={() => setNotifOpen(true)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: 4, position: 'relative' }}>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setNotifOpen(true)} className="relative" style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: 4 }}>
             <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, stroke: 'white', fill: 'none', strokeWidth: 2 }}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             {unreadCount > 0 && <div style={{ position: 'absolute', top: 2, right: 2, width: 7, height: 7, background: '#C13333', borderRadius: '50%', border: '1.5px solid #0B1628' }} />}
           </button>
@@ -182,7 +182,7 @@ const CitizenLayout = ({ user, children }) => {
 
       {/* ── MOBILE SLIDE-OUT MENU ────────────────────────── */}
       {mobileMenuOpen && (
-        <div className="md:hidden" style={{ position: 'fixed', top: 48, left: 0, bottom: 0, width: 240, background: '#0B1628', zIndex: 40, overflowY: 'auto', padding: 12 }}>
+        <div className="md:hidden fixed top-12 left-0 bottom-0 z-40 overflow-y-auto" style={{ width: 240, background: '#0B1628', padding: 12 }}>
           {NAV_ITEMS.map(group => (
             <div key={group.section} style={{ marginBottom: 8 }}>
               <div style={{ fontSize: 8.5, fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.18)', textTransform: 'uppercase', padding: '8px 10px 4px' }}>{group.section}</div>
@@ -190,7 +190,8 @@ const CitizenLayout = ({ user, children }) => {
                 const active = isActive(item.path);
                 return (
                   <button key={item.path} onClick={() => { navigate(item.path); setMobileMenuOpen(false); }}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", background: active ? '#1B6CA8' : 'transparent', color: active ? 'white' : 'rgba(255,255,255,0.48)', textAlign: 'left' }}>
+                    className="flex items-center gap-2 w-full text-left"
+                    style={{ padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", background: active ? '#1B6CA8' : 'transparent', color: active ? 'white' : 'rgba(255,255,255,0.48)' }}>
                     <NavIcon path={item.icon} />{item.label}
                     {item.badge > 0 && <span style={{ marginLeft: 'auto', background: '#C13333', color: 'white', fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 10 }}>{item.badge}</span>}
                   </button>
@@ -199,7 +200,8 @@ const CitizenLayout = ({ user, children }) => {
             </div>
           ))}
           <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
-            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", background: 'transparent', color: '#C13333', textAlign: 'left', marginTop: 12, borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 14 }}>
+            className="flex items-center gap-2 w-full text-left"
+            style={{ padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", background: 'transparent', color: '#C13333', marginTop: 12, borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 14 }}>
             <svg viewBox="0 0 24 24" style={{ width: 14, height: 14, stroke: 'currentColor', fill: 'none', strokeWidth: 2 }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Sign out
           </button>
@@ -207,15 +209,15 @@ const CitizenLayout = ({ user, children }) => {
       )}
 
       {/* ── MAIN CONTENT ─────────────────────────────────── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, paddingTop: 48 }} className="md:pt-0">
-        {/* Desktop Topbar */}
-        <div className="hidden md:flex" style={{ background: 'white', borderBottom: '1px solid #E2E8F0', padding: '0 24px', height: 52, alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 10, flexShrink: 0 }}>
+      <div className="flex flex-col flex-1 min-w-0 pt-12 md:pt-0">
+        {/* Desktop Topbar (desktop only) */}
+        <div className="hidden md:flex items-center justify-between sticky top-0 z-10 shrink-0" style={{ background: 'white', borderBottom: '1px solid #E2E8F0', padding: '0 24px', height: 52 }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{getGreeting()}, {user?.first_name}</div>
             <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 1 }}>{new Date().toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button onClick={() => setNotifOpen(true)} style={{ width: 34, height: 34, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', position: 'relative' }}>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setNotifOpen(true)} className="relative flex items-center justify-center" style={{ width: 34, height: 34, borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', cursor: 'pointer' }}>
               <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, stroke: '#64748B', fill: 'none', strokeWidth: 2 }}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               {unreadCount > 0 && <div style={{ position: 'absolute', top: 6, right: 6, width: 7, height: 7, background: '#C13333', borderRadius: '50%', border: '1.5px solid white' }} />}
             </button>
@@ -223,18 +225,19 @@ const CitizenLayout = ({ user, children }) => {
         </div>
 
         {/* Page content */}
-        <main style={{ flex: 1, padding: '16px', overflowY: 'auto' }} className="md:p-5 pb-24 md:pb-5">
+        <main className="flex-1 overflow-y-auto p-4 pb-24 md:p-5 md:pb-5">
           {children}
         </main>
       </div>
 
-      {/* ── MOBILE BOTTOM NAVIGATION ─────────────────────── */}
-      <div className="md:hidden" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#0B1628', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', justifyContent: 'space-around', padding: '4px 4px', zIndex: 50, paddingBottom: 'env(safe-area-inset-bottom, 4px)' }}>
+      {/* ── MOBILE BOTTOM NAVIGATION (mobile only) ──────── */}
+      <div className="flex md:hidden justify-around fixed bottom-0 left-0 right-0 z-50" style={{ background: '#0B1628', borderTop: '1px solid rgba(255,255,255,0.07)', padding: '4px', paddingBottom: 'env(safe-area-inset-bottom, 4px)' }}>
         {MOBILE_NAV.map(item => {
           const active = isActive(item.path);
           return (
             <button key={item.path} onClick={() => navigate(item.path)}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '6px 8px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'transparent', color: active ? '#1B6CA8' : 'rgba(255,255,255,0.35)', transition: 'all 0.15s', minWidth: 52 }}>
+              className="flex flex-col items-center gap-0.5 relative"
+              style={{ padding: '6px 8px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'transparent', color: active ? '#1B6CA8' : 'rgba(255,255,255,0.35)', transition: 'all 0.15s', minWidth: 52 }}>
               {active && <div style={{ position: 'absolute', top: -1, width: 24, height: 2, background: '#1B6CA8', borderRadius: 2 }} />}
               <svg viewBox="0 0 24 24" style={{ width: 18, height: 18, stroke: 'currentColor', fill: 'none', strokeWidth: 1.5 }}>{item.icon}</svg>
               <span style={{ fontSize: 9, fontWeight: active ? 600 : 400 }}>{item.label}</span>
