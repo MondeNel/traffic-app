@@ -4,6 +4,7 @@ import L from 'leaflet';
 import AdminLayout from '../../components/layout/AdminLayout';
 import PlanRoadblockModal from '../../components/admin/PlanRoadblockModal';
 import 'leaflet/dist/leaflet.css';
+import useAuthStore from '../../store/authStore';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -496,11 +497,13 @@ const JurisdictionLocked = ({ adminProvince, adminCity }) => (
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN LIVE MAP COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
-const LiveMap = ({ adminProvince, adminCity }) => {
-  // These props come from the login session — the admin's assigned jurisdiction.
-  // If no props passed (dev mode), fall back to reading from sessionStorage or defaults.
-  const effectiveProvince = adminProvince || sessionStorage.getItem('admin_province') || 'Gauteng';
-  const effectiveCity = adminCity || sessionStorage.getItem('admin_city') || 'Johannesburg';
+const LiveMap = () => {
+  // Read jurisdiction from auth store
+  const { user } = useAuthStore();
+  const jurisdiction = user?.jurisdiction;
+  
+  const effectiveProvince = jurisdiction?.province || 'Gauteng';
+  const effectiveCity = jurisdiction?.city || 'Johannesburg';
 
   const [activeFilters, setActiveFilters] = useState({
     violations: true, expiredDiscs: true, roadblocks: true,
