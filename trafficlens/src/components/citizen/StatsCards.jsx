@@ -11,48 +11,48 @@ const StatCard = ({ accent, icon, label, value, sub }) => {
       background: 'white',
       border: '1px solid #E2E8F0',
       borderLeft: `3px solid ${a.border}`,
-      borderRadius: '0 10px 10px 0',
-      padding: '14px 16px',
+      borderRadius: '0 8px 8px 0',
+      padding: '6px 8px',
       position: 'relative',
       display: 'flex',
       flexDirection: 'column',
-      gap: 5,
-    }}>
+      gap: 2,
+    }} className="md:p-3.5 md:gap-1.5 md:rounded-r-[10px]">
       {/* Icon */}
       <div style={{
-        position: 'absolute', right: 14, top: 14,
-        width: 30, height: 30,
-        borderRadius: 8,
+        position: 'absolute', right: 6, top: 6,
+        width: 22, height: 22,
+        borderRadius: 6,
         background: a.iconBg,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, stroke: a.iconStroke, fill: 'none', strokeWidth: 2 }}>
+      }} className="md:w-[30px] md:h-[30px] md:right-3.5 md:top-3.5 md:rounded-lg">
+        <svg viewBox="0 0 24 24" style={{ width: 10, height: 10, stroke: a.iconStroke, fill: 'none', strokeWidth: 2 }} className="md:w-[13px] md:h-[13px]">
           {icon}
         </svg>
       </div>
 
       <div style={{
-        fontSize: 9.5,
+        fontSize: 7.5,
         fontWeight: 600,
-        letterSpacing: '0.07em',
+        letterSpacing: '0.05em',
         textTransform: 'uppercase',
         color: '#94A3B8',
-      }}>
+      }} className="md:text-[9.5px]">
         {label}
       </div>
 
       <div style={{
         fontFamily: "'IBM Plex Mono', monospace",
-        fontSize: 22,
+        fontSize: 14,
         fontWeight: 600,
         color: '#0F172A',
-        letterSpacing: '-0.03em',
+        letterSpacing: '-0.02em',
         lineHeight: 1,
-      }}>
+      }} className="md:text-[22px]">
         {value}
       </div>
 
-      <div style={{ fontSize: 10, color: '#64748B' }}>
+      <div style={{ fontSize: 7.5, color: '#64748B' }} className="md:text-[10px]">
         {sub}
       </div>
     </div>
@@ -75,7 +75,7 @@ const StatsCards = ({ fines = [], license }) => {
   const licenseDays = getLicenseDays();
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }} className="md:gap-3">
       <StatCard
         accent="red"
         label="Outstanding fines"

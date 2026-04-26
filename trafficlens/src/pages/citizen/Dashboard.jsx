@@ -14,17 +14,18 @@ const QuickAction = ({ label, icon, onClick }) => (
     style={{
       background: 'white',
       border: '1px solid #E2E8F0',
-      borderRadius: 10,
-      padding: '12px 10px',
+      borderRadius: 8,
+      padding: '8px 6px',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      gap: 7,
+      gap: 5,
       cursor: 'pointer',
       transition: 'all 0.15s',
       textAlign: 'center',
       fontFamily: "'DM Sans', sans-serif",
     }}
+    className="md:p-3 md:gap-7 md:rounded-[10px]"
     onMouseEnter={e => {
       e.currentTarget.style.borderColor = '#1B6CA8';
       e.currentTarget.style.background = '#E8F2FA';
@@ -35,16 +36,16 @@ const QuickAction = ({ label, icon, onClick }) => (
     }}
   >
     <div style={{
-      width: 36, height: 36,
-      borderRadius: 9,
+      width: 28, height: 28,
+      borderRadius: 6,
       background: '#E8F2FA',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <svg viewBox="0 0 24 24" style={{ width: 16, height: 16, stroke: '#1B6CA8', fill: 'none', strokeWidth: 2 }}>
+    }} className="md:w-9 md:h-9 md:rounded-[9px]">
+      <svg viewBox="0 0 24 24" style={{ width: 13, height: 13, stroke: '#1B6CA8', fill: 'none', strokeWidth: 2 }} className="md:w-4 md:h-4">
         {icon}
       </svg>
     </div>
-    <span style={{ fontSize: 10.5, fontWeight: 600, color: '#334155', lineHeight: 1.3 }}>
+    <span style={{ fontSize: 9, fontWeight: 600, color: '#334155', lineHeight: 1.2 }} className="md:text-[10.5px]">
       {label}
     </span>
   </button>
@@ -104,12 +105,12 @@ const Dashboard = () => {
         {/* Stats */}
         <StatsCards fines={displayFines} license={demoUser.license} />
 
-        {/* Quick actions */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-          {quickActions.map(a => (
-            <QuickAction key={a.label} label={a.label} icon={a.icon} onClick={a.onClick} />
-          ))}
-        </div>
+        {/* Quick actions - 2x2 on mobile, 4 columns on desktop */}
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }} className="md:grid-cols-4 md:gap-2.5">
+  {quickActions.map(a => (
+    <QuickAction key={a.label} label={a.label} icon={a.icon} onClick={a.onClick} />
+  ))}
+</div>
 
         {/* Fines */}
         <div>
