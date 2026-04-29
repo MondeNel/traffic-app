@@ -1,16 +1,44 @@
 import { create } from 'zustand';
 
-const useAuthStore = create((set) => ({
+const STORAGE_KEY = 'trafficlens_user';
+const TYPE_KEY = 'trafficlens_userType';
+
+const persistUser = (user) => {
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+};
+
+const useAuthStore = create((set, get) => ({
   user: null,
   isAuthenticated: false,
   userType: null,
   isLoading: false,
   error: null,
 
+  // ── Update profile (text fields + profile image) ──────
+  updateProfile: (profileData) => {
+    const current = get().user;
+    if (!current) return;
+
+    const updated = {
+      ...current,
+      first_name: profileData.firstName ?? current.first_name,
+      last_name: profileData.lastName ?? current.last_name,
+      email: profileData.email ?? current.email,
+      phone: profileData.phone ?? current.phone,
+      address: profileData.address ?? current.address,
+      date_of_birth: profileData.dateOfBirth ?? current.date_of_birth,
+      profileImage: profileData.profileImage ?? current.profileImage,
+    };
+
+    set({ user: updated });
+    persistUser(updated);
+  },
+
+  // ── Register ─────────────────────────────────────────
   register: async (userData) => {
     set({ isLoading: true, error: null });
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     const newUser = {
       first_name: userData.firstName,
       last_name: userData.lastName,
@@ -19,29 +47,36 @@ const useAuthStore = create((set) => ({
       phone: userData.phone || '',
       address: userData.address || '',
       date_of_birth: userData.dateOfBirth,
+      profileImage: null,
       license: {
         license_number: `ZA-DL-${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
         license_expiry: new Date(new Date().setFullYear(new Date().getFullYear() + 5)).toISOString().split('T')[0],
-        vehicle_codes: 'B'
+        vehicle_codes: 'B',
       },
       paymentAccount: {
         cardholderName: `${userData.firstName} ${userData.lastName}`,
-        cardNumber: '4532 7891 2345 6789', expiryDate: '09/28', cvv: '123',
-        cardType: 'VISA', balance: 12500, bank: 'Standard Bank', accountType: 'Current Account'
+        cardNumber: '4532 7891 2345 6789',
+        expiryDate: '09/28',
+        cvv: '123',
+        cardType: 'VISA',
+        balance: 12500,
+        bank: 'Standard Bank',
+        accountType: 'Current Account',
       },
       vehicles: [],
-      fines: []
+      fines: [],
     };
-    
+
     set({ user: newUser, isAuthenticated: true, userType: 'citizen', isLoading: false });
-    sessionStorage.setItem('trafficlens_user', JSON.stringify(newUser));
-    sessionStorage.setItem('trafficlens_userType', 'citizen');
+    persistUser(newUser);
+    sessionStorage.setItem(TYPE_KEY, 'citizen');
   },
 
+  // ── Login citizen ────────────────────────────────────
   loginCitizen: async (email, password) => {
     set({ isLoading: true, error: null });
     await new Promise(resolve => setTimeout(resolve, 800));
-    
+
     if (!email || !email.includes('@') || !password || password.length < 4) {
       set({ error: 'Please enter a valid email and password (min 4 characters)', isLoading: false });
       throw new Error('Invalid credentials');
@@ -50,75 +85,92 @@ const useAuthStore = create((set) => ({
     const nameFromEmail = email.split('@')[0].replace(/[._-]/g, ' ');
     const names = nameFromEmail.split(' ');
     const firstName = names[0].charAt(0).toUpperCase() + names[0].slice(1);
-    const lastName = names.length > 1 ? names[names.length - 1].charAt(0).toUpperCase() + names[names.length - 1].slice(1) : 'User';
+    const lastName = names.length > 1
+      ? names[names.length - 1].charAt(0).toUpperCase() + names[names.length - 1].slice(1)
+      : 'User';
 
     const user = {
-      first_name: firstName, last_name: lastName,
+      first_name: firstName,
+      last_name: lastName,
       id_number: '920512' + Math.random().toString().slice(2, 9),
-      email, phone: '+27 82 555 0134', address: 'Cape Town, South Africa',
+      email,
+      phone: '+27 82 555 0134',
+      address: 'Cape Town, South Africa',
       date_of_birth: '1996-06-17',
+      profileImage: null,
       license: {
         license_number: 'ZA-DL-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
         license_expiry: new Date(new Date().setFullYear(new Date().getFullYear() + 5)).toISOString().split('T')[0],
-        vehicle_codes: 'B'
+        vehicle_codes: 'B',
       },
       paymentAccount: {
-        cardholderName: `${firstName} ${lastName}`, cardNumber: '4532 7891 2345 6789',
-        expiryDate: '09/28', cvv: '123', cardType: 'VISA', balance: 12500,
-        bank: 'Standard Bank', accountType: 'Current Account'
+        cardholderName: `${firstName} ${lastName}`,
+        cardNumber: '4532 7891 2345 6789',
+        expiryDate: '09/28',
+        cvv: '123',
+        cardType: 'VISA',
+        balance: 12500,
+        bank: 'Standard Bank',
+        accountType: 'Current Account',
       },
       vehicles: [
-        { id: 1, plate_number: 'GP 82 TT', make: 'Toyota', model: 'Corolla', year: 2019, engine: '1.8L Petrol', disc_expiry: '2025-04-28', registered_date: '2021-08-14', status: 'warning' }
+        { id: 1, plate_number: 'GP 82 TT', make: 'Toyota', model: 'Corolla', year: 2019, engine: '1.8L Petrol', disc_expiry: '2025-06-28', registered_date: '2021-08-14', status: 'warning' },
       ],
       fines: [
-        { id: 1, fine_type: 'speeding', description: 'Speeding — N1 Cape Town', amount: 1500, location: 'N1 Cape Town · 82km/h in 60km/h zone', issued_date: '2025-04-12', due_date: '2025-05-12', status: 'unpaid', plate_number: 'GP 82 TT' },
-        { id: 2, fine_type: 'parking', description: 'No-parking zone — Sea Point', amount: 600, location: 'Beach Road, Sea Point', issued_date: '2025-04-01', due_date: '2025-05-01', status: 'unpaid', plate_number: null }
-      ]
+        { id: 1, fine_type: 'speeding', description: 'Speeding — N1 Cape Town', amount: 1500, location: 'N1 Cape Town · 82km/h in 60km/h zone', issued_date: '2025-06-12', due_date: '2025-07-12', status: 'unpaid', plate_number: 'GP 82 TT' },
+        { id: 2, fine_type: 'parking', description: 'No-parking zone — Sea Point', amount: 600, location: 'Beach Road, Sea Point', issued_date: '2025-06-01', due_date: '2025-07-01', status: 'unpaid', plate_number: null },
+      ],
     };
-    
+
     set({ user, isAuthenticated: true, userType: 'citizen', isLoading: false });
-    sessionStorage.setItem('trafficlens_user', JSON.stringify(user));
-    sessionStorage.setItem('trafficlens_userType', 'citizen');
+    persistUser(user);
+    sessionStorage.setItem(TYPE_KEY, 'citizen');
   },
 
+  // ── Login admin ──────────────────────────────────────
   loginAdmin: async (email, password, province, city) => {
     set({ isLoading: true, error: null });
     await new Promise(resolve => setTimeout(resolve, 800));
-    
+
     if (!email || !email.includes('@') || !password || password.length < 6) {
       set({ error: 'Please enter valid admin credentials (password min 6 characters)', isLoading: false });
       throw new Error('Invalid admin credentials');
     }
 
     const adminUser = {
-      first_name: email.split('@')[0].replace(/[._-]/g, ' ').split(' ')[0].charAt(0).toUpperCase() + email.split('@')[0].replace(/[._-]/g, ' ').split(' ')[0].slice(1),
+      first_name: email.split('@')[0].replace(/[._-]/g, ' ').split(' ')[0].charAt(0).toUpperCase() +
+        email.split('@')[0].replace(/[._-]/g, ' ').split(' ')[0].slice(1),
       last_name: 'Dlamini',
-      id_number: 'ADMIN-001', email, role: 'admin',
+      id_number: 'ADMIN-001',
+      email,
+      role: 'admin',
       department: 'Metro Police',
       badgeNumber: 'JMPD-' + Math.random().toString().slice(2, 6),
-      jurisdiction: { province: province || 'Gauteng', city: city || 'Johannesburg' }
+      jurisdiction: { province: province || 'Gauteng', city: city || 'Johannesburg' },
     };
-    
+
     set({ user: adminUser, isAuthenticated: true, userType: 'admin', isLoading: false });
-    sessionStorage.setItem('trafficlens_user', JSON.stringify(adminUser));
-    sessionStorage.setItem('trafficlens_userType', 'admin');
+    persistUser(adminUser);
+    sessionStorage.setItem(TYPE_KEY, 'admin');
   },
 
+  // ── Logout ───────────────────────────────────────────
   logout: () => {
-    sessionStorage.removeItem('trafficlens_user');
-    sessionStorage.removeItem('trafficlens_userType');
+    sessionStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(TYPE_KEY);
     set({ user: null, isAuthenticated: false, userType: null, error: null });
   },
 
+  // ── Check auth on load ───────────────────────────────
   checkAuth: () => {
-    const savedUser = sessionStorage.getItem('trafficlens_user');
-    const savedType = sessionStorage.getItem('trafficlens_userType');
+    const savedUser = sessionStorage.getItem(STORAGE_KEY);
+    const savedType = sessionStorage.getItem(TYPE_KEY);
     if (savedUser && savedType) {
       set({ user: JSON.parse(savedUser), isAuthenticated: true, userType: savedType });
     }
   },
 
-  clearError: () => set({ error: null })
+  clearError: () => set({ error: null }),
 }));
 
 export default useAuthStore;
