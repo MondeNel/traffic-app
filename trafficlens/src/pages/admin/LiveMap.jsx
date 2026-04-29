@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import AdminLayout from '../../components/layout/AdminLayout';
-import PlanRoadblockModal from '../../components/admin/PlanRoadblockModal';
 import 'leaflet/dist/leaflet.css';
 import useAuthStore from '../../store/authStore';
 
@@ -384,6 +383,23 @@ const policeIcon = new L.DivIcon({
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// NEW: Pin icon for the location‑picking mode
+// ─────────────────────────────────────────────────────────────────────────────
+const pinIcon = new L.DivIcon({
+  className: 'custom-marker',
+  html: `<div class="relative">
+    <div class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
+      <svg viewBox="0 0 24 24" class="w-3 h-3 stroke-white fill-none" stroke-width="3">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </div>
+    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"></div>
+  </div>`,
+  iconSize: [20, 24],
+  iconAnchor: [10, 24],
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // MAP CONTROLS COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 const MapControls = ({ center, zoom }) => {
@@ -476,6 +492,18 @@ const SmoothMarker = ({ vehicle, routePoints }) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// NEW: Component that captures a single map click
+// ─────────────────────────────────────────────────────────────────────────────
+const MapClickPicker = ({ onPick }) => {
+  useMapEvents({
+    click(e) {
+      onPick([e.latlng.lat, e.latlng.lng]);
+    },
+  });
+  return null;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // JURISDICTION UNAVAILABLE OVERLAY
 // ─────────────────────────────────────────────────────────────────────────────
 const JurisdictionLocked = ({ adminProvince, adminCity }) => (
@@ -498,10 +526,8 @@ const JurisdictionLocked = ({ adminProvince, adminCity }) => (
 // MAIN LIVE MAP COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 const LiveMap = () => {
-  // Read jurisdiction from auth store
   const { user } = useAuthStore();
   const jurisdiction = user?.jurisdiction;
-  
   const effectiveProvince = jurisdiction?.province || 'Gauteng';
   const effectiveCity = jurisdiction?.city || 'Johannesburg';
 
@@ -509,12 +535,13 @@ const LiveMap = () => {
     violations: true, expiredDiscs: true, roadblocks: true,
     hotspots: true, vehicles: true, revenue: true,
   });
-  const [showPlanRoadblock, setShowPlanRoadblock] = useState(false);
   const [roadblocksList, setRoadblocksList] = useState([]);
+  const [pickingActive, setPickingActive] = useState(false);
+  const [pickedLocation, setPickedLocation] = useState(null);
+  const [pickFeedback, setPickFeedback] = useState(null);
 
   const sim = useJurisdictionSimulation(effectiveProvince, effectiveCity);
 
-  // Seed initial roadblocks once per city
   useEffect(() => {
     if (!sim) return;
     const rand = seededRandom(cityToSeed(`rb:${effectiveProvince}:${effectiveCity}`));
@@ -532,19 +559,35 @@ const LiveMap = () => {
     setRoadblocksList(initial);
   }, [effectiveProvince, effectiveCity, sim]);
 
-  const toggleFilter = (key) => setActiveFilters(prev => ({ ...prev, [key]: !prev[key] }));
+  const startPicking = useCallback(() => {
+    setPickedLocation(null);
+    setPickingActive(true);
+    setPickFeedback(null);
+  }, []);
 
-  const handlePlanRoadblock = (data) => {
-    if (!sim) return;
-    const rand = seededRandom(Date.now());
-    setRoadblocksList(prev => [...prev, {
-      id: prev.length + 1,
-      lat: sim.center[0] + (rand() - 0.5) * 0.06,
-      lng: sim.center[1] + (rand() - 0.5) * 0.08,
-      name: data.name || `${data.location}, ${data.city}`,
-      officers: data.officers,
-    }]);
-  };
+  const cancelPicking = useCallback(() => {
+    setPickingActive(false);
+    setPickedLocation(null);
+    setPickFeedback(null);
+  }, []);
+
+  const handleMapPick = useCallback((latlng) => {
+    if (!pickingActive) return;
+    const newRoadblock = {
+      id: Date.now(),
+      lat: latlng[0],
+      lng: latlng[1],
+      name: `${effectiveCity} Roadblock`,
+      officers: 4,
+    };
+    setRoadblocksList(prev => [...prev, newRoadblock]);
+    setPickedLocation(latlng);
+    setPickFeedback('success');
+    setPickingActive(false);
+    setTimeout(() => setPickFeedback(null), 3000);
+  }, [pickingActive, effectiveCity]);
+
+  const toggleFilter = (key) => setActiveFilters(prev => ({ ...prev, [key]: !prev[key] }));
 
   const getDotColor = (color) => ({
     red: 'bg-red-500', amber: 'bg-amber-500', blue: 'bg-blue-500',
@@ -564,14 +607,13 @@ const LiveMap = () => {
   return (
     <AdminLayout>
       <div className="flex h-full">
-        {/* MAP PANEL */}
         <div className="flex-1 relative">
           <MapContainer
             center={sim.center}
             zoom={sim.zoom}
             zoomControl={false}
             className="h-full w-full z-0"
-            style={{ background: '#0B1520' }}
+            style={{ background: '#0B1520', cursor: pickingActive ? 'crosshair' : undefined }}
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -580,7 +622,8 @@ const LiveMap = () => {
             <SetMapView center={sim.center} zoom={sim.zoom} />
             <MapControls center={sim.center} zoom={sim.zoom} />
 
-            {/* Hotspot Circles */}
+            {pickingActive && <MapClickPicker onPick={handleMapPick} />}
+
             {activeFilters.hotspots && sim.hotspots.map(h => (
               <div key={`hotspot-${h.id}`}>
                 <Circle center={[h.lat, h.lng]} radius={h.radius * 1.5} pathOptions={{ color: 'transparent', fillColor: h.color, fillOpacity: 0.03, weight: 0, stroke: false }} interactive={false} />
@@ -598,7 +641,6 @@ const LiveMap = () => {
               </div>
             ))}
 
-            {/* Moving Vehicles */}
             {activeFilters.vehicles && (
               <>
                 {sim.vehicles.map(v => (
@@ -610,7 +652,6 @@ const LiveMap = () => {
               </>
             )}
 
-            {/* Roadblocks */}
             {activeFilters.roadblocks && roadblocksList.map(rb => (
               <div key={rb.id}>
                 <Marker position={[rb.lat, rb.lng]} icon={roadblockIcon}>
@@ -624,9 +665,40 @@ const LiveMap = () => {
                 <Circle center={[rb.lat, rb.lng]} radius={500} pathOptions={{ color: '#3B82F6', fillColor: '#3B82F6', fillOpacity: 0.1, weight: 2, dashArray: '10 5' }} />
               </div>
             ))}
+
+            {pickedLocation && pickingActive && (
+              <Marker position={pickedLocation} icon={pinIcon}>
+                <Popup>
+                  <div className="text-xs">
+                    <p className="font-bold text-slate-900">Roadblock location</p>
+                    <p className="text-slate-500">{pickedLocation[0].toFixed(5)}, {pickedLocation[1].toFixed(5)}</p>
+                  </div>
+                </Popup>
+              </Marker>
+            )}
           </MapContainer>
 
-          {/* STATS OVERLAY — Desktop */}
+          {pickingActive && (
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 z-[2000] bg-blue-600 text-white px-4 py-2 rounded-xl shadow-2xl flex items-center gap-3 animate-pulse">
+              <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-white fill-none" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              <span className="text-xs font-bold">Click on the map to place the roadblock</span>
+              <button onClick={cancelPicking} className="ml-2 px-2 py-1 bg-white/20 rounded-lg text-[10px] font-bold hover:bg-white/30 transition-colors">
+                Cancel
+              </button>
+            </div>
+          )}
+
+          {pickFeedback === 'success' && (
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 z-[2000] bg-emerald-600 text-white px-4 py-2 rounded-xl shadow-2xl flex items-center gap-2">
+              <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-white fill-none" strokeWidth="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span className="text-xs font-bold">Roadblock placed successfully!</span>
+            </div>
+          )}
+
           <div className="hidden md:block absolute top-3 left-3 z-[1000] space-y-2">
             {[
               { key: 'violations', label: 'Active violations', value: sim.stats.totalViolations, color: 'red', textColor: 'text-red-400', border: 'border-red-500/30' },
@@ -640,8 +712,6 @@ const LiveMap = () => {
                 <div className="text-[9px] text-slate-500">{stat.label}</div>
               </button>
             ))}
-
-            {/* Jurisdiction badge */}
             <div className="bg-adm/95 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2">
               <div className="text-[9px] text-slate-600 mb-0.5">Jurisdiction</div>
               <div className="text-[10px] font-medium text-slate-400">{effectiveCity}</div>
@@ -649,7 +719,6 @@ const LiveMap = () => {
             </div>
           </div>
 
-          {/* FILTER PILLS */}
           <div className="absolute top-3 right-3 z-[1000] flex gap-1.5 flex-wrap">
             {[
               { key: 'violations', label: 'Violations', color: 'red' },
@@ -665,7 +734,6 @@ const LiveMap = () => {
             ))}
           </div>
 
-          {/* LEGEND */}
           <div className="hidden md:block absolute bottom-4 left-3 z-[1000] bg-adm/90 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2 text-[10px] text-slate-500">
             <div className="flex items-center gap-2 mb-1"><div className="w-3 h-3 bg-red-400 rounded-full" /> High revenue hotspot</div>
             <div className="flex items-center gap-2 mb-1"><div className="w-3 h-3 bg-amber-400 rounded-full" /> Medium revenue hotspot</div>
@@ -674,18 +742,14 @@ const LiveMap = () => {
           </div>
         </div>
 
-        {/* RIGHT PANEL — Recent Activity */}
         <div className="hidden lg:flex w-60 bg-adm2 border-l border-slate-800 flex-col shrink-0">
           <div className="p-3 border-b border-slate-800 flex items-center justify-between">
             <span className="text-[11px] font-medium text-slate-400">Recent activity</span>
             <span className="bg-emerald-500/10 text-emerald-400 rounded-md px-1.5 py-0.5 text-[10px] font-semibold">{sim.activityFeed.length}</span>
           </div>
-
-          {/* City context bar */}
           <div className="px-3 py-2 border-b border-slate-800/50 bg-slate-900/30">
             <div className="text-[9px] text-slate-600">Viewing: <span className="text-slate-500 font-medium">{effectiveCity}, {effectiveProvince}</span></div>
           </div>
-
           <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
             {sim.activityFeed.map((activity) => (
               <div key={activity.id} className="p-2.5 rounded-lg bg-white/[0.02] border border-slate-800 hover:bg-white/[0.04] transition-colors">
@@ -703,12 +767,20 @@ const LiveMap = () => {
             ))}
           </div>
           <div className="p-2 border-t border-slate-800">
-            <button onClick={() => setShowPlanRoadblock(true)} className="w-full py-2 bg-blue-600 text-white rounded-md text-[11px] font-semibold hover:bg-blue-500 transition-colors">Plan roadblock</button>
+            <button
+              onClick={startPicking}
+              disabled={pickingActive}
+              className={`w-full py-2 rounded-md text-[11px] font-semibold transition-colors ${
+                pickingActive
+                  ? 'bg-blue-900 text-blue-300 cursor-not-allowed'
+                  : 'bg-blue-600 text-white hover:bg-blue-500'
+              }`}
+            >
+              {pickingActive ? 'Click map to place...' : 'Plan roadblock'}
+            </button>
           </div>
         </div>
       </div>
-
-      <PlanRoadblockModal isOpen={showPlanRoadblock} onClose={() => setShowPlanRoadblock(false)} onSubmit={handlePlanRoadblock} />
     </AdminLayout>
   );
 };
