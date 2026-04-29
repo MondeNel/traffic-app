@@ -14,6 +14,7 @@ import Offenders from './pages/admin/Offenders';
 import Roadblocks from './pages/admin/Roadblocks';
 import Reports from './pages/admin/Reports';
 import ActivityLog from './pages/admin/ActivityLog';
+import Fines from './pages/citizen/Fines';
 
 const ProtectedRoute = ({ children, allowedType }) => {
   const { isAuthenticated, userType } = useAuthStore();
@@ -47,6 +48,7 @@ function App() {
         <Route path="/admin/offenders" element={<ProtectedRoute allowedType="admin"><Offenders /></ProtectedRoute>} />
         <Route path="/admin/roadblocks" element={<ProtectedRoute allowedType="admin"><Roadblocks /></ProtectedRoute>} />
         <Route path="/admin/reports" element={<ProtectedRoute allowedType="admin"><Reports /></ProtectedRoute>} />
+        <Route path="/fines" element={<ProtectedRoute allowedType="citizen"><Fines /></ProtectedRoute>} />
         <Route path="/admin/activity" element={<ProtectedRoute allowedType="admin"><ActivityLog /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

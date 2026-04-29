@@ -24,7 +24,6 @@ const Landing = () => {
   const navigate = useNavigate();
   const { register, loginCitizen, loginAdmin, isLoading, error, clearError, isAuthenticated, userType } = useAuthStore();
   
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate(userType === 'admin' ? '/admin/map' : '/dashboard', { replace: true });
@@ -41,7 +40,9 @@ const Landing = () => {
   // Register form
   const [regForm, setRegForm] = useState({
     firstName: '', lastName: '', idNumber: '', email: '',
-    phone: '', address: '', dateOfBirth: '', password: '', confirmPassword: ''
+    gender: '', phone: '', address: '', dateOfBirth: '',
+    licenseType: '', licenseProvince: '', licenseCity: '',
+    password: '', confirmPassword: ''
   });
   const [regError, setRegError] = useState('');
   
@@ -57,6 +58,9 @@ const Landing = () => {
     if (regForm.password !== regForm.confirmPassword) { setRegError('Passwords do not match'); return; }
     if (regForm.password.length < 6) { setRegError('Password must be at least 6 characters'); return; }
     if (!/^\d{13}$/.test(regForm.idNumber)) { setRegError('ID number must be 13 digits'); return; }
+    if (!regForm.gender) { setRegError('Please select your gender'); return; }
+    if (!regForm.licenseType) { setRegError('Please select your license type'); return; }
+    if (!regForm.licenseProvince || !regForm.licenseCity) { setRegError('Please select your license place of issue'); return; }
     try { await register(regForm); navigate('/dashboard'); } catch (err) {}
   };
 
@@ -106,7 +110,7 @@ const Landing = () => {
           </div>
 
           <AnimatePresence mode="wait">
-            {/* Citizen Login */}
+            {/* ── Citizen Login ─────────────────────────── */}
             {activeTab === 'login' && (
               <motion.div key="login" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
                 className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
@@ -139,16 +143,16 @@ const Landing = () => {
                   </button>
                 </form>
                 <p className="text-center text-xs text-slate-400 mt-4 flex items-center justify-center gap-1.5">
-  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-ca fill-none shrink-0" strokeWidth="2">
-    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
-  </svg>
-  Any email and password (4+ characters) will work
-</p>
+                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-ca fill-none shrink-0" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                  </svg>
+                  Any email and password (4+ characters) will work
+                </p>
                 <p className="text-center text-xs text-slate-500 mt-2">Don't have an account? <button onClick={() => setActiveTab('register')} className="text-ca font-medium hover:text-ca-dark">Register here</button></p>
               </motion.div>
             )}
 
-            {/* Register */}
+            {/* ── Register ──────────────────────────────── */}
             {activeTab === 'register' && (
               <motion.div key="register" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
                 className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
@@ -170,11 +174,57 @@ const Landing = () => {
                   </div>
                   <div><label className="block text-xs font-medium text-slate-600 mb-1">ID Number (13 digits)</label><input type="text" name="idNumber" value={regForm.idNumber} onChange={handleRegChange} maxLength={13} placeholder="9205125432082" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" required /></div>
                   <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input type="email" name="email" value={regForm.email} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" required /></div>
+
+                  {/* Gender */}
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1">Gender</label>
+                    <select name="gender" value={regForm.gender} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white" required>
+                      <option value="">Select gender</option>
+                      <option value="MALE">Male</option>
+                      <option value="FEMALE">Female</option>
+                    </select>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-3">
                     <div><label className="block text-xs font-medium text-slate-600 mb-1">Phone</label><input type="tel" name="phone" value={regForm.phone} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" /></div>
                     <div><label className="block text-xs font-medium text-slate-600 mb-1">Date of birth</label><input type="date" name="dateOfBirth" value={regForm.dateOfBirth} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" required /></div>
                   </div>
                   <div><label className="block text-xs font-medium text-slate-600 mb-1">Address</label><input type="text" name="address" value={regForm.address} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" /></div>
+
+                  {/* License Details Section */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">License Details</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium text-slate-600 mb-1">License Type</label>
+                        <select name="licenseType" value={regForm.licenseType} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white" required>
+                          <option value="">Select type</option>
+                          <option value="B">B — Light Motor Vehicles</option>
+                          <option value="EB">EB — Light Articulated</option>
+                          <option value="C1">C1 — Heavy up to 16 000kg</option>
+                          <option value="C">C — Heavy Motor Vehicle</option>
+                          <option value="EC1">EC1 — Extra Heavy Articulated up to 16 000kg</option>
+                          <option value="EC">EC — Extra Heavy Articulated</option>
+                          <option value="A">A — Motorcycles</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-600 mb-1">Province of Issue</label>
+                        <select name="licenseProvince" value={regForm.licenseProvince} onChange={(e) => { setRegForm(prev => ({ ...prev, licenseProvince: e.target.value, licenseCity: '' })); }} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white" required>
+                          <option value="">Select province</option>
+                          {provinces.map(p => <option key={p} value={p}>{p}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">City of Issue</label>
+                      <select name="licenseCity" value={regForm.licenseCity} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white" required>
+                        <option value="">Select city</option>
+                        {(citiesByProvince[regForm.licenseProvince] || []).map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-3">
                     <div><label className="block text-xs font-medium text-slate-600 mb-1">Password</label><input type="password" name="password" value={regForm.password} onChange={handleRegChange} placeholder="Min. 6 characters" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" required /></div>
                     <div><label className="block text-xs font-medium text-slate-600 mb-1">Confirm password</label><input type="password" name="confirmPassword" value={regForm.confirmPassword} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" required /></div>
@@ -187,7 +237,7 @@ const Landing = () => {
               </motion.div>
             )}
 
-            {/* Admin Portal */}
+            {/* ── Admin Portal ──────────────────────────── */}
             {activeTab === 'admin' && (
               <motion.div key="admin" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
                 className="bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-xl">
@@ -208,30 +258,25 @@ const Landing = () => {
                 <form onSubmit={handleAdminLogin} className="space-y-4">
                   <div><label className="block text-xs font-medium text-slate-400 mb-1.5">Email</label><input type="email" value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)} placeholder="officer@trafficlens.gov.za" className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required /></div>
                   <div><label className="block text-xs font-medium text-slate-400 mb-1.5">Password</label><input type="password" value={adminPassword} onChange={(e) => setAdminPassword(e.target.value)} placeholder="Enter admin password" className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required /></div>
-                  
-                  {/* Jurisdiction */}
                   <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-3 space-y-3">
                     <p className="text-[9px] text-slate-500 uppercase tracking-wider font-bold">Jurisdiction</p>
                     <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[10px] font-medium text-slate-400 mb-1">Province</label>
-                        <select value={adminProvince} onChange={(e) => { setAdminProvince(e.target.value); setAdminCity(citiesByProvince[e.target.value]?.[0] || ''); }} className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-                          {provinces.map(p => <option key={p} value={p}>{p}</option>)}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-medium text-slate-400 mb-1">City / Town</label>
-                        <select value={adminCity} onChange={(e) => setAdminCity(e.target.value)} className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-                          {(citiesByProvince[adminProvince] || []).map(c => <option key={c} value={c}>{c}</option>)}
-                        </select>
-                      </div>
+                      <div><label className="block text-[10px] font-medium text-slate-400 mb-1">Province</label><select value={adminProvince} onChange={(e) => { setAdminProvince(e.target.value); setAdminCity(citiesByProvince[e.target.value]?.[0] || ''); }} className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">{provinces.map(p => <option key={p} value={p}>{p}</option>)}</select></div>
+                      <div><label className="block text-[10px] font-medium text-slate-400 mb-1">City / Town</label><select value={adminCity} onChange={(e) => setAdminCity(e.target.value)} className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">{(citiesByProvince[adminProvince] || []).map(c => <option key={c} value={c}>{c}</option>)}</select></div>
                     </div>
                   </div>
-
                   <button type="submit" disabled={isLoading} className="w-full py-3 bg-emerald-500 text-slate-900 rounded-xl text-sm font-bold hover:bg-emerald-400 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
                     {isLoading ? <><div className="w-4 h-4 border-2 border-slate-900/30 border-t-slate-900 rounded-full animate-spin" /> Authenticating...</> : 'Access Admin Portal'}
                   </button>
                 </form>
+                <div className="mt-4 p-3 bg-slate-800 rounded-lg">
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">Demo Access</p>
+                  <div className="space-y-1 text-xs text-slate-400">
+                    <p>Use any email and password (6+ characters)</p>
+                    <p>Select your province and city for jurisdiction</p>
+                    <p className="text-slate-500 mt-1">Try: <span className="text-slate-300 font-mono">officer@trafficlens.gov.za</span></p>
+                  </div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
