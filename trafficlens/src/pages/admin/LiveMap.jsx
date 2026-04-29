@@ -127,8 +127,46 @@ function generateRoadNetwork(centerLat, centerLng, rand) {
   const latScale = 0.008;
   const lngScale = 0.012 * Math.cos(centerLat * Math.PI / 180);
 
-  const angles = [0, 45, 90, 135, 180, 225, 270, 315];
-  const arterialNames = ['N_Arterial', 'NE_Arterial', 'E_Arterial', 'SE_Arterial', 'S_Arterial', 'SW_Arterial', 'W_Arterial', 'NW_Arterial'];
+  // ── Detect coastal cities and get ocean direction ──────
+  const isCoastal = (city) => {
+    const coastal = {
+      'Cape Town': 'west', 'Durban': 'east', 'Port Elizabeth': 'south',
+      'East London': 'south', 'Richards_Bay': 'east', 'Mossel Bay': 'south',
+      'George': 'south', 'Empangeni': 'east',
+    };
+    return coastal[city] || null;
+  };
+
+  // Build a lookup from city coordinates
+  const findCityName = () => {
+    for (const province of Object.values(JURISDICTION_DB)) {
+      for (const [name, data] of Object.entries(province.cities)) {
+        if (Math.abs(data.lat - centerLat) < 0.001 && Math.abs(data.lng - centerLng) < 0.001) {
+          return name;
+        }
+      }
+    }
+    return null;
+  };
+
+  const cityName = findCityName();
+  const oceanDir = isCoastal(cityName);
+
+  // Adjust angles to favor inland directions
+  const getAngles = () => {
+    if (!oceanDir) return [0, 45, 90, 135, 180, 225, 270, 315];
+
+    // Remove angles pointing toward ocean
+    switch (oceanDir) {
+      case 'west':  return [0, 45, 90, 135, 180, 225];           // remove 270, 315 (west-ish)
+      case 'east':  return [45, 90, 135, 180, 225, 270, 315, 0]; // remove 0, 45 (east-ish) → keep 90-315
+      case 'south': return [0, 45, 90, 135, 270, 315];           // remove 180, 225 (south-ish)
+      default:      return [0, 45, 90, 135, 180, 225, 270, 315];
+    }
+  };
+
+  const angles = getAngles();
+  const arterialNames = angles.map((_, i) => `Arterial_${i}`);
 
   angles.forEach((angle, i) => {
     const rad = (angle * Math.PI) / 180;
@@ -147,6 +185,10 @@ function generateRoadNetwork(centerLat, centerLng, rand) {
     networks[arterialNames[i]] = points;
   });
 
+  // Ring roads — offset center inland for coastal cities
+  const ringCenterLat = oceanDir === 'south' ? centerLat + 0.01 : oceanDir === 'west' ? centerLat : centerLat;
+  const ringCenterLng = oceanDir === 'west' ? centerLng + 0.015 : oceanDir === 'east' ? centerLng - 0.015 : centerLng;
+
   ['Inner_Ring', 'Outer_Ring'].forEach((name, ri) => {
     const radius = ri === 0 ? 1.5 : 3.5;
     const segments = 16;
@@ -154,13 +196,14 @@ function generateRoadNetwork(centerLat, centerLng, rand) {
     for (let j = 0; j <= segments; j++) {
       const rad = (j / segments) * 2 * Math.PI;
       points.push([
-        centerLat + radius * latScale * Math.cos(rad) + (rand() - 0.5) * 0.0005,
-        centerLng + radius * lngScale * Math.sin(rad) + (rand() - 0.5) * 0.0005 * Math.cos(centerLat * Math.PI / 180),
+        ringCenterLat + radius * latScale * Math.cos(rad) + (rand() - 0.5) * 0.0005,
+        ringCenterLng + radius * lngScale * Math.sin(rad) + (rand() - 0.5) * 0.0005 * Math.cos(centerLat * Math.PI / 180),
       ]);
     }
     networks[name] = points;
   });
 
+  // Connectors — also shifted inland
   ['Connector_A', 'Connector_B', 'Connector_C'].forEach((name, ci) => {
     const startAngle = ((ci * 60 + rand() * 40) * Math.PI) / 180;
     const endAngle = startAngle + Math.PI + (rand() - 0.5) * 0.8;
@@ -170,15 +213,22 @@ function generateRoadNetwork(centerLat, centerLng, rand) {
       const t = j / steps;
       const angle = startAngle + (endAngle - startAngle) * t;
       const r = 2 + rand() * 1.5;
-      points.push([centerLat + r * latScale * Math.cos(angle), centerLng + r * lngScale * Math.sin(angle)]);
+      points.push([
+        ringCenterLat + r * latScale * Math.cos(angle),
+        ringCenterLng + r * lngScale * Math.sin(angle),
+      ]);
     }
     networks[name] = points;
   });
 
+  // CBD loop
   const cbdPoints = [];
   for (let j = 0; j <= 8; j++) {
     const rad = (j / 8) * 2 * Math.PI;
-    cbdPoints.push([centerLat + 0.5 * latScale * Math.cos(rad), centerLng + 0.5 * lngScale * Math.sin(rad)]);
+    cbdPoints.push([
+      ringCenterLat + 0.5 * latScale * Math.cos(rad),
+      ringCenterLng + 0.5 * lngScale * Math.sin(rad),
+    ]);
   }
   networks['CBD_Loop'] = cbdPoints;
 
