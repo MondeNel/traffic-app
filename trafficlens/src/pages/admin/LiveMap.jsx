@@ -20,62 +20,63 @@ export const JURISDICTION_DB = {
     cities: {
       Johannesburg: { lat: -26.2041, lng: 28.0473, zoom: 12, density: 'high', trafficMultiplier: 1.4 },
       Pretoria:     { lat: -25.7461, lng: 28.1881, zoom: 12, density: 'high', trafficMultiplier: 1.2 },
-      Ekurhuleni:   { lat: -26.3000, lng: 28.1670, zoom: 12, density: 'medium', trafficMultiplier: 1.0 },
-      Soweto:       { lat: -26.2678, lng: 27.8585, zoom: 12, density: 'high', trafficMultiplier: 1.1 },
       Sandton:      { lat: -26.1070, lng: 28.0567, zoom: 13, density: 'high', trafficMultiplier: 1.5 },
+      Soweto:       { lat: -26.2678, lng: 27.8585, zoom: 12, density: 'high', trafficMultiplier: 1.1 },
       Midrand:      { lat: -25.9992, lng: 28.1284, zoom: 12, density: 'medium', trafficMultiplier: 0.9 },
-      Centurion:    { lat: -25.8600, lng: 28.1900, zoom: 12, density: 'medium', trafficMultiplier: 1.0 },
+      Rosebank:     { lat: -26.1452, lng: 28.0436, zoom: 13, density: 'high', trafficMultiplier: 1.3 },
+      Randburg:     { lat: -26.0927, lng: 27.9823, zoom: 13, density: 'medium', trafficMultiplier: 1.0 },
+      Fourways:     { lat: -26.0275, lng: 28.0106, zoom: 13, density: 'medium', trafficMultiplier: 0.9 },
     },
   },
   'Western Cape': {
     cities: {
       'Cape Town':  { lat: -33.9249, lng: 18.4241, zoom: 12, density: 'high', trafficMultiplier: 1.3 },
       Stellenbosch: { lat: -33.9321, lng: 18.8602, zoom: 13, density: 'low', trafficMultiplier: 0.6 },
-      'George':     { lat: -33.9608, lng: 22.4597, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
       Paarl:        { lat: -33.7310, lng: 18.9741, zoom: 13, density: 'low', trafficMultiplier: 0.6 },
       Worcester:    { lat: -33.6462, lng: 19.4486, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
-      'Mossel Bay': { lat: -34.1831, lng: 22.1392, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
+      George:       { lat: -33.9608, lng: 22.4597, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
+      Knysna:       { lat: -34.0363, lng: 23.0474, zoom: 13, density: 'low', trafficMultiplier: 0.4 },
     },
   },
   'KwaZulu-Natal': {
     cities: {
-      Durban:         { lat: -29.8587, lng: 31.0218, zoom: 12, density: 'high', trafficMultiplier: 1.2 },
+      Durban:           { lat: -29.8587, lng: 31.0218, zoom: 12, density: 'high', trafficMultiplier: 1.2 },
       Pietermaritzburg: { lat: -29.6186, lng: 30.3826, zoom: 12, density: 'medium', trafficMultiplier: 0.9 },
-      Newcastle:      { lat: -27.7490, lng: 29.9319, zoom: 13, density: 'low', trafficMultiplier: 0.6 },
-      Richards_Bay:   { lat: -28.7833, lng: 32.0333, zoom: 13, density: 'low', trafficMultiplier: 0.6 },
-      Empangeni:      { lat: -28.7500, lng: 31.9000, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
+      'Richards Bay':   { lat: -28.7833, lng: 32.0333, zoom: 13, density: 'low', trafficMultiplier: 0.6 },
+      Newcastle:        { lat: -27.7490, lng: 29.9319, zoom: 13, density: 'low', trafficMultiplier: 0.6 },
+      Ladysmith:        { lat: -28.5570, lng: 29.7810, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
     },
   },
   'Eastern Cape': {
     cities: {
-      'Port Elizabeth': { lat: -33.9608, lng: 25.6022, zoom: 12, density: 'medium', trafficMultiplier: 0.9 },
-      'East London':    { lat: -33.0153, lng: 27.9116, zoom: 12, density: 'medium', trafficMultiplier: 0.8 },
-      Mthatha:          { lat: -31.5881, lng: 28.7847, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
-      Uitenhage:        { lat: -33.7667, lng: 25.4000, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
-      Grahamstown:      { lat: -33.3042, lng: 26.5328, zoom: 13, density: 'low', trafficMultiplier: 0.4 },
+      Gqeberha:     { lat: -33.9608, lng: 25.6022, zoom: 12, density: 'medium', trafficMultiplier: 0.9 },
+      'East London': { lat: -33.0153, lng: 27.9116, zoom: 12, density: 'medium', trafficMultiplier: 0.8 },
+      Grahamstown:  { lat: -33.3042, lng: 26.5328, zoom: 13, density: 'low', trafficMultiplier: 0.4 },
+      Mthatha:      { lat: -31.5881, lng: 28.7847, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
     },
   },
   'Free State': {
     cities: {
-      Bloemfontein:   { lat: -29.1210, lng: 26.2140, zoom: 12, density: 'medium', trafficMultiplier: 0.8 },
-      Welkom:         { lat: -27.9774, lng: 26.7342, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
-      Phuthaditjhaba: { lat: -28.5333, lng: 28.8000, zoom: 13, density: 'low', trafficMultiplier: 0.4 },
+      Bloemfontein: { lat: -29.1210, lng: 26.2140, zoom: 12, density: 'medium', trafficMultiplier: 0.8 },
+      Welkom:       { lat: -27.9774, lng: 26.7342, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
+      Bethlehem:    { lat: -28.2310, lng: 28.3070, zoom: 13, density: 'low', trafficMultiplier: 0.4 },
+      Kroonstad:    { lat: -27.6500, lng: 27.2333, zoom: 13, density: 'low', trafficMultiplier: 0.4 },
     },
   },
   Limpopo: {
     cities: {
-      Polokwane:    { lat: -23.9015, lng: 29.4687, zoom: 12, density: 'medium', trafficMultiplier: 0.8 },
-      Tzaneen:      { lat: -23.8333, lng: 30.1667, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
-      Musina:       { lat: -22.3383, lng: 30.0441, zoom: 13, density: 'low', trafficMultiplier: 0.4 },
-      Thohoyandou:  { lat: -22.9500, lng: 30.4833, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
+      Polokwane:   { lat: -23.9015, lng: 29.4687, zoom: 12, density: 'medium', trafficMultiplier: 0.8 },
+      Tzaneen:     { lat: -23.8333, lng: 30.1667, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
+      Mokopane:    { lat: -24.1833, lng: 28.9833, zoom: 13, density: 'low', trafficMultiplier: 0.4 },
+      Thohoyandou: { lat: -22.9500, lng: 30.4833, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
     },
   },
   Mpumalanga: {
     cities: {
-      Nelspruit:  { lat: -25.4753, lng: 30.9694, zoom: 12, density: 'medium', trafficMultiplier: 0.8 },
+      Mbombela:   { lat: -25.4753, lng: 30.9694, zoom: 12, density: 'medium', trafficMultiplier: 0.8 },
       Witbank:    { lat: -25.8753, lng: 29.2303, zoom: 13, density: 'low', trafficMultiplier: 0.6 },
       Secunda:    { lat: -26.5177, lng: 29.1762, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
-      Middelburg: { lat: -25.7725, lng: 29.4742, zoom: 13, density: 'low', trafficMultiplier: 0.5 },
+      Ermelo:     { lat: -26.5195, lng: 29.9878, zoom: 13, density: 'low', trafficMultiplier: 0.4 },
     },
   },
   'North West': {
@@ -108,6 +109,8 @@ const FILTER_COLORS = {
   emerald: { bg: 'bg-emerald-500/20', border: 'border-emerald-500/30', text: 'text-emerald-400' },
 };
 
+const AREA_SUFFIXES = ['CBD', 'Industrial Zone', 'Residential Hub', 'Shopping District', 'Corridor', 'Interchange', 'Town Centre', 'Bypass'];
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SEEDED RANDOM
 // ─────────────────────────────────────────────────────────────────────────────
@@ -118,54 +121,57 @@ function seededRandom(seed) {
 function cityToSeed(cityName) {
   return cityName.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) * 31;
 }
+const COASTAL_CITIES = {
+  'Cape Town':    { dir: 'west',  safeAngles: [0, 45, 90, 135, 180] },
+  'Durban':       { dir: 'east',  safeAngles: [180, 225, 270, 315, 0] },
+  'Gqeberha':     { dir: 'south', safeAngles: [270, 315, 0, 45, 90] },
+  'East London':  { dir: 'south', safeAngles: [270, 315, 0, 45, 90] },
+  'Richards Bay': { dir: 'east',  safeAngles: [180, 225, 270, 315, 0] },
+  'Mossel Bay':   { dir: 'south', safeAngles: [270, 315, 0, 45, 90] },
+  'George':       { dir: 'south', safeAngles: [270, 315, 0, 45, 90] },
+  'Knysna':       { dir: 'south', safeAngles: [270, 315, 0, 45, 90] },
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ROAD NETWORK GENERATOR — latitude-adjusted
+// HAND-TUNED INLAND ORIGINS — shifts the entire sim center away from the coast
 // ─────────────────────────────────────────────────────────────────────────────
-function generateRoadNetwork(centerLat, centerLng, rand) {
+const CITY_INLAND_OFFSETS = {
+  'Cape Town':    { dLat: -0.02, dLng: +0.06 },
+  'Durban':       { dLat:  0.00, dLng: -0.08 },
+  'Gqeberha':     { dLat: -0.04, dLng: -0.02 },
+  'East London':  { dLat: -0.02, dLng: -0.06 },
+  'Richards Bay': { dLat:  0.00, dLng: -0.05 },
+  'Mossel Bay':   { dLat: -0.03, dLng:  0.00 },
+  'George':       { dLat: -0.03, dLng:  0.00 },
+  'Knysna':       { dLat: -0.02, dLng:  0.00 },
+};
+
+// Returns inland center offset for ring roads / connectors
+function inlandOffset(oceanDir, latScale, lngScale) {
+  switch (oceanDir) {
+    case 'west':  return { dLat: 0,           dLng:  lngScale * 2.5 }; 
+    case 'east':  return { dLat: 0,           dLng: -lngScale * 2.5 }; 
+    case 'south': return { dLat: latScale * 1.5, dLng: 0 };            
+    case 'north': return { dLat: -latScale * 1.5, dLng: 0 };
+    default:      return { dLat: 0,           dLng: 0 };
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ROAD NETWORK GENERATOR — latitude-adjusted, coastal-aware
+// ─────────────────────────────────────────────────────────────────────────────
+function generateRoadNetwork(centerLat, centerLng, rand, cityName) {
   const networks = {};
   const latScale = 0.008;
   const lngScale = 0.012 * Math.cos(centerLat * Math.PI / 180);
 
-  // ── Detect coastal cities and get ocean direction ──────
-  const isCoastal = (city) => {
-    const coastal = {
-      'Cape Town': 'west', 'Durban': 'east', 'Port Elizabeth': 'south',
-      'East London': 'south', 'Richards_Bay': 'east', 'Mossel Bay': 'south',
-      'George': 'south', 'Empangeni': 'east',
-    };
-    return coastal[city] || null;
-  };
+  const coastal  = COASTAL_CITIES[cityName] || null;
+  const oceanDir = coastal?.dir || null;
 
-  // Build a lookup from city coordinates
-  const findCityName = () => {
-    for (const province of Object.values(JURISDICTION_DB)) {
-      for (const [name, data] of Object.entries(province.cities)) {
-        if (Math.abs(data.lat - centerLat) < 0.001 && Math.abs(data.lng - centerLng) < 0.001) {
-          return name;
-        }
-      }
-    }
-    return null;
-  };
+  const angles = coastal
+    ? coastal.safeAngles
+    : [0, 45, 90, 135, 180, 225, 270, 315];
 
-  const cityName = findCityName();
-  const oceanDir = isCoastal(cityName);
-
-  // Adjust angles to favor inland directions
-  const getAngles = () => {
-    if (!oceanDir) return [0, 45, 90, 135, 180, 225, 270, 315];
-
-    // Remove angles pointing toward ocean
-    switch (oceanDir) {
-      case 'west':  return [0, 45, 90, 135, 180, 225];           // remove 270, 315 (west-ish)
-      case 'east':  return [45, 90, 135, 180, 225, 270, 315, 0]; // remove 0, 45 (east-ish) → keep 90-315
-      case 'south': return [0, 45, 90, 135, 270, 315];           // remove 180, 225 (south-ish)
-      default:      return [0, 45, 90, 135, 180, 225, 270, 315];
-    }
-  };
-
-  const angles = getAngles();
   const arterialNames = angles.map((_, i) => `Arterial_${i}`);
 
   angles.forEach((angle, i) => {
@@ -185,9 +191,9 @@ function generateRoadNetwork(centerLat, centerLng, rand) {
     networks[arterialNames[i]] = points;
   });
 
-  // Ring roads — offset center inland for coastal cities
-  const ringCenterLat = oceanDir === 'south' ? centerLat + 0.01 : oceanDir === 'west' ? centerLat : centerLat;
-  const ringCenterLng = oceanDir === 'west' ? centerLng + 0.015 : oceanDir === 'east' ? centerLng - 0.015 : centerLng;
+  const offset = oceanDir ? inlandOffset(oceanDir, latScale, lngScale) : { dLat: 0, dLng: 0 };
+  const ringCenterLat = centerLat + offset.dLat;
+  const ringCenterLng = centerLng + offset.dLng;
 
   ['Inner_Ring', 'Outer_Ring'].forEach((name, ri) => {
     const radius = ri === 0 ? 1.5 : 3.5;
@@ -197,22 +203,21 @@ function generateRoadNetwork(centerLat, centerLng, rand) {
       const rad = (j / segments) * 2 * Math.PI;
       points.push([
         ringCenterLat + radius * latScale * Math.cos(rad) + (rand() - 0.5) * 0.0005,
-        ringCenterLng + radius * lngScale * Math.sin(rad) + (rand() - 0.5) * 0.0005 * Math.cos(centerLat * Math.PI / 180),
+        ringCenterLng + radius * lngScale * Math.sin(rad) + (rand() - 0.5) * 0.0005,
       ]);
     }
     networks[name] = points;
   });
 
-  // Connectors — also shifted inland
   ['Connector_A', 'Connector_B', 'Connector_C'].forEach((name, ci) => {
     const startAngle = ((ci * 60 + rand() * 40) * Math.PI) / 180;
-    const endAngle = startAngle + Math.PI + (rand() - 0.5) * 0.8;
+    const endAngle   = startAngle + Math.PI + (rand() - 0.5) * 0.8;
     const points = [];
     const steps = 10;
     for (let j = 0; j <= steps; j++) {
-      const t = j / steps;
+      const t     = j / steps;
       const angle = startAngle + (endAngle - startAngle) * t;
-      const r = 2 + rand() * 1.5;
+      const r     = 2 + rand() * 1.5;
       points.push([
         ringCenterLat + r * latScale * Math.cos(angle),
         ringCenterLng + r * lngScale * Math.sin(angle),
@@ -221,7 +226,6 @@ function generateRoadNetwork(centerLat, centerLng, rand) {
     networks[name] = points;
   });
 
-  // CBD loop
   const cbdPoints = [];
   for (let j = 0; j <= 8; j++) {
     const rad = (j / 8) * 2 * Math.PI;
@@ -236,24 +240,36 @@ function generateRoadNetwork(centerLat, centerLng, rand) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// HOTSPOT GENERATOR — latitude-adjusted
+// HOTSPOT GENERATOR — coastal-aware (no ocean hotspots)
 // ─────────────────────────────────────────────────────────────────────────────
-const AREA_SUFFIXES = ['CBD', 'Industrial Zone', 'Residential Hub', 'Shopping District', 'Corridor', 'Interchange', 'Town Centre', 'Bypass'];
 function generateHotspots(centerLat, centerLng, multiplier, cityName, rand) {
   const count = Math.floor(5 + rand() * 5);
   const hotspots = [];
   const latScale = 0.008;
   const lngScale = 0.012 * Math.cos(centerLat * Math.PI / 180);
+  const coastal  = COASTAL_CITIES[cityName] || null;
+  const offset   = coastal ? inlandOffset(coastal.dir, latScale, lngScale) : { dLat: 0, dLng: 0 };
+
+  // Full offset so base is firmly inland (was * 0.5)
+  const baseLat = centerLat + offset.dLat;
+  const baseLng = centerLng + offset.dLng;
+
+  // Coastal cities get a tighter scatter radius so hotspots don't reach the ocean
+  const maxDist = coastal ? 2.5 : 3.5;
+
+  const safeAngles = coastal?.safeAngles || [0, 45, 90, 135, 180, 225, 270, 315];
+
   for (let i = 0; i < count; i++) {
-    const angle = rand() * 2 * Math.PI;
-    const dist = 0.5 + rand() * 3.5;
+    const angle = safeAngles[Math.floor(rand() * safeAngles.length)] * (Math.PI / 180)
+                  + (rand() - 0.5) * 0.6;
+    const dist = 0.3 + rand() * maxDist;  // was 0.5 + rand() * 3.5
     const isHigh = rand() > 0.5;
     const tickets = Math.floor((80 + rand() * 280) * multiplier);
     const revenue = tickets * 1500;
     hotspots.push({
       id: i + 1,
-      lat: centerLat + dist * latScale * Math.cos(angle),
-      lng: centerLng + dist * lngScale * Math.sin(angle),
+      lat: baseLat + dist * latScale * Math.cos(angle),
+      lng: baseLng + dist * lngScale * Math.sin(angle),
       radius: Math.floor(800 + rand() * 1200),
       tickets,
       revenue: `R ${revenue.toLocaleString()}`,
@@ -334,22 +350,34 @@ export function useJurisdictionSimulation(province, cityName) {
   return useMemo(() => {
     const cityData = JURISDICTION_DB[province]?.cities[cityName];
     if (!cityData) return null;
+
     const seed = cityToSeed(`${province}:${cityName}`);
     const rand = seededRandom(seed);
     const { lat, lng, zoom, trafficMultiplier } = cityData;
-    const roadNetworks = generateRoadNetwork(lat, lng, rand);
-    const hotspots = generateHotspots(lat, lng, trafficMultiplier, cityName, rand);
-    const vehicles = generateVehicles(roadNetworks, trafficMultiplier, province, rand);
+
+    // Shift sim origin inland for coastal cities so no roads/vehicles spawn in ocean
+    const inlandShift = CITY_INLAND_OFFSETS[cityName] || { dLat: 0, dLng: 0 };
+    const simLat = lat + inlandShift.dLat;
+    const simLng = lng + inlandShift.dLng;
+
+    // Pass cityName explicitly so generateRoadNetwork knows coastal safe angles
+    const roadNetworks = generateRoadNetwork(simLat, simLng, rand, cityName);
+    const hotspots     = generateHotspots(simLat, simLng, trafficMultiplier, cityName, rand);
+    const vehicles     = generateVehicles(roadNetworks, trafficMultiplier, province, rand);
     const activityFeed = generateActivityFeed(province, cityName, rand);
+
     return {
-      center: [lat, lng], zoom, roadNetworks, hotspots,
-      vehicles: vehicles.filter(v => !v.isPolice),
-      policeVehicles: vehicles.filter(v => v.isPolice),
+      center: [lat, lng], // map camera stays on real city center
+      zoom,
+      roadNetworks,
+      hotspots,
+      vehicles:      vehicles.filter(v => !v.isPolice),
+      policeVehicles: vehicles.filter(v =>  v.isPolice),
       activityFeed,
       stats: {
-        totalRevenue: hotspots.reduce((sum, h) => sum + parseInt(h.revenue.replace(/[^0-9]/g, '')), 0),
+        totalRevenue:    hotspots.reduce((sum, h) => sum + parseInt(h.revenue.replace(/[^0-9]/g, '')), 0),
         totalViolations: Math.floor(80 * trafficMultiplier + rand() * 100),
-        expiredDiscs: Math.floor(20 * trafficMultiplier + rand() * 30),
+        expiredDiscs:    Math.floor(20 * trafficMultiplier + rand() * 30),
       },
     };
   }, [province, cityName]);
@@ -488,23 +516,29 @@ const LiveMap = () => {
 
   // Seed roadblocks — latitude-adjusted
   useEffect(() => {
-    if (!sim) return;
-    const rand = seededRandom(cityToSeed(`rb:${effectiveProvince}:${effectiveCity}`));
-    const latScale = 0.008;
-    const lngScale = 0.012 * Math.cos(sim.center[0] * Math.PI / 180);
-    const initial = Array.from({ length: 2 }, (_, i) => {
-      const angle = rand() * 2 * Math.PI;
-      const dist = 0.5 + rand() * 2;
-      return {
-        id: i + 1,
-        lat: sim.center[0] + dist * latScale * Math.cos(angle),
-        lng: sim.center[1] + dist * lngScale * Math.sin(angle),
-        name: `${effectiveCity} Checkpoint ${i + 1}`,
-        officers: Math.floor(3 + rand() * 4),
-      };
-    });
-    setRoadblocksList(initial);
-  }, [effectiveProvince, effectiveCity, sim]);
+  if (!sim) return;
+  const rand = seededRandom(cityToSeed(`rb:${effectiveProvince}:${effectiveCity}`));
+  const latScale = 0.008;
+  const lngScale = 0.012 * Math.cos(sim.center[0] * Math.PI / 180);
+
+  // ── Use inland shift for roadblock placement too ──
+  const inlandShift = CITY_INLAND_OFFSETS[effectiveCity] || { dLat: 0, dLng: 0 };
+  const rbLat = sim.center[0] + inlandShift.dLat;
+  const rbLng = sim.center[1] + inlandShift.dLng;
+
+  const initial = Array.from({ length: 2 }, (_, i) => {
+    const angle = rand() * 2 * Math.PI;
+    const dist = 0.5 + rand() * 2;
+    return {
+      id: i + 1,
+      lat: rbLat + dist * latScale * Math.cos(angle),
+      lng: rbLng + dist * lngScale * Math.sin(angle),
+      name: `${effectiveCity} Checkpoint ${i + 1}`,
+      officers: Math.floor(3 + rand() * 4),
+    };
+  });
+  setRoadblocksList(initial);
+}, [effectiveProvince, effectiveCity, sim]);
 
   const startPicking = useCallback(() => { setPickedLocation(null); setPickingActive(true); setPickFeedback(null); }, []);
   const cancelPicking = useCallback(() => { setPickingActive(false); setPickedLocation(null); setPickFeedback(null); }, []);
