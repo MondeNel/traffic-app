@@ -108,6 +108,14 @@ const PLATE_PREFIXES = {
   'Northern Cape': ['NC'],
 };
 
+// Static color map to avoid Tailwind production purge
+const FILTER_COLORS = {
+  red:     { bg: 'bg-red-500/20',     border: 'border-red-500/30',     text: 'text-red-400' },
+  amber:   { bg: 'bg-amber-500/20',   border: 'border-amber-500/30',   text: 'text-amber-400' },
+  blue:    { bg: 'bg-blue-500/20',    border: 'border-blue-500/30',    text: 'text-blue-400' },
+  emerald: { bg: 'bg-emerald-500/20', border: 'border-emerald-500/30', text: 'text-emerald-400' },
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // SEEDED RANDOM — deterministic per city so data stays consistent each render
 // ─────────────────────────────────────────────────────────────────────────────
@@ -383,7 +391,7 @@ const policeIcon = new L.DivIcon({
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// NEW: Pin icon for the location‑picking mode
+// Pin icon for the location‑picking mode
 // ─────────────────────────────────────────────────────────────────────────────
 const pinIcon = new L.DivIcon({
   className: 'custom-marker',
@@ -492,7 +500,7 @@ const SmoothMarker = ({ vehicle, routePoints }) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// NEW: Component that captures a single map click
+// Component that captures a single map click
 // ─────────────────────────────────────────────────────────────────────────────
 const MapClickPicker = ({ onPick }) => {
   useMapEvents({
@@ -666,12 +674,15 @@ const LiveMap = () => {
               </div>
             ))}
 
-            {pickedLocation && pickingActive && (
+            {/* Pin always visible after placement */}
+            {pickedLocation && (
               <Marker position={pickedLocation} icon={pinIcon}>
                 <Popup>
                   <div className="text-xs">
-                    <p className="font-bold text-slate-900">Roadblock location</p>
-                    <p className="text-slate-500">{pickedLocation[0].toFixed(5)}, {pickedLocation[1].toFixed(5)}</p>
+                    <p className="font-bold text-slate-900">New roadblock</p>
+                    <p className="text-slate-500">
+                      {pickedLocation[0].toFixed(5)}, {pickedLocation[1].toFixed(5)}
+                    </p>
                   </div>
                 </Popup>
               </Marker>
@@ -691,7 +702,7 @@ const LiveMap = () => {
           )}
 
           {pickFeedback === 'success' && (
-            <div className="absolute top-12 left-1/2 -translate-x-1/2 z-[2000] bg-emerald-600 text-white px-4 py-2 rounded-xl shadow-2xl flex items-center gap-2">
+            <div className="absolute top-24 left-1/2 -translate-x-1/2 z-[2000] bg-emerald-600 text-white px-4 py-2 rounded-xl shadow-2xl flex items-center gap-2">
               <svg viewBox="0 0 24 24" className="w-4 h-4 stroke-white fill-none" strokeWidth="2">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
@@ -726,12 +737,19 @@ const LiveMap = () => {
               { key: 'roadblocks', label: 'Roadblocks', color: 'blue' },
               { key: 'hotspots', label: 'Hotspots', color: 'red' },
               { key: 'vehicles', label: 'Vehicles', color: 'emerald' },
-            ].map(f => (
-              <button key={f.key} onClick={() => toggleFilter(f.key)}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-medium border transition-colors cursor-pointer ${activeFilters[f.key] ? `bg-${f.color}-500/20 border-${f.color}-500/30 text-${f.color}-400` : 'bg-adm/90 border-slate-700 text-slate-500 opacity-50 hover:opacity-75'}`}>
-                <span className={`w-1.5 h-1.5 bg-${f.color}-400 rounded-full inline-block mr-1.5`} />{f.label}
-              </button>
-            ))}
+            ].map(f => {
+              const { bg, border, text } = FILTER_COLORS[f.color] || FILTER_COLORS.red;
+              return (
+                <button key={f.key} onClick={() => toggleFilter(f.key)}
+                  className={`px-3 py-1.5 rounded-full text-[10px] font-medium border transition-colors cursor-pointer ${
+                    activeFilters[f.key]
+                      ? `${bg} ${border} ${text}`
+                      : 'bg-adm/90 border-slate-700 text-slate-500 opacity-50 hover:opacity-75'
+                  }`}>
+                  <span className={`w-1.5 h-1.5 bg-${f.color}-400 rounded-full inline-block mr-1.5`} />{f.label}
+                </button>
+              );
+            })}
           </div>
 
           <div className="hidden md:block absolute bottom-4 left-3 z-[1000] bg-adm/90 backdrop-blur-sm border border-slate-800 rounded-lg px-3 py-2 text-[10px] text-slate-500">
