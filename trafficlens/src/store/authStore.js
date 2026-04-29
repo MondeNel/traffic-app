@@ -14,6 +14,18 @@ const futureDate = (daysAhead) => {
   return d.toISOString().split('T')[0];
 };
 
+// Helper to parse a human-readable name from an email
+const parseNameFromEmail = (email) => {
+  const raw = email.split('@')[0].replace(/[0-9]/g, '');
+  const parts = raw.split(/[._-]/).filter(Boolean);
+  if (parts.length === 0) return { first: 'Citizen', last: 'User' };
+  const first = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
+  const last = parts.length > 1
+    ? parts[parts.length - 1].charAt(0).toUpperCase() + parts[parts.length - 1].slice(1).toLowerCase()
+    : first;
+  return { first, last };
+};
+
 const useAuthStore = create((set, get) => ({
   user: null,
   isAuthenticated: false,
@@ -105,19 +117,14 @@ const useAuthStore = create((set, get) => ({
       throw new Error('Invalid credentials');
     }
 
-    const nameFromEmail = email.split('@')[0].replace(/[._-]/g, ' ');
-    const names = nameFromEmail.split(' ');
-    const firstName = names[0].charAt(0).toUpperCase() + names[0].slice(1);
-    const lastName = names.length > 1
-      ? names[names.length - 1].charAt(0).toUpperCase() + names[names.length - 1].slice(1)
-      : 'User';
+    const { first, last } = parseNameFromEmail(email);
 
     const today = new Date();
     const expiryDate = new Date(today.setFullYear(today.getFullYear() + 5)).toISOString().split('T')[0];
 
     const user = {
-      first_name: firstName,
-      last_name: lastName,
+      first_name: first,
+      last_name: last,
       id_number: '920512' + Math.random().toString().slice(2, 9),
       email,
       gender: 'MALE',
@@ -134,7 +141,7 @@ const useAuthStore = create((set, get) => ({
         province_of_issue: 'Western Cape',
       },
       paymentAccount: {
-        cardholderName: `${firstName} ${lastName}`,
+        cardholderName: `${first} ${last}`,
         cardNumber: '4532 7891 2345 6789',
         expiryDate: '09/28',
         cvv: '123',
@@ -170,9 +177,10 @@ const useAuthStore = create((set, get) => ({
       throw new Error('Invalid admin credentials');
     }
 
+    const { first } = parseNameFromEmail(email);
+
     const adminUser = {
-      first_name: email.split('@')[0].replace(/[._-]/g, ' ').split(' ')[0].charAt(0).toUpperCase() +
-        email.split('@')[0].replace(/[._-]/g, ' ').split(' ')[0].slice(1),
+      first_name: first,
       last_name: 'Dlamini',
       id_number: 'ADMIN-001',
       email,

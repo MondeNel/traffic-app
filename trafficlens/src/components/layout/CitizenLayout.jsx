@@ -6,7 +6,6 @@ import NotificationsModal from '../citizen/NotificationsModal';
 import PaymentModal from '../citizen/PaymentModal';
 import demoUser from '../../data/demoUser';
 
-/* ─── Nav config ───────────────────────────────────────────── */
 const NAV_ITEMS = [
   {
     section: 'Main',
@@ -36,7 +35,7 @@ const MOBILE_NAV = [
 ];
 
 const DEMO_NOTIFICATIONS = [
-  { id: 1, type: 'warning', title: 'Fine Payment Due', message: 'You have 3 outstanding fines totalling R 2,550 due within 30 days.', created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(), isRead: false },
+  { id: 1, type: 'warning', title: 'Fine Payment Due', message: 'You have 3 outstanding fines totalling R 2,850 due within 30 days.', created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(), isRead: false },
   { id: 2, type: 'warning', title: 'License Disc Expiring', message: 'The license disc for GP 14 KW expires in 21 days. Renew to avoid penalties.', created_at: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(), isRead: false },
   { id: 3, type: 'info', title: 'License Renewal Reminder', message: 'Your driver\'s license expires on 28 Sep 2026. Start your renewal early to avoid delays.', created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), isRead: false },
   { id: 4, type: 'success', title: 'Payment Confirmed', message: 'Your fine payment of R 500 (TL-M4X9W) has been processed successfully.', created_at: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), isRead: true },
@@ -55,17 +54,20 @@ const getGreeting = () => {
   return 'Good evening';
 };
 
-/* ─── Layout ───────────────────────────────────────────────── */
 const CitizenLayout = ({ user, children }) => {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { logout } = useAuthStore();
-  const { processPayment, isProcessing } = usePaymentStore();
+  const { fines: paymentFines, processPayment, isProcessing } = usePaymentStore();
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState(DEMO_NOTIFICATIONS);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [selectedFine, setSelectedFine] = useState(null);
+
+  const currentUser = user || demoUser;
+  const displayFines = paymentFines.length > 0 ? paymentFines : (currentUser?.fines || demoUser.fines);
+  const unpaidFinesCount = displayFines.filter(f => f.status === 'unpaid').length;
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
   const markRead = (id) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
@@ -73,38 +75,37 @@ const CitizenLayout = ({ user, children }) => {
 
   const handleLogout = () => { logout(); navigate('/'); };
 
-  const initials = user ? `${(user.first_name || '')[0] || ''}${(user.last_name || '')[0] || ''}` : 'U';
+  const initials = currentUser ? `${(currentUser.first_name || '')[0] || ''}${(currentUser.last_name || '')[0] || ''}` : 'U';
   const isActive = (path) => location.pathname === path;
 
-  // Handle notification actions
   const handleNotificationAction = (notification) => {
     markRead(notification.id);
-    
-    // Fine-related: open payment modal
     if (notification.type === 'warning' && notification.title.includes('Fine')) {
-      const fine = demoUser.fines.find(f => f.status === 'unpaid');
+      const fine = displayFines.find(f => f.status === 'unpaid');
       if (fine) {
         setSelectedFine(fine);
         setNotifOpen(false);
         setShowPayment(true);
       }
     }
-    
-    // License/disc related: navigate to page
-    if (notification.title.includes('License Disc')) {
-      setNotifOpen(false);
-      navigate('/vehicles');
-    }
-    if (notification.title.includes('License Renewal')) {
-      setNotifOpen(false);
-      navigate('/license');
-    }
+    if (notification.title.includes('License Disc')) { setNotifOpen(false); navigate('/vehicles'); }
+    if (notification.title.includes('License Renewal')) { setNotifOpen(false); navigate('/license'); }
   };
 
   const handlePayment = async (fineId) => {
     await processPayment(fineId);
     setShowPayment(false);
     setSelectedFine(null);
+  };
+
+  const renderBadge = (item) => {
+    const count = item.label === 'Traffic Fines' ? unpaidFinesCount : (item.badge || 0);
+    if (count <= 0) return null;
+    return (
+      <span style={{ marginLeft: 'auto', background: '#C13333', color: 'white', fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 10 }}>
+        {count}
+      </span>
+    );
   };
 
   return (
@@ -127,8 +128,8 @@ const CitizenLayout = ({ user, children }) => {
         <div className="flex items-center gap-2.5" style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
           <div className="flex items-center justify-center shrink-0" style={{ width: 34, height: 34, borderRadius: '50%', background: '#1B6CA8', border: '2px solid rgba(255,255,255,0.15)', fontFamily: "'Syne', sans-serif", fontSize: 12, fontWeight: 800, color: 'white' }}>{initials}</div>
           <div style={{ minWidth: 0 }}>
-            <div className="truncate" style={{ fontSize: 12, fontWeight: 600, color: 'white' }}>{user?.first_name} {user?.last_name}</div>
-            <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.32)', fontFamily: "'IBM Plex Mono', monospace", marginTop: 1 }}>{user?.id_number?.slice(0, 13)}</div>
+            <div className="truncate" style={{ fontSize: 12, fontWeight: 600, color: 'white' }}>{currentUser?.first_name} {currentUser?.last_name}</div>
+            <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.32)', fontFamily: "'IBM Plex Mono', monospace", marginTop: 1 }}>{currentUser?.id_number?.slice(0, 13)}</div>
           </div>
         </div>
         <nav className="flex flex-col gap-0.5" style={{ flex: 1, padding: '8px 10px' }}>
@@ -144,7 +145,7 @@ const CitizenLayout = ({ user, children }) => {
                     onMouseEnter={e => { if (!active) { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}}
                     onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.48)'; }}}>
                     <NavIcon path={item.icon} />{item.label}
-                    {item.badge > 0 && <span style={{ marginLeft: 'auto', background: '#C13333', color: 'white', fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 10 }}>{item.badge}</span>}
+                    {renderBadge(item)}
                   </button>
                 );
               })}
@@ -193,7 +194,7 @@ const CitizenLayout = ({ user, children }) => {
                     className="flex items-center gap-2 w-full text-left"
                     style={{ padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12.5, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", background: active ? '#1B6CA8' : 'transparent', color: active ? 'white' : 'rgba(255,255,255,0.48)' }}>
                     <NavIcon path={item.icon} />{item.label}
-                    {item.badge > 0 && <span style={{ marginLeft: 'auto', background: '#C13333', color: 'white', fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 10 }}>{item.badge}</span>}
+                    {renderBadge(item)}
                   </button>
                 );
               })}
@@ -211,7 +212,7 @@ const CitizenLayout = ({ user, children }) => {
       <div className="flex flex-col flex-1 min-w-0 pt-12 md:pt-0">
         <div className="hidden md:flex items-center justify-between sticky top-0 z-10 shrink-0" style={{ background: 'white', borderBottom: '1px solid #E2E8F0', padding: '0 24px', height: 52 }}>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{getGreeting()}, {user?.first_name}</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{getGreeting()}, {currentUser?.first_name}</div>
             <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 1 }}>{new Date().toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</div>
           </div>
           <div className="flex items-center gap-2">
@@ -243,21 +244,11 @@ const CitizenLayout = ({ user, children }) => {
       </div>
 
       {/* ── MODALS ──────────────────────────────────────── */}
-      <NotificationsModal 
-        isOpen={notifOpen} 
-        onClose={() => setNotifOpen(false)} 
-        notifications={notifications} 
-        onMarkRead={markRead} 
-        onMarkAllRead={markAllRead} 
-        onAction={handleNotificationAction} 
-      />
-      <PaymentModal
-        isOpen={showPayment}
+      <NotificationsModal isOpen={notifOpen} onClose={() => setNotifOpen(false)}
+        notifications={notifications} onMarkRead={markRead} onMarkAllRead={markAllRead} onAction={handleNotificationAction} />
+      <PaymentModal isOpen={showPayment}
         onClose={() => { if (!isProcessing) { setShowPayment(false); setSelectedFine(null); } }}
-        fine={selectedFine}
-        onPay={handlePayment}
-        isProcessing={isProcessing}
-      />
+        fine={selectedFine} onPay={handlePayment} isProcessing={isProcessing} />
     </div>
   );
 };
