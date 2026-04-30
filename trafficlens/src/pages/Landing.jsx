@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
+import Skeleton from '../components/ui/Skeleton';
 
 const provinces = [
   'Eastern Cape', 'Free State', 'Gauteng', 'KwaZulu-Natal',
@@ -23,21 +24,22 @@ const citiesByProvince = {
 const Landing = () => {
   const navigate = useNavigate();
   const { register, loginCitizen, loginAdmin, isLoading, error, clearError, isAuthenticated, userType } = useAuthStore();
+  const [pageReady, setPageReady] = useState(false);
   
   useEffect(() => {
     if (isAuthenticated) {
       navigate(userType === 'admin' ? '/admin/map' : '/dashboard', { replace: true });
     }
+    const t = setTimeout(() => setPageReady(true), 500);
+    return () => clearTimeout(t);
   }, [isAuthenticated, userType, navigate]);
   
   const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
   
-  // Citizen login
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
-  // Register form
   const [regForm, setRegForm] = useState({
     firstName: '', lastName: '', idNumber: '', email: '',
     gender: '', phone: '', address: '', dateOfBirth: '',
@@ -46,7 +48,6 @@ const Landing = () => {
   });
   const [regError, setRegError] = useState('');
   
-  // Admin login
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [adminProvince, setAdminProvince] = useState('Gauteng');
@@ -75,6 +76,47 @@ const Landing = () => {
   };
 
   const handleRegChange = (e) => setRegForm({ ...regForm, [e.target.name]: e.target.value });
+
+  if (!pageReady) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col">
+        <div className="bg-white border-b border-slate-200 px-6 py-4">
+          <div className="max-w-6xl mx-auto flex items-center gap-2">
+            <Skeleton className="w-9 h-9 rounded-lg" />
+            <div className="space-y-1">
+              <Skeleton className="h-5 w-28" />
+              <Skeleton className="h-2 w-44" />
+            </div>
+          </div>
+        </div>
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            {/* Tab switcher skeleton */}
+            <div className="flex gap-1 bg-white border border-slate-200 rounded-xl p-1 mb-6 shadow-sm">
+              <Skeleton className="flex-1 h-10 rounded-lg" />
+              <Skeleton className="flex-1 h-10 rounded-lg" />
+              <Skeleton className="flex-1 h-10 rounded-lg" />
+            </div>
+            {/* Form skeleton */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+              <div className="flex flex-col items-center gap-2 mb-6">
+                <Skeleton className="h-6 w-40" />
+                <Skeleton className="h-3.5 w-48" />
+              </div>
+              <Skeleton className="h-4 w-10" />
+              <Skeleton className="h-11 w-full rounded-lg" />
+              <Skeleton className="h-4 w-14" />
+              <Skeleton className="h-11 w-full rounded-lg" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+              <div className="flex justify-center mt-4">
+                <Skeleton className="h-3 w-48" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -143,9 +185,7 @@ const Landing = () => {
                   </button>
                 </form>
                 <p className="text-center text-xs text-slate-400 mt-4 flex items-center justify-center gap-1.5">
-                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-ca fill-none shrink-0" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
-                  </svg>
+                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 stroke-ca fill-none shrink-0" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                   Any email and password (4+ characters) will work
                 </p>
                 <p className="text-center text-xs text-slate-500 mt-2">Don't have an account? <button onClick={() => setActiveTab('register')} className="text-ca font-medium hover:text-ca-dark">Register here</button></p>
@@ -174,8 +214,6 @@ const Landing = () => {
                   </div>
                   <div><label className="block text-xs font-medium text-slate-600 mb-1">ID Number (13 digits)</label><input type="text" name="idNumber" value={regForm.idNumber} onChange={handleRegChange} maxLength={13} placeholder="9205125432082" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" required /></div>
                   <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input type="email" name="email" value={regForm.email} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" required /></div>
-
-                  {/* Gender */}
                   <div>
                     <label className="block text-xs font-medium text-slate-600 mb-1">Gender</label>
                     <select name="gender" value={regForm.gender} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white" required>
@@ -184,47 +222,19 @@ const Landing = () => {
                       <option value="FEMALE">Female</option>
                     </select>
                   </div>
-
                   <div className="grid grid-cols-2 gap-3">
                     <div><label className="block text-xs font-medium text-slate-600 mb-1">Phone</label><input type="tel" name="phone" value={regForm.phone} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" /></div>
                     <div><label className="block text-xs font-medium text-slate-600 mb-1">Date of birth</label><input type="date" name="dateOfBirth" value={regForm.dateOfBirth} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" required /></div>
                   </div>
                   <div><label className="block text-xs font-medium text-slate-600 mb-1">Address</label><input type="text" name="address" value={regForm.address} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" /></div>
-
-                  {/* License Details Section */}
                   <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
                     <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">License Details</p>
                     <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">License Type</label>
-                        <select name="licenseType" value={regForm.licenseType} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white" required>
-                          <option value="">Select type</option>
-                          <option value="B">B — Light Motor Vehicles</option>
-                          <option value="EB">EB — Light Articulated</option>
-                          <option value="C1">C1 — Heavy up to 16 000kg</option>
-                          <option value="C">C — Heavy Motor Vehicle</option>
-                          <option value="EC1">EC1 — Extra Heavy Articulated up to 16 000kg</option>
-                          <option value="EC">EC — Extra Heavy Articulated</option>
-                          <option value="A">A — Motorcycles</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">Province of Issue</label>
-                        <select name="licenseProvince" value={regForm.licenseProvince} onChange={(e) => { setRegForm(prev => ({ ...prev, licenseProvince: e.target.value, licenseCity: '' })); }} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white" required>
-                          <option value="">Select province</option>
-                          {provinces.map(p => <option key={p} value={p}>{p}</option>)}
-                        </select>
-                      </div>
+                      <div><label className="block text-xs font-medium text-slate-600 mb-1">License Type</label><select name="licenseType" value={regForm.licenseType} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white" required><option value="">Select type</option><option value="B">B — Light Motor Vehicles</option><option value="EB">EB — Light Articulated</option><option value="C1">C1 — Heavy up to 16 000kg</option><option value="C">C — Heavy Motor Vehicle</option><option value="EC1">EC1 — Extra Heavy Articulated up to 16 000kg</option><option value="EC">EC — Extra Heavy Articulated</option><option value="A">A — Motorcycles</option></select></div>
+                      <div><label className="block text-xs font-medium text-slate-600 mb-1">Province of Issue</label><select name="licenseProvince" value={regForm.licenseProvince} onChange={(e) => { setRegForm(prev => ({ ...prev, licenseProvince: e.target.value, licenseCity: '' })); }} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white" required><option value="">Select province</option>{provinces.map(p => <option key={p} value={p}>{p}</option>)}</select></div>
                     </div>
-                    <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">City of Issue</label>
-                      <select name="licenseCity" value={regForm.licenseCity} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white" required>
-                        <option value="">Select city</option>
-                        {(citiesByProvince[regForm.licenseProvince] || []).map(c => <option key={c} value={c}>{c}</option>)}
-                      </select>
-                    </div>
+                    <div><label className="block text-xs font-medium text-slate-600 mb-1">City of Issue</label><select name="licenseCity" value={regForm.licenseCity} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white" required><option value="">Select city</option>{(citiesByProvince[regForm.licenseProvince] || []).map(c => <option key={c} value={c}>{c}</option>)}</select></div>
                   </div>
-
                   <div className="grid grid-cols-2 gap-3">
                     <div><label className="block text-xs font-medium text-slate-600 mb-1">Password</label><input type="password" name="password" value={regForm.password} onChange={handleRegChange} placeholder="Min. 6 characters" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" required /></div>
                     <div><label className="block text-xs font-medium text-slate-600 mb-1">Confirm password</label><input type="password" name="confirmPassword" value={regForm.confirmPassword} onChange={handleRegChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" required /></div>
