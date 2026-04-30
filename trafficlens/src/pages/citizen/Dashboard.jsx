@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CitizenLayout from '../../components/layout/CitizenLayout';
 import StatsCards from '../../components/citizen/StatsCards';
@@ -6,6 +6,7 @@ import FinesList from '../../components/citizen/FinesList';
 import LicenseCard from '../../components/citizen/LicenseCard';
 import RenewalModal from '../../components/citizen/RenewalModal';
 import PaymentModal from '../../components/citizen/PaymentModal';
+import Skeleton, { StatCardSkeleton, FineRowSkeleton, LicenseCardSkeleton } from '../../components/ui/Skeleton';
 import useAuthStore from '../../store/authStore';
 import demoUser from '../../data/demoUser';
 import usePaymentStore from '../../store/paymentStore';
@@ -34,8 +35,11 @@ const Dashboard = () => {
   const [showRenewal, setShowRenewal] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [selectedFine, setSelectedFine] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const fines = usePaymentStore(state => state.fines);
   const displayFines = fines.length > 0 ? fines : currentUser.fines || demoUser.fines;
+
+  useEffect(() => { const t = setTimeout(() => setIsLoading(false), 700); return () => clearTimeout(t); }, []);
 
   const quickActions = [
     { label: 'Pay Fine', onClick: () => { const unpaidFine = displayFines.find(f => f.status === 'unpaid'); if (unpaidFine) { setSelectedFine(unpaidFine); setShowPayment(true); } }, icon: <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></> },
@@ -45,6 +49,47 @@ const Dashboard = () => {
   ];
 
   const handlePayment = async (fineId) => { await usePaymentStore.getState().processPayment(fineId); setShowPayment(false); setSelectedFine(null); };
+
+  if (isLoading) {
+    return (
+      <CitizenLayout user={currentUser}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          {/* Stats skeletons */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }} className="md:gap-2.5">
+            <StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton />
+          </div>
+          {/* Quick action skeletons */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }} className="md:gap-2.5">
+            {Array(4).fill(null).map((_, i) => (
+              <div key={i} className="bg-white border border-slate-200 rounded-lg p-2 flex flex-col items-center gap-2 md:p-3 md:gap-7 md:rounded-[10px]">
+                <Skeleton className="w-7 h-7 md:w-9 md:h-9 rounded-md" />
+                <Skeleton className="h-2 w-14 md:w-16" />
+              </div>
+            ))}
+          </div>
+          {/* Fines skeletons */}
+          <div>
+            <div className="flex items-center justify-between mb-2.5">
+              <Skeleton className="h-3 w-28" />
+              <Skeleton className="h-2.5 w-14" />
+            </div>
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+              <FineRowSkeleton /><FineRowSkeleton /><FineRowSkeleton /><FineRowSkeleton />
+            </div>
+          </div>
+          {/* License card skeleton */}
+          <div>
+            <div className="flex items-center justify-between mb-2.5">
+              <Skeleton className="h-3 w-36" />
+              <Skeleton className="h-2.5 w-20" />
+            </div>
+            <LicenseCardSkeleton />
+          </div>
+          <div style={{ height: 8 }} />
+        </div>
+      </CitizenLayout>
+    );
+  }
 
   return (
     <CitizenLayout user={currentUser}>
