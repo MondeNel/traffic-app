@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import CitizenLayout from '../../components/layout/CitizenLayout';
+import Skeleton, { CardSkeleton } from '../../components/ui/Skeleton';
 import useAuthStore from '../../store/authStore';
 import demoUser from '../../data/demoUser';
 
@@ -71,8 +72,11 @@ const Profile = () => {
   const currentUser = user || demoUser;
   const [profilePic, setProfilePic] = useState(currentUser.profileImage || null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [consents, setConsents] = useState({ identity: true, vehicle: true, payment: true, location: false, notifications: true });
   const [saveMessage, setSaveMessage] = useState('');
+
+  useEffect(() => { const t = setTimeout(() => setIsLoading(false), 600); return () => clearTimeout(t); }, []);
 
   const toggleConsent = (key) => {
     setConsents(prev => {
@@ -101,6 +105,53 @@ const Profile = () => {
   const handleProfileUpdate = (formData) => {
     updateProfile(formData);
   };
+
+  if (isLoading) {
+    return (
+      <CitizenLayout user={currentUser}>
+        <div className="flex flex-col gap-4">
+          {/* Header skeleton */}
+          <div className="space-y-1">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-2.5 w-48" />
+          </div>
+          {/* Profile and privacy cards */}
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-3.5">
+            {/* Profile card skeleton */}
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <div className="flex flex-col items-center pb-3 border-b border-slate-200 mb-3">
+                <Skeleton className="w-16 h-16 rounded-full mb-2" />
+                <Skeleton className="h-4 w-32 mb-1" />
+                <Skeleton className="h-2.5 w-24" />
+              </div>
+              <div className="space-y-0">
+                {Array(6).fill(null).map((_, i) => (
+                  <div key={i} className={`flex justify-between items-center py-1.5 ${i < 5 ? 'border-b border-slate-200' : ''}`}>
+                    <Skeleton className="h-2.5 w-16" />
+                    <Skeleton className="h-2.5 w-28" />
+                  </div>
+                ))}
+              </div>
+              <Skeleton className="h-8 w-full mt-3 rounded" />
+            </div>
+            {/* Privacy card skeleton */}
+            <div className="bg-white border border-slate-200 rounded-xl p-3.5 space-y-3">
+              <Skeleton className="h-3.5 w-36" />
+              {Array(5).fill(null).map((_, i) => (
+                <div key={i} className={`flex items-start justify-between py-2 gap-2.5 ${i < 4 ? 'border-b border-slate-200' : ''}`}>
+                  <div className="flex-1 space-y-1">
+                    <Skeleton className="h-3 w-32" />
+                    <Skeleton className="h-2 w-full" />
+                  </div>
+                  <Skeleton className="w-[34px] h-[19px] rounded-full shrink-0 mt-0.5" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CitizenLayout>
+    );
+  }
 
   return (
     <CitizenLayout user={currentUser}>
