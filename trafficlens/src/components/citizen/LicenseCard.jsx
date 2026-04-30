@@ -3,14 +3,28 @@ import { MapPin } from 'lucide-react';
 import userIdImage from '../../assets/ID.jpg';
 
 const SAFlag = () => (
-  <div className="flex-shrink-0 overflow-hidden rounded" style={{ width: 28, height: 19, border: '1px solid rgba(255,255,255,0.25)' }}>
-    <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr 1fr', height: '100%' }}>
-      <div style={{ background: '#007749' }} />
-      <div style={{ background: 'white', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 0, height: 0, borderTop: '9.5px solid transparent', borderBottom: '9.5px solid transparent', borderLeft: '16px solid #FFC72C' }} />
-      </div>
-      <div style={{ background: '#DE3831' }} />
-    </div>
+  <div
+    className="flex-shrink-0 overflow-hidden rounded"
+    style={{ width: 28, height: 19, border: '1px solid rgba(255,255,255,0.25)', position: 'relative' }}
+  >
+    <svg viewBox="0 0 3 2" width="28" height="19" xmlns="http://www.w3.org/2000/svg">
+      {/* Red top band */}
+      <rect x="0" y="0" width="3" height="0.666" fill="#DE3831"/>
+      {/* White thin stripe */}
+      <rect x="0" y="0.666" width="3" height="0.111" fill="white"/>
+      {/* Green center band */}
+      <rect x="0" y="0.777" width="3" height="0.444" fill="#007A4D"/>
+      {/* White thin stripe */}
+      <rect x="0" y="1.222" width="3" height="0.111" fill="white"/>
+      {/* Blue bottom band */}
+      <rect x="0" y="1.333" width="3" height="0.667" fill="#002395"/>
+      {/* Black outer chevron */}
+      <polygon points="0,0 0,2 1.08,1" fill="#000000"/>
+      {/* Gold middle chevron */}
+      <polygon points="0,0 0,2 0.96,1" fill="#FFB81C"/>
+      {/* Green inner chevron */}
+      <polygon points="0,0.18 0,1.82 0.72,1" fill="#007A4D"/>
+    </svg>
   </div>
 );
 
