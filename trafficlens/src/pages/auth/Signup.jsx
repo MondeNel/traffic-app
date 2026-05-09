@@ -18,6 +18,7 @@ const Signup = () => {
     confirmPassword: ''
   });
   
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [formError, setFormError] = useState('');
 
   const handleChange = (e) => {
@@ -38,6 +39,10 @@ const Signup = () => {
     }
     if (!/^\d{13}$/.test(formData.idNumber)) {
       setFormError('ID number must be 13 digits');
+      return false;
+    }
+    if (!termsAccepted) {
+      setFormError('You must accept the terms and conditions');
       return false;
     }
     return true;
@@ -218,6 +223,40 @@ const Signup = () => {
                 required
               />
             </div>
+
+            {/* Terms and Conditions – custom styled checkbox */}
+            <label className="flex items-start gap-3 cursor-pointer py-1">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="sr-only"
+              />
+              <div
+                className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors ${
+                  termsAccepted
+                    ? 'border-[#1B6CA8] bg-[#1B6CA8]'
+                    : 'border-[#CBD5E1] bg-white'
+                }`}
+              >
+                {termsAccepted && (
+                  <svg viewBox="0 0 24 24" className="h-3 w-3 stroke-white fill-none" strokeWidth="3">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+              </div>
+              <span className="text-xs text-[#64748B] leading-relaxed">
+                I agree to the{' '}
+                <a href="#" className="text-[#1B6CA8] underline hover:text-[#0F4A7A]">
+                  Terms and Conditions
+                </a>{' '}
+                and{' '}
+                <a href="#" className="text-[#1B6CA8] underline hover:text-[#0F4A7A]">
+                  Privacy Policy
+                </a>
+                . I understand that my personal information will be processed in accordance with POPIA.
+              </span>
+            </label>
 
             <button
               type="submit"
